@@ -1,4 +1,4 @@
-package Factory;
+package GameModels;
 
 public class Slots {
     /**
