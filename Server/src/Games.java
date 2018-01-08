@@ -20,19 +20,29 @@ public class Games {
         return pokerGames.get(gameID);
     }
 
+    public void updatePokerGame(Poker game, int gameID) {
+        pokerGames.put(gameID, game);
+    }
+
     public Slots getSlotGame(int gameID) {
         return slotGames.get(gameID);
     }
 
+    public void updateSlotGame(Slots game, int gameID) {
+        slotGames.put(gameID, game);
+    }
+
     public void createPokerGame(int initialUserID){
+        Poker newGame = new Poker();
         /**
          * Somehow run initial code like waiting for more player, first cards, etc...
          */
         // We will use initialUserID for gameID because no one will ever have it and it's easy
-        pokerGames.put(initialUserID, new Poker());
+        pokerGames.put(initialUserID, newGame);
     }
 
     public void createSlotGame(int userID) {
-        slotGames.put(userID, new Slots());
+        Slots newGame = new Slots();
+        slotGames.put(userID, newGame);
     }
 }
