@@ -18,7 +18,7 @@ public class Poker {
     }
 
     public void addToPot(double amount) {
-        pot = pot + amount;
+        pot =+ amount;
     }
 
     public ArrayList<String> getPlayerHand(int userID) {
