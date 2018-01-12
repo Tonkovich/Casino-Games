@@ -1,5 +1,4 @@
-import GameModels.Poker;
-import GameModels.Slots;
+import GameModels.*;
 
 import java.util.HashMap;
 
@@ -13,10 +12,10 @@ public class Games {
         return instance;
     }
 
-    private HashMap<Integer, Poker> pokerGames = new HashMap<>();
-    private HashMap<Integer, Slots> slotGames = new HashMap<>();
+    private HashMap<Integer, CardGame> pokerGames = new HashMap<>();
+    private HashMap<Integer, Game> slotGames = new HashMap<>();
 
-    public Poker getPokerGame(int gameID) {
+    public CardGame getPokerGame(int gameID) {
         return pokerGames.get(gameID);
     }
 
@@ -24,7 +23,7 @@ public class Games {
         pokerGames.put(gameID, game);
     }
 
-    public Slots getSlotGame(int gameID) {
+    public Game getSlotGame(int gameID) {
         return slotGames.get(gameID);
     }
 
@@ -33,7 +32,7 @@ public class Games {
     }
 
     public void createPokerGame(int initialUserID){
-        Poker newGame = new Poker();
+        CardGame newGame = new Poker();
         /**
          * Somehow run initial code like waiting for more player, first cards, etc...
          */
@@ -42,7 +41,7 @@ public class Games {
     }
 
     public void createSlotGame(int userID) {
-        Slots newGame = new Slots();
+        Game newGame = new Slots();
         slotGames.put(userID, newGame);
     }
 }

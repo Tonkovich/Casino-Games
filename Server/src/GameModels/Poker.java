@@ -3,22 +3,22 @@ package GameModels;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Poker {
+public class Poker extends CardGame{
     /**
      * Will hold Hashmaps and other game data templates
      */
     private double pot;
     private HashMap<Integer, ArrayList<String>> playerHands = new HashMap<>();
     private HashMap<Integer, Player> gamePlayers = new HashMap<>();
-    public ArrayList<String> houseCards = new ArrayList<>();
-    public ArrayList<String> houseDeck = new ArrayList<>();
+    private ArrayList<String> houseCards = new ArrayList<>();
+    private ArrayList<String> houseDeck = new ArrayList<>();
 
     public double getPot() {
         return pot;
     }
 
     public void addToPot(double amount) {
-        pot =+ amount;
+        pot += amount;
     }
 
     public ArrayList<String> getPlayerHand(int userID) {
@@ -36,6 +36,22 @@ public class Poker {
 
     public Player getPlayer(int userID) {
         return gamePlayers.get(userID);
+    }
+
+    public ArrayList<String> getHouseCards() {
+        return houseCards;
+    }
+
+    public void setHouseCards(ArrayList<String> houseCards) {
+        this.houseCards = houseCards;
+    }
+
+    public ArrayList<String> getHouseDeck() {
+        return houseDeck;
+    }
+
+    public void setHouseDeck(ArrayList<String> houseDeck) {
+        this.houseDeck = houseDeck;
     }
 
 }

@@ -11,6 +11,6 @@ public class Player {
     }
 
     public void addToPlayerWallet(double amount) {
-        playerWallet = playerWallet + amount;
+        playerWallet += amount;
     }
 }
