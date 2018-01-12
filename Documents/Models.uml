@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>GameModels.Slots</OriginalElement>
+  <nodes>
+    <node x="227.0" y="444.0">GameModels.Poker</node>
+    <node x="147.0" y="0.0">GameModels.Game</node>
+    <node x="251.5" y="123.0">GameModels.CardGame</node>
+    <node x="0.0" y="222.0">GameModels.MachineGame</node>
+    <node x="0.0" y="576.0">GameModels.Slots</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="GameModels.MachineGame" target="GameModels.Game">
+      <point x="0.0" y="-36.5" />
+      <point x="103.5" y="98.0" />
+      <point x="198.75" y="98.0" />
+      <point x="-51.75" y="36.5" />
+    </edge>
+    <edge source="GameModels.Slots" target="GameModels.MachineGame">
+      <point x="0.0" y="-59.0" />
+      <point x="0.0" y="36.5" />
+    </edge>
+    <edge source="GameModels.CardGame" target="GameModels.Game">
+      <point x="0.0" y="-135.5" />
+      <point x="397.5" y="98.0" />
+      <point x="302.25" y="98.0" />
+      <point x="51.75" y="36.5" />
+    </edge>
+    <edge source="GameModels.Poker" target="GameModels.CardGame">
+      <point x="0.0" y="-191.0" />
+      <point x="0.0" y="135.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="63.0" y="414.0" />
+  <SelectedNodes>
+    <node>GameModels.Game</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
