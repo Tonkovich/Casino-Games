@@ -1,6 +1,6 @@
 package GameModels;
 
-public class Slots extends Game {
+public class Slots extends MachineGame {
     /**
      * Will hold Hashmaps and other game data templates
      */
