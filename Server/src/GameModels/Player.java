@@ -2,6 +2,7 @@ package GameModels;
 
 public class Player {
     private double playerWallet = 0; // Should only set as zero on "new Player()"
+    private String IPAddress;
 
     public double getPlayerWallet() {
         /**
@@ -12,5 +13,9 @@ public class Player {
 
     public void addToPlayerWallet(double amount) {
         playerWallet += amount;
+    }
+
+    public void subtractFromPlayerWallet(double amount) {
+        playerWallet -= amount;
     }
 }
