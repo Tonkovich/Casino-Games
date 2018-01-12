@@ -16,6 +16,8 @@ public abstract class CardGame extends Game {
 
     public abstract void addToPot(double amount);
 
+    public abstract void resetPot();
+
     public abstract ArrayList<String> getHouseCards();
 
     public abstract void setHouseCards(ArrayList<String> houseCards);

@@ -21,6 +21,10 @@ public class Poker extends CardGame{
         pot += amount;
     }
 
+    public void resetPot(){
+        pot = 0;
+    }
+
     public ArrayList<String> getPlayerHand(int userID) {
         return playerHands.get(userID);
     }
