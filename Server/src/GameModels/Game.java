@@ -1,8 +1,16 @@
 package GameModels;
 
-public abstract class Game {
+import java.util.HashMap;
 
-    public abstract Player getPlayer(int userID);
+public class Game {
 
-    public abstract void addPlayer(Player newPlayer, int userID);
+    private HashMap<Integer, Player> gamePlayers = new HashMap<>();
+
+    public Player getPlayer(int userID) {
+        return gamePlayers.get(userID);
+    }
+
+    public void addPlayer(Player newPlayer, int userID) {
+        gamePlayers.put(userID, newPlayer);
+    }
 }

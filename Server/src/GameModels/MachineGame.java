@@ -1,9 +1,13 @@
 package GameModels;
 
-public abstract class MachineGame extends Game {
+public class MachineGame extends Game {
+    private Player user;
 
-    public abstract Player getPlayer(int userID);
+    public Player getPlayer() {
+        return user;
+    }
 
-    public abstract void addPlayer(Player newPlayer, int userID);
-
+    public void addPlayer(Player newPlayer) {
+        user = newPlayer;
+    }
 }

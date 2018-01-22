@@ -1,28 +1,48 @@
 package GameModels;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public abstract class CardGame extends Game {
+public class CardGame extends Game {
 
-    public abstract Player getPlayer(int userID);
+    private double pot;
+    private HashMap<Integer, ArrayList<String>> playerHands = new HashMap<>();
+    private ArrayList<String> houseCards = new ArrayList<>();
+    private ArrayList<String> houseDeck = new ArrayList<>();
 
-    public abstract void addPlayer(Player newPlayer, int userID);
+    public double getPot() {
+        return pot;
+    }
 
-    public abstract void setPlayerHand(ArrayList<String> playerCards, int userID);
+    public void addToPot(double amount) {
+        pot += amount;
+    }
 
-    public abstract ArrayList<String> getPlayerHand(int userID);
+    public void resetPot() {
+        pot = 0;
+    }
 
-    public abstract double getPot();
+    public ArrayList<String> getPlayerHand(int userID) {
+        return playerHands.get(userID);
+    }
 
-    public abstract void addToPot(double amount);
+    public void setPlayerHand(ArrayList<String> playerCards, int userID) {
+        playerHands.put(userID, playerCards);
+    }
 
-    public abstract void resetPot();
+    public ArrayList<String> getHouseCards() {
+        return houseCards;
+    }
 
-    public abstract ArrayList<String> getHouseCards();
+    public void setHouseCards(ArrayList<String> houseCards) {
+        this.houseCards = houseCards;
+    }
 
-    public abstract void setHouseCards(ArrayList<String> houseCards);
+    public ArrayList<String> getHouseDeck() {
+        return houseDeck;
+    }
 
-    public abstract ArrayList<String> getHouseDeck();
-
-    public abstract void setHouseDeck(ArrayList<String> houseDeck);
+    public void setHouseDeck(ArrayList<String> houseDeck) {
+        this.houseDeck = houseDeck;
+    }
 }

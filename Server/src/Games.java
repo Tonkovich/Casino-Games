@@ -12,10 +12,10 @@ public class Games {
         return instance;
     }
 
-    private HashMap<Integer, CardGame> pokerGames = new HashMap<>();
-    private HashMap<Integer, Game> slotGames = new HashMap<>();
+    private HashMap<Integer, Poker> pokerGames = new HashMap<>();
+    private HashMap<Integer, Slots> slotGames = new HashMap<>();
 
-    public CardGame getPokerGame(int gameID) {
+    public Poker getPokerGame(int gameID) {
         return pokerGames.get(gameID);
     }
 
@@ -23,7 +23,7 @@ public class Games {
         pokerGames.put(gameID, game);
     }
 
-    public Game getSlotGame(int gameID) {
+    public Slots getSlotGame(int gameID) {
         return slotGames.get(gameID);
     }
 
@@ -32,7 +32,7 @@ public class Games {
     }
 
     public void createPokerGame(int initialUserID){
-        CardGame newGame = new Poker();
+        Poker newGame = new Poker();
         /**
          * Somehow run initial code like waiting for more player, first cards, etc...
          */
@@ -40,8 +40,18 @@ public class Games {
         pokerGames.put(initialUserID, newGame);
     }
 
+    public void joinPokerGame(int userID, int gameID) {
+        Poker game = pokerGames.get(gameID);
+        //Player player = Database.getPlayer() wait until method is created
+        //game.addPlayer(player, userID);
+        /**
+         * initial code like get cards...etc...
+         */
+        updatePokerGame(game, gameID);
+    }
+
     public void createSlotGame(int userID) {
-        Game newGame = new Slots();
+        Slots newGame = new Slots();
         slotGames.put(userID, newGame);
     }
 }
