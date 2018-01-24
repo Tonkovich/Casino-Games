@@ -1,8 +1,10 @@
 package GameModels;
 
+import java.net.InetAddress;
+
 public class Player {
     private double playerWallet = 0; // Should only set as zero on "new Player()"
-    private String IPAddress;
+    private InetAddress IPAddress;
 
     public double getPlayerWallet() {
         /**
@@ -17,5 +19,13 @@ public class Player {
 
     public void subtractFromPlayerWallet(double amount) {
         playerWallet -= amount;
+    }
+
+    public InetAddress getIPAddress() {
+        return IPAddress;
+    }
+
+    public void setIPAddress(InetAddress IPAddress) {
+        this.IPAddress = IPAddress;
     }
 }
