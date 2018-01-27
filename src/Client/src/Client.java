@@ -1,12 +1,14 @@
 import Utils.ClientSocket;
-import org.json.simple.JSONObject;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 
 public class Client {
     /**
@@ -15,6 +17,11 @@ public class Client {
     public static void main(String[] args) throws IOException {
         InputStreamReader is = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(is);
+
+        /*
+         * Initial start up of connections
+         */
+
         try {
             System.out.println("Please enter server IP: ");
             String hostName = br.readLine();
@@ -31,19 +38,30 @@ public class Client {
                 portNum = "12000";
 
             int portNumInt = Integer.parseInt(portNum);
-
             ClientSocket mySocket = new ClientSocket(1337);
-            JSONObject json = new JSONObject();
-            String incoming;
+
+            /*
+             * End of start up of connections
+             */
+
             while (true) {
                 System.out.println("Enter Message: ");
+                String incoming = br.readLine();
 
-                json.put("test", br.readLine());
+                // Build JSON object and add
+                JsonObject json = Json.createObjectBuilder()
+                        .add("test", incoming).build();
 
-                mySocket.sendMessage(hostNameInet, portNumInt, json.toJSONString());
-
+                // Send message to server and wait for receive
+                mySocket.sendMessage(hostNameInet, portNumInt, json.toString());
                 incoming = mySocket.receiveMessage();
-                System.out.println(incoming.toString());
+
+                // Convert Incoming message to JSON object
+                JsonReader jsonReader = Json.createReader(new StringReader(incoming));
+                json = jsonReader.readObject();
+
+                // Print out message
+                System.out.println(json.getString("test"));
             }
         } catch (SocketException ex) {
             ex.printStackTrace();

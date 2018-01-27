@@ -1,7 +1,10 @@
 import Utils.Message;
 import Utils.ServerSocket;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import java.io.StringReader;
 
 
 public class Server {
@@ -22,8 +25,12 @@ public class Server {
                 Message request = mySocket.receiveMessageAndSender();
                 String message = request.getMessage();
 
-                JSONParser parser = new JSONParser();
-                JSONObject json = (JSONObject) parser.parse(message);
+                // Take incoming message and convert to JSON object
+                JsonReader jsonReader = Json.createReader(new StringReader(message));
+                JsonObject json = jsonReader.readObject();
+
+                // Read from the JSON Object, in this case key test
+                System.out.print(json.getString("test"));
 
                 /**
                  *
@@ -35,7 +42,9 @@ public class Server {
                  * call methods...do stuff
                  *
                  */
-                mySocket.sendMessage(request.getAddress(), request.getPort(), json.toJSONString());
+
+
+                mySocket.sendMessage(request.getAddress(), request.getPort(), json.toString() + " Return");
             }
         } catch (Exception ex) {
             ex.printStackTrace();
