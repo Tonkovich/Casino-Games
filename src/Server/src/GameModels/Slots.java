@@ -1,8 +1,14 @@
 package GameModels;
 
-public class Slots extends MachineGame {
+public class Slots implements MachineGame {
 
-    /**
-     * Overload methods if necessary
-     */
+    private Player player;
+
+    public void addPlayer(int userID, Player player) {
+        this.player = player;
+    }
+
+    public Player getPlayer(int userID) {
+        return this.player;
+    }
 }

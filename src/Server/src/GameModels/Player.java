@@ -5,6 +5,7 @@ import java.net.InetAddress;
 public class Player {
     private double playerWallet = 0; // Should only set as zero on "new Player()"
     private InetAddress IPAddress;
+    private int userID;
 
     public double getPlayerWallet() {
         /**
@@ -27,5 +28,13 @@ public class Player {
 
     public void setIPAddress(InetAddress IPAddress) {
         this.IPAddress = IPAddress;
+    }
+
+    public void setUserID(int incoming) {
+        userID = incoming;
+    }
+
+    public int getUserID() {
+        return userID;
     }
 }
