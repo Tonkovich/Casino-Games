@@ -3,17 +3,17 @@
   <ID>JAVA</ID>
   <OriginalElement>GameModels.Slots</OriginalElement>
   <nodes>
-    <node x="146.0" y="158.0">GameModels.Poker</node>
-    <node x="150.25" y="0.0">GameModels.Game</node>
-    <node x="146.0" y="-190.0">Server</node>
-    <node x="264.5" y="79.0">GameModels.CardGame</node>
-    <node x="37.0" y="-107.0">Games</node>
-    <node x="0.5" y="79.0">GameModels.MachineGame</node>
-    <node x="147.0" y="-330.0">Client</node>
-    <node x="0.0" y="191.0">GameModels.Slots</node>
+    <node x="0.0" y="158.0">GameModels.Poker</node>
+    <node x="260.25" y="0.0">GameModels.Game</node>
+    <node x="323.0" y="342.0">Server</node>
+    <node x="118.5" y="79.0">GameModels.CardGame</node>
+    <node x="0.0" y="419.0">Games</node>
+    <node x="366.5" y="79.0">GameModels.MachineGame</node>
+    <node x="448.0" y="342.0">Client</node>
+    <node x="361.0" y="202.0">GameModels.Slots</node>
   </nodes>
   <notes>
-    <note x="-124.0" y="-59.0">
+    <note x="87.0" y="342.0">
       <node>Games</node>
       <value>Stores Games</value>
       <edge>
@@ -23,15 +23,15 @@
     </note>
   </notes>
   <edges>
-    <edge source="GameModels.Slots" target="GameModels.MachineGame">
-      <point x="0.0" y="-36.5" />
-      <point x="0.0" y="14.5" />
-    </edge>
     <edge source="GameModels.MachineGame" target="GameModels.Game">
       <point x="0.0" y="-14.5" />
-      <point x="63.0" y="54.0" />
-      <point x="170.0" y="54.0" />
-      <point x="-19.75" y="14.5" />
+      <point x="429.0" y="54.0" />
+      <point x="319.5" y="54.0" />
+      <point x="19.75" y="14.5" />
+    </edge>
+    <edge source="GameModels.Slots" target="GameModels.MachineGame">
+      <point x="0.0" y="-25.5" />
+      <point x="0.0" y="14.5" />
     </edge>
     <edge source="GameModels.Poker" target="GameModels.CardGame">
       <point x="0.0" y="-69.5" />
@@ -39,14 +39,21 @@
     </edge>
     <edge source="GameModels.CardGame" target="GameModels.Game">
       <point x="0.0" y="-14.5" />
-      <point x="316.5" y="54.0" />
-      <point x="209.5" y="54.0" />
-      <point x="19.75" y="14.5" />
+      <point x="170.5" y="54.0" />
+      <point x="280.0" y="54.0" />
+      <point x="-19.75" y="14.5" />
     </edge>
   </edges>
-  <settings layout="Hierarchic Group" zoom="1.0" x="366.0" y="-66.0" />
+  <settings layout="Hierarchic Group" zoom="1.0" x="181.5" y="264.0" />
   <SelectedNodes>
+    <node>GameModels.Poker</node>
+    <node>GameModels.Game</node>
+    <node>Server</node>
+    <node>GameModels.CardGame</node>
+    <node>Games</node>
+    <node>GameModels.MachineGame</node>
     <node>Client</node>
+    <node>GameModels.Slots</node>
   </SelectedNodes>
   <Categories>
     <Category>Fields</Category>
