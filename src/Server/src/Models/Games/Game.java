@@ -1,4 +1,4 @@
-package Models.Game;
+package Models.Games;
 
 public interface Game {
     void addPlayer(int userID, Player player);

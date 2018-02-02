@@ -1,4 +1,4 @@
-package Models.Game;
+package Models.Games;
 
 import java.util.Timer;
 

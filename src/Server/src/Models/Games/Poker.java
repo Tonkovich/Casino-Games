@@ -1,4 +1,4 @@
-package Models.Game;
+package Models.Games;
 
 import Models.Parts.CardGame.Deck;
 import Models.Parts.CardGame.Hand;
