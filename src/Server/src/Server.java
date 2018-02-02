@@ -1,3 +1,4 @@
+import Models.Game.Poker;
 import Utils.Message;
 import Utils.ServerSocket;
 
@@ -49,5 +50,13 @@ public class Server {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void pokerLogic(Poker poker, int userID) {
+
+    }
+
+    public void slotLogic() {
+
     }
 }

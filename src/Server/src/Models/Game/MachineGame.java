@@ -1,4 +1,4 @@
-package GameModels;
+package Models.Game;
 
 public interface MachineGame extends Game {
 

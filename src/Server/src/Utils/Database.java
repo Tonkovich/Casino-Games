@@ -1,9 +1,23 @@
 package Utils;
 
+import Models.Game.Player;
+import org.sql2o.Connection;
+import org.sql2o.Sql2o;
+
+import java.util.List;
+
 public class Database {
-    /**
-     * Will hold methods for establishing connection and uploading/downloading player data
-     *
-     * We will use SQL20 for getting/setting data on the SQL server
-     */
+
+    private Sql2o sql2o;
+
+    public List<Player> loadPlayer(int userID) {
+        String playerSQL = "SELECT user_id, wallet FROM Players p WHERE p.user_id = :userID";
+        try (Connection con = sql2o.open()) {
+            return con.createQuery(playerSQL)
+                    .addParameter("userID", userID)
+                    .addColumnMapping("wallet", "wallet")
+                    .addColumnMapping("user_id", "userID")
+                    .executeAndFetch(Player.class);
+        }
+    }
 }

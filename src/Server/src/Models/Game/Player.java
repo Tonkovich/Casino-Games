@@ -1,4 +1,4 @@
-package GameModels;
+package Models.Game;
 
 import java.net.InetAddress;
 

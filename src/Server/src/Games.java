@@ -1,4 +1,5 @@
-import GameModels.*;
+import Models.Game.Poker;
+import Models.Game.Slots;
 
 import java.util.HashMap;
 
@@ -33,9 +34,7 @@ public class Games {
 
     public void createPokerGame(int initialUserID){
         Poker newGame = new Poker();
-        /**
-         * Somehow run initial code like waiting for more player, first cards, etc...
-         */
+
         // We will use initialUserID for gameID because no one will ever have it and it's easy
         pokerGames.put(initialUserID, newGame);
     }
@@ -43,7 +42,7 @@ public class Games {
     public void joinPokerGame(int userID, int gameID) {
         Poker game = pokerGames.get(gameID);
         //Player player = Database.getPlayer() wait until method is created
-        //game.addPlayer(player, userID);
+        //game.addPlayer(userID, Player);
         /**
          * initial code like get cards...etc...
          */
