@@ -1,5 +1,5 @@
-import Models.Game.Poker;
-import Models.Game.Slots;
+import Models.Games.Poker;
+import Models.Games.Slots;
 
 import java.util.HashMap;
 

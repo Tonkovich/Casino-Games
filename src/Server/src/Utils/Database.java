@@ -1,6 +1,6 @@
 package Utils;
 
-import Models.Game.Player;
+import Models.Games.Player;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 

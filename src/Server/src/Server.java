@@ -1,4 +1,4 @@
-import Models.Game.Poker;
+import Models.Games.Poker;
 import Utils.Message;
 import Utils.ServerSocket;
 
