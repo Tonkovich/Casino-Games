@@ -5,10 +5,12 @@ import java.util.Comparator;
 public class Card implements Comparator<Card> {
     private Suit suit;
     private CardValue value;
+    private boolean isPlayers;
 
-    Card(CardValue value, Suit suit) {
+    Card(CardValue value, Suit suit, boolean isPlayers) {
         this.suit = suit;
         this.value = value;
+        this.isPlayers = isPlayers;
     }
 
     public Suit getSuit() {
@@ -25,6 +27,14 @@ public class Card implements Comparator<Card> {
 
     public void setCardValue(CardValue value) {
         this.value = value;
+    }
+
+    public boolean isPlayers() {
+        return isPlayers;
+    }
+
+    public void setIsPlayers(boolean isPlayers) {
+        this.isPlayers = isPlayers;
     }
 
     @Override

@@ -12,7 +12,7 @@ public class Deck {
         deck = new ArrayList<>();
         for (CardValue v : CardValue.values()) {
             for (Suit s : Suit.values()) {
-                Card card = new Card(v, s);
+                Card card = new Card(v, s, false);
                 deck.add(card);
             }
         }
@@ -28,9 +28,17 @@ public class Deck {
         return deck;
     }
 
+    public void clearDeck() {
+        deck.clear();
+    }
+
     public Card drawCard() {
         return deck.remove(0);
         // TODO: Check if deck is empty
+    }
+
+    public Card peek() {
+        return deck.get(0);
     }
 
     public int size() {
