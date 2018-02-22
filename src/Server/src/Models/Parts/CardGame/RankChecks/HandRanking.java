@@ -9,6 +9,7 @@ public enum HandRanking {
     TWO_PAIR(30),
     THREE_OAK(45),
     STRAIGHT(60),
+    ROYAL_STRAIGHT(61),
     FLUSH(75),
     FULL_HOUSE(90),
     FOUR_OAK(105),
@@ -21,7 +22,7 @@ public enum HandRanking {
         this.handRanking = value;
     }
 
-    public int getHandRanking() {
+    public int getVal() {
         return handRanking;
     }
 }
