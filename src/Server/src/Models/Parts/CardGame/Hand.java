@@ -13,6 +13,10 @@ public class Hand {
         return hand;
     }
 
+    public void clearHand() {
+        hand.clear();
+    }
+
     // Used for message sending to client
     public String toString() {
         String result = "";
