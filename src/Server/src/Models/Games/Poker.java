@@ -14,6 +14,7 @@ import java.util.*;
 public class Poker implements CardGame {
 
     private double pot;
+    private double prevBet = 0;
     private boolean gameReady = false;
     private HashMap<Integer, Hand> playerHands = new HashMap<>();
     private HashMap<Integer, Player> players = new HashMap<>();
@@ -28,6 +29,7 @@ public class Poker implements CardGame {
         turns = new PriorityQueue<>(); // Will keep track of player turns
         house = new Hand();
         pm = new PokerMessages();
+        start(); // Start thread
     }
 
     /*
@@ -46,7 +48,7 @@ public class Poker implements CardGame {
     }
 
     public void deal() {
-        initHouseCard(); // Start river
+        initHouseCard(); // Start house cards
         for (Hand h : playerHands.values()) {
             for (int i = 0; i < 2; i++) { // Two cards: Texas Hold'em
                 Card c = deck.drawCard();
@@ -71,6 +73,16 @@ public class Poker implements CardGame {
     public void addToPot(double amount) {
         pot += amount;
         massSender(pm.addedToPot(amount, pot, turns.peek()));
+        prevBet = amount;
+    }
+
+    public double getPrevBet() {
+        return prevBet;
+    }
+
+    public void fold(int userID) {
+        turns.remove();
+        massSender(pm.userFold(players.get(userID).getUsername()));
     }
 
     public boolean isMoveAllowed(Player player) {
@@ -154,5 +166,21 @@ public class Poker implements CardGame {
         for (Player p : players.values()) {
             p.sendMessage(message);
         }
+    }
+
+
+    //// IMPLEMENTATION CODE /////
+
+
+    public void start() {
+        boolean cont = true;
+        Thread t = new Thread(() -> {
+            while (cont) {
+                /**
+                 * GAME INSTANCE LOGIC HERE
+                 */
+            }
+        });
+        t.start();
     }
 }
