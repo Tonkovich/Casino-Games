@@ -4,10 +4,11 @@ import Utils.ServerSocket;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class Player {
     private double playerWallet = 0; // Should only set as zero on "new Player()"
-    private InetAddress IPAddress;
+    private String IPAddress;
     private int userID;
     private String username;
 
@@ -18,20 +19,20 @@ public class Player {
         return playerWallet;
     }
 
-    public void addToPlayerWallet(double amount) {
-        playerWallet += amount;
-    }
-
-    public void subtractFromPlayerWallet(double amount) {
-        playerWallet -= amount;
+    public void setPlayerWallet(double amount) {
+        playerWallet = amount;
     }
 
     public InetAddress getIPAddress() {
-        return IPAddress;
+        try {
+            return InetAddress.getByName(IPAddress);
+        } catch (UnknownHostException ex) {
+            return null; // is this okay?
+        }
     }
 
     public void setIPAddress(InetAddress IPAddress) {
-        this.IPAddress = IPAddress;
+        this.IPAddress = IPAddress.getHostAddress();
     }
 
     public void setUserID(int incoming) {
@@ -53,7 +54,7 @@ public class Player {
     public void sendMessage(String json) {
         try {
             ServerSocket client = new ServerSocket(12000);
-            client.sendMessage(IPAddress, 1337, json);
+            client.sendMessage(InetAddress.getByName(IPAddress), 1337, json);
         } catch (IOException e) {
             // Do nothing
         }
