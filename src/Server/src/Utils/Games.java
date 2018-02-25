@@ -1,3 +1,5 @@
+package Utils;
+
 import Models.Games.Poker;
 import Models.Games.Slots;
 
@@ -5,12 +7,18 @@ import java.util.HashMap;
 
 public class Games {
 
+    private Players playerDB = Players.getInstance();
+
     private static Games instance;
+
     public static Games getInstance(){
         if(instance == null){
             instance = new Games();
         }
         return instance;
+    }
+
+    private Games() {
     }
 
     private HashMap<Integer, Poker> pokerGames = new HashMap<>();
@@ -20,17 +28,11 @@ public class Games {
         return pokerGames.get(gameID);
     }
 
-    public void updatePokerGame(Poker game, int gameID) {
-        pokerGames.put(gameID, game);
-    }
 
     public Slots getSlotGame(int gameID) {
         return slotGames.get(gameID);
     }
 
-    public void updateSlotGame(Slots game, int gameID) {
-        slotGames.put(gameID, game);
-    }
 
     public void createPokerGame(int initialUserID){
         Poker newGame = new Poker();
@@ -41,12 +43,9 @@ public class Games {
 
     public void joinPokerGame(int userID, int gameID) {
         Poker game = pokerGames.get(gameID);
-        //Player player = Database.getPlayer() wait until method is created
-        //game.addPlayer(userID, Player);
-        /**
-         * initial code like get cards...etc...
-         */
-        updatePokerGame(game, gameID);
+
+        // Get user from PlayerDB
+        pokerGames.get(gameID).addPlayer(userID, playerDB.getPlayer(userID));
     }
 
     public void createSlotGame(int userID) {
