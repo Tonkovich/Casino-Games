@@ -4,6 +4,8 @@ import javax.json.JsonObject;
 
 public class ParseStore {
 
+    private static ParseStore instance;
+
     JsonObject json;
     PokerParse pp = PokerParse.getInstance();
     SlotParse sp = SlotParse.getInstance();
@@ -12,13 +14,15 @@ public class ParseStore {
         // Do nothing
     }
 
-    public ParseStore(JsonObject json) {
-        this.json = json;
-        parse();
+    public static ParseStore getInstance() {
+        if (instance == null) {
+            instance = new ParseStore();
+        }
+        return instance;
     }
 
     // First line from client will send message to different parsers
-    public void parse() {
+    public void parse(JsonObject json) {
         if (json != null) {
             switch (json.getString("gameType")) {
                 case "Poker":

@@ -1,4 +1,6 @@
-import Models.Games.Poker;
+import Parsers.ParseStore;
+import Utils.Database;
+import Utils.DatabaseException;
 import Utils.Message;
 import Utils.ServerSocket;
 
@@ -13,7 +15,10 @@ public class Server {
      * The server class will be mainly responsible for interpreting incoming client messages and sending the data to the
      * appropriate method/location
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DatabaseException {
+
+        Database db = new Database();
+        ParseStore ps = ParseStore.getInstance();
 
         int serverPort = 12000; // Default port
         if (args.length == 1)
@@ -22,6 +27,7 @@ public class Server {
             ServerSocket mySocket = new ServerSocket(serverPort);
             System.out.println("Server is ready");
 
+            // Game loop waiting for messages
             while (true) {
                 Message request = mySocket.receiveMessageAndSender();
                 String message = request.getMessage();
@@ -30,33 +36,12 @@ public class Server {
                 JsonReader jsonReader = Json.createReader(new StringReader(message));
                 JsonObject json = jsonReader.readObject();
 
-                // Read from the JSON Object, in this case key test
-                System.out.print(json.getString("test"));
+                ps.parse(json);
 
-                /**
-                 *
-                 * switch(json.get("game"))
-                 * case: "Poker"
-                 *
-                 * case: "Slots"
-                 *
-                 * call methods...do stuff
-                 *
-                 */
-
-
-                mySocket.sendMessage(request.getAddress(), request.getPort(), json.toString() + " Return");
+                //mySocket.sendMessage(request.getAddress(), request.getPort(), json.toString() + " Return");
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    public void pokerLogic(Poker poker, int userID) {
-
-    }
-
-    public void slotLogic() {
-
     }
 }
