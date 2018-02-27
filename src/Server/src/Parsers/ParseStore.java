@@ -5,10 +5,8 @@ import javax.json.JsonObject;
 public class ParseStore {
 
     private static ParseStore instance;
-
-    JsonObject json;
-    PokerParse pp = PokerParse.getInstance();
-    SlotParse sp = SlotParse.getInstance();
+    private PokerParse pp = PokerParse.getInstance();
+    private SlotParse sp = SlotParse.getInstance();
 
     private ParseStore() {
         // Do nothing
