@@ -108,12 +108,7 @@ public class Poker implements CardGame {
 
     // Final game code
     public void completeRound() {
-        Player player = getWinner();
-        // Message to losers
-        massSender(pm.winnerMessageOthers(player));
-        // Message to winner
-        player.sendMessage(pm.winnerMessage());
-
+        getWinner();
         deck.clearDeck();
         resetPot();
 
@@ -134,32 +129,122 @@ public class Poker implements CardGame {
             house.addCard(deck.drawCard());
     }
 
-    private Player getWinner() {
-        int rankMax = 0;
+    private void getWinner() {
+        int rankMax = 0; // set to zero because highcard is zero
+
         // Key: HandRank score, Value: Player
         Map<Integer, Player> ranks = new HashMap<>();
+
         // Key: highcard score, Value: playerhand key
         Map<Integer, Integer> highcards = new HashMap<>();
+
+        // Handle multiple winner highcards
+        List<Integer> winnerHighCards = new ArrayList<>();
+
+        // Highest high card
+        int maxHighCard = 0;
+
         ScoreHand scoreHand;
         // Using keys because we'll eventually need the key for player association and message sending
         for (Integer key : playerHands.keySet()) {
             Hand hand = playerHands.get(key);
             scoreHand = new ScoreHand(hand, house);
-            ranks.put(scoreHand.getRank(), players.get(key));
-            highcards.put(scoreHand.getHighCard(), key);
+            ranks.put(scoreHand.getRank(), players.get(key)); // Put hand rank into map
+            highcards.put(players.get(key).getUserID(), scoreHand.getHighCard()); // Put highcard into map
         }
-        // Find max first
-        Player[] winners = new Player[ranks.size()];
+
+        List<Player> winners = new ArrayList<>();
+        // Find max hand type
         for (Integer key : ranks.keySet()) {
-            if (key > rankMax) {
+            if (key >= rankMax) {
                 rankMax = key;
             }
             // TODO: Handle multiple max's, highcards, and etc
         }
 
+        if (rankMax > 0) {
+            for (Integer key : ranks.keySet()) {
+                if (key >= rankMax)
+                    winners.add(ranks.get(key)); // Add winners that have the max rank hand
+            }
+            // Winners > 1, compare highcards
+            if (winners.size() > 1) {
 
-        // TODO: Check all player hands and see who has best
-        return null;
+                for (Player p : winners) {
+                    // Select all winners highcards, positions in list will correspond with player iteration
+                    winnerHighCards.add(highcards.get(p.getUserID()));
+                }
+                // Find highest highcard
+                int duplicates = 0;
+                for (int i = 0; i < winnerHighCards.size(); i++) {
+                    if (winnerHighCards.get(i) >= maxHighCard) {
+                        if (winnerHighCards.get(i) == maxHighCard)
+                            duplicates++;
+                        maxHighCard = winnerHighCards.get(i);
+                    }
+                }
+
+                // Players who have same hand and same highcard, divide pot
+                if (duplicates > 0) {
+                    multipleWinners(duplicates, maxHighCard, highcards);
+                } else {
+                    // Many players same hand, only one with better high card
+                    singleWinner(maxHighCard, highcards);
+                }
+            } else {
+                // Only one winner with best hand
+                singleWinner(maxHighCard, highcards);
+            }
+            // No one has stuff, compare all highcards
+        } else {
+            // First find highest highcard
+            int duplicates = 0;
+            for (Integer i : highcards.keySet()) {
+                if (i >= maxHighCard) {
+                    if (i == maxHighCard)
+                        duplicates++;
+                    maxHighCard = i;
+                }
+            }
+
+            if (duplicates > 0) {
+                // Multiple highcard winners
+                multipleWinners(duplicates, maxHighCard, highcards);
+            } else {
+                // Single highcard winner
+                singleWinner(maxHighCard, highcards);
+            }
+
+        }
+    }
+
+    // Handling a single winner
+    private void singleWinner(int maxHighCard, Map<Integer, Integer> highcards) {
+        for (Integer i : highcards.keySet()) {
+            if (highcards.get(i) == maxHighCard) {
+                Player player = players.get(i);
+                player.setPlayerWallet(player.getPlayerWallet() + getPot());
+                players.get(i).sendMessage(pm.winnerMessage());
+                massSender(pm.winnerMessageOthers(players.get(i)));
+            }
+        }
+    }
+
+    // Handling multiple winners
+    private void multipleWinners(int duplicates, int maxHighCard, Map<Integer, Integer> highcards) {
+        double divPot = getPot() / duplicates; // Split pot between players
+
+        List<Player> finalWinners = new ArrayList<>();
+        for (Integer i : highcards.keySet()) {
+            if (highcards.get(i) == maxHighCard) {
+                Player player = players.get(i);
+                finalWinners.add(players.get(i));
+                player.sendMessage(pm.winnerMessage()); // Send each player winner message
+                player.setPlayerWallet(player.getPlayerWallet() + divPot); // Give them their winnings
+            }
+        }
+
+        massSender(pm.multipleWinners(finalWinners));
     }
 
     private void massSender(String message) {
