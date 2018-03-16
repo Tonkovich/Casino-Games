@@ -5,6 +5,7 @@ import Models.Parts.CardGame.Card;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import java.util.List;
 
 public class PokerMessages implements CardGameMessages {
 
@@ -12,6 +13,17 @@ public class PokerMessages implements CardGameMessages {
         JsonObject json = Json.createObjectBuilder()
                 .add("header", "serverMessage")
                 .add("message", player.getUsername() + " won!").build();
+        return json.toString();
+    }
+
+    public String multipleWinners(List<Player> player) {
+        String allPlayers = "";
+        for (Player p : player) {
+            allPlayers += p.getUsername() + ", ";
+        }
+        JsonObject json = Json.createObjectBuilder()
+                .add("header", "serverMessage")
+                .add("message", allPlayers + " won!").build();
         return json.toString();
     }
 
@@ -77,6 +89,13 @@ public class PokerMessages implements CardGameMessages {
         JsonObject json = Json.createObjectBuilder()
                 .add("header", "serverMessage")
                 .add("message", "Round over: Play again(y/n)").build();
+        return json.toString();
+    }
+
+    public String userFold(String name) {
+        JsonObject json = Json.createObjectBuilder()
+                .add("header", "serverMessage")
+                .add("message", name + " folds.").build();
         return json.toString();
     }
 }
