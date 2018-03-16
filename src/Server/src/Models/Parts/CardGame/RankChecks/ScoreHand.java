@@ -35,7 +35,7 @@ public class ScoreHand {
         getFrequencies();
         rank = HandRanking.HIGH_CARD;
         findHighCard();
-        rankHand();
+        rankHand(); // Will replace highcard if other hand found
     }
 
     public int getRank() {
