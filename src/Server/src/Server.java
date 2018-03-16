@@ -36,9 +36,7 @@ public class Server {
                 JsonReader jsonReader = Json.createReader(new StringReader(message));
                 JsonObject json = jsonReader.readObject();
 
-                ps.parse(json);
-
-                //mySocket.sendMessage(request.getAddress(), request.getPort(), json.toString() + " Return");
+                ps.parse(json); // Parse
             }
         } catch (Exception ex) {
             ex.printStackTrace();
