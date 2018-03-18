@@ -3,10 +3,15 @@ package Models.Parts.CardGame;
 import java.util.ArrayList;
 
 public class Hand {
-    private ArrayList<Card> hand;
+    private ArrayList<Card> hand = new ArrayList<>();
 
     public void addCard(Card c) {
         hand.add(c);
+    }
+
+    // Sounds weird but needed to replace arraylist
+    public void addHand(ArrayList<Card> hand) {
+        this.hand = hand;
     }
 
     public ArrayList<Card> getCards() {
@@ -29,9 +34,12 @@ public class Hand {
     }
 
     public Hand addAll(Hand h2) {
+        ArrayList<Card> temp = new ArrayList<>(hand);
         for (Card c : h2.getCards()) {
-            addCard(c);
+            temp.add(c);
         }
-        return this;
+        Hand newHand = new Hand();
+        newHand.addHand(temp);
+        return newHand;
     }
 }
