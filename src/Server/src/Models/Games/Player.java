@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class Player {
+public class Player implements Comparable<Player> {
     private double playerWallet = 0; // Should only set as zero on "new Player()"
     private String IPAddress;
     private int userID;
@@ -58,5 +58,9 @@ public class Player {
         } catch (IOException e) {
             // Do nothing
         }
+    }
+
+    public int compareTo(Player anotherPlayer) {
+        return userID - anotherPlayer.getUserID();
     }
 }
