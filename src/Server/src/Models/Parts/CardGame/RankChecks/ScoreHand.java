@@ -19,8 +19,8 @@ public class ScoreHand {
     private static final int FOUR_OF_A_KIND = 16;
 
     private Hand hand;
-    private int[] faceFrequency = new int[13];
-    private int[] suitFrequency = new int[4];
+    private int[] faceFrequency = new int[15];
+    private int[] suitFrequency = new int[5];
     private boolean hasAce;
     private boolean isRoyal;
     private HandRanking rank;
@@ -127,12 +127,13 @@ public class ScoreHand {
             int val = c.getCardValue().getVal();
             int counter = 0;
             // Find card with same value, then register isPlayers()
+            bools.add(counter, false);
             for (Integer i : sorted) {
                 if (i == val) {
                     bools.add(counter, c.isPlayers());
                 }
-                counter++;
             }
+            counter++;
         }
 
 
