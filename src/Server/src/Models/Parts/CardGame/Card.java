@@ -44,4 +44,8 @@ public class Card implements Comparator<Card> {
         return Integer.compare(v1Val, v2Val);
     }
 
+    public String toString() {
+        return value + " of " + suit.toString() + ", ";
+    }
+
 }
