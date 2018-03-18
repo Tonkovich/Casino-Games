@@ -19,7 +19,7 @@ public class Poker implements CardGame {
     private HashMap<Integer, Hand> playerHands = new HashMap<>();
     private HashMap<Integer, Player> players = new HashMap<>();
     private Hand house;
-    private Queue<Player> turns;
+    private PriorityQueue<Player> turns;
     private Deck deck;
     private Timer timer;
     private PokerMessages pm;
@@ -36,6 +36,7 @@ public class Poker implements CardGame {
         Initialize all player info
      */
     public void addPlayer(int userID, Player player) {
+        // TODO: Make max number of players 6
         Hand hand = new Hand(); // Create empty hand
         players.put(userID, player);
         setPlayerHand(hand, userID);
@@ -53,6 +54,7 @@ public class Poker implements CardGame {
             for (int i = 0; i < 2; i++) { // Two cards: Texas Hold'em
                 Card c = deck.drawCard();
                 c.setIsPlayers(true);
+                System.out.println(c.toString());
                 h.addCard(c);
             }
         }
@@ -81,6 +83,7 @@ public class Poker implements CardGame {
     }
 
     public void fold(int userID) {
+        // TODO: Remove players hand and etc
         turns.remove();
         massSender(pm.userFold(players.get(userID).getUsername()));
     }
@@ -129,11 +132,11 @@ public class Poker implements CardGame {
             house.addCard(deck.drawCard());
     }
 
-    private void getWinner() {
+    public void getWinner() {
         int rankMax = 0; // set to zero because highcard is zero
 
-        // Key: HandRank score, Value: Player
-        Map<Integer, Player> ranks = new HashMap<>();
+        // Key: Player userID, Value: Rank score
+        Map<Integer, Integer> ranks = new HashMap<>();
 
         // Key: highcard score, Value: playerhand key
         Map<Integer, Integer> highcards = new HashMap<>();
@@ -149,13 +152,13 @@ public class Poker implements CardGame {
         for (Integer key : playerHands.keySet()) {
             Hand hand = playerHands.get(key);
             scoreHand = new ScoreHand(hand, house);
-            ranks.put(scoreHand.getRank(), players.get(key)); // Put hand rank into map
+            ranks.put(players.get(key).getUserID(), scoreHand.getRank()); // Put hand rank into map
             highcards.put(players.get(key).getUserID(), scoreHand.getHighCard()); // Put highcard into map
         }
 
         List<Player> winners = new ArrayList<>();
         // Find max hand type
-        for (Integer key : ranks.keySet()) {
+        for (Integer key : ranks.values()) {
             if (key >= rankMax) {
                 rankMax = key;
             }
@@ -164,8 +167,8 @@ public class Poker implements CardGame {
 
         if (rankMax > 0) {
             for (Integer key : ranks.keySet()) {
-                if (key >= rankMax)
-                    winners.add(ranks.get(key)); // Add winners that have the max rank hand
+                if (ranks.get(key) >= rankMax)
+                    winners.add(players.get(key)); // Add winners that have the max rank hand
             }
             // Winners > 1, compare highcards
             if (winners.size() > 1) {
@@ -199,7 +202,7 @@ public class Poker implements CardGame {
         } else {
             // First find highest highcard
             int duplicates = 0;
-            for (Integer i : highcards.keySet()) {
+            for (Integer i : highcards.values()) {
                 if (i >= maxHighCard) {
                     if (i == maxHighCard)
                         duplicates++;
@@ -220,9 +223,17 @@ public class Poker implements CardGame {
 
     // Handling a single winner
     private void singleWinner(int maxHighCard, Map<Integer, Integer> highcards) {
+
+        System.out.print("Single");
+
         for (Integer i : highcards.keySet()) {
             if (highcards.get(i) == maxHighCard) {
                 Player player = players.get(i);
+
+                System.out.println(playerHands.get(player.getUserID()).toString());
+                System.out.println(player.getUsername());
+
+
                 player.setPlayerWallet(player.getPlayerWallet() + getPot());
                 players.get(i).sendMessage(pm.winnerMessage());
                 massSender(pm.winnerMessageOthers(players.get(i)));
@@ -234,11 +245,17 @@ public class Poker implements CardGame {
     private void multipleWinners(int duplicates, int maxHighCard, Map<Integer, Integer> highcards) {
         double divPot = getPot() / duplicates; // Split pot between players
 
+        System.out.println("Multiple");
+
         List<Player> finalWinners = new ArrayList<>();
         for (Integer i : highcards.keySet()) {
             if (highcards.get(i) == maxHighCard) {
                 Player player = players.get(i);
                 finalWinners.add(players.get(i));
+
+                System.out.print(player.getUsername());
+
+
                 player.sendMessage(pm.winnerMessage()); // Send each player winner message
                 player.setPlayerWallet(player.getPlayerWallet() + divPot); // Give them their winnings
             }
