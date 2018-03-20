@@ -3,7 +3,7 @@ package Models.Games;
 import Models.Parts.CardGame.Card;
 import Models.Parts.CardGame.Deck;
 import Models.Parts.CardGame.Hand;
-import Models.Parts.CardGame.RankChecks.ScoreHand;
+import Models.Parts.CardGame.Ranking.EvaluateHand;
 import Utils.JSONMessages.PokerMessages;
 
 import java.util.*;
@@ -146,13 +146,13 @@ public class Poker implements CardGame {
         // Highest high card
         int maxHighCard = 0;
 
-        ScoreHand scoreHand;
+        EvaluateHand evaluate;
         // Populate maps and score all players hands
         for (Integer key : playerHands.keySet()) {
             Hand hand = playerHands.get(key);
-            scoreHand = new ScoreHand(hand, house);
-            ranks.put(players.get(key).getUserID(), scoreHand.getRank()); // Put hand rank into map
-            highcards.put(players.get(key).getUserID(), scoreHand.getHighCard()); // Put highcard into map
+            evaluate = new EvaluateHand(hand, house);
+            ranks.put(players.get(key).getUserID(), evaluate.getRank()); // Put hand rank into map
+            highcards.put(players.get(key).getUserID(), evaluate.getHighCard()); // Put highcard into map
         }
 
         List<Player> winners = new ArrayList<>();

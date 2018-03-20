@@ -1,4 +1,4 @@
-package Models.Parts.CardGame.RankChecks;
+package Models.Parts.CardGame.Ranking;
 
 import Models.Parts.CardGame.Card;
 import Models.Parts.CardGame.CardValue;
@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ScoreHand {
+public class EvaluateHand {
 
     // constants for evaluating pairs
     private static final int ONE_PAIR = 4;
@@ -28,7 +28,7 @@ public class ScoreHand {
     private Hand playerHand;
 
 
-    public ScoreHand(Hand playerHand, Hand houseHand) {
+    public EvaluateHand(Hand playerHand, Hand houseHand) {
         this.playerHand = playerHand; // Im lazy so im using this for getPairSum()
         hand = playerHand.addAll(houseHand);
         Collections.sort(hand.getCards(), new Card()); // Passes cards to comparator and sorts

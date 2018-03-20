@@ -1,4 +1,4 @@
-package Models.Parts.CardGame.RankChecks;
+package Models.Parts.CardGame.Ranking;
 
 public enum HandRanking {
     HIGH_CARD(0),
