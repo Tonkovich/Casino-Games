@@ -27,7 +27,7 @@ public class Hand {
         String result = "";
 
         for (Card c : hand) {
-            result += c.getCardValue() + " of " + c.getSuit() + " ";
+            result += c.getCardValue() + " of " + c.getSuit() + ", ";
         }
 
         return result;
