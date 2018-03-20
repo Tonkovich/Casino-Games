@@ -54,7 +54,6 @@ public class Poker implements CardGame {
             for (int i = 0; i < 2; i++) { // Two cards: Texas Hold'em
                 Card c = deck.drawCard();
                 c.setIsPlayers(true);
-                System.out.println(c.toString());
                 h.addCard(c);
             }
         }
@@ -148,7 +147,7 @@ public class Poker implements CardGame {
         int maxHighCard = 0;
 
         ScoreHand scoreHand;
-        // Using keys because we'll eventually need the key for player association and message sending
+        // Populate maps and score all players hands
         for (Integer key : playerHands.keySet()) {
             Hand hand = playerHands.get(key);
             scoreHand = new ScoreHand(hand, house);
@@ -157,12 +156,12 @@ public class Poker implements CardGame {
         }
 
         List<Player> winners = new ArrayList<>();
+
         // Find max hand type
         for (Integer key : ranks.values()) {
             if (key >= rankMax) {
                 rankMax = key;
             }
-            // TODO: Handle multiple max's, highcards, and etc
         }
 
         if (rankMax > 0) {
@@ -177,6 +176,7 @@ public class Poker implements CardGame {
                     // Select all winners highcards, positions in list will correspond with player iteration
                     winnerHighCards.add(highcards.get(p.getUserID()));
                 }
+
                 // Find highest highcard
                 int duplicates = 0;
                 for (int i = 0; i < winnerHighCards.size(); i++) {
@@ -192,11 +192,12 @@ public class Poker implements CardGame {
                     multipleWinners(duplicates, maxHighCard, highcards);
                 } else {
                     // Many players same hand, only one with better high card
-                    singleWinner(maxHighCard, highcards);
+                    singleWinner(maxHighCard, rankMax, highcards, ranks);
                 }
             } else {
                 // Only one winner with best hand
-                singleWinner(maxHighCard, highcards);
+                maxHighCard = highcards.get(winners.get(0).getUserID());
+                singleWinner(maxHighCard, rankMax, highcards, ranks);
             }
             // No one has stuff, compare all highcards
         } else {
@@ -215,22 +216,22 @@ public class Poker implements CardGame {
                 multipleWinners(duplicates, maxHighCard, highcards);
             } else {
                 // Single highcard winner
-                singleWinner(maxHighCard, highcards);
+                singleWinner(maxHighCard, rankMax, highcards, ranks);
             }
 
         }
     }
 
     // Handling a single winner
-    private void singleWinner(int maxHighCard, Map<Integer, Integer> highcards) {
+    private void singleWinner(int maxHighCard, int rankMax, Map<Integer, Integer> highcards, Map<Integer, Integer> ranks) {
 
-        System.out.print("Single");
+        System.out.println("Single");
 
         for (Integer i : highcards.keySet()) {
-            if (highcards.get(i) == maxHighCard) {
+            if (highcards.get(i) == maxHighCard && ranks.get(i) == rankMax) {
                 Player player = players.get(i);
 
-                System.out.println(playerHands.get(player.getUserID()).toString());
+                System.out.println("Player hand: " + playerHands.get(player.getUserID()).toString());
                 System.out.println(player.getUsername());
 
 
@@ -243,7 +244,7 @@ public class Poker implements CardGame {
 
     // Handling multiple winners
     private void multipleWinners(int duplicates, int maxHighCard, Map<Integer, Integer> highcards) {
-        double divPot = getPot() / duplicates; // Split pot between players
+        double divPot = getPot() / duplicates + 1; // Split pot between players
 
         System.out.println("Multiple");
 
@@ -253,7 +254,7 @@ public class Poker implements CardGame {
                 Player player = players.get(i);
                 finalWinners.add(players.get(i));
 
-                System.out.print(player.getUsername());
+                System.out.println(player.getUsername());
 
 
                 player.sendMessage(pm.winnerMessage()); // Send each player winner message
