@@ -7,10 +7,13 @@ public class Card implements Comparator<Card> {
     private CardValue value;
     private boolean isPlayers;
 
-    Card(CardValue value, Suit suit, boolean isPlayers) {
+    public Card(CardValue value, Suit suit, boolean isPlayers) {
         this.suit = suit;
         this.value = value;
         this.isPlayers = isPlayers;
+    }
+
+    public Card() {
     }
 
     public Suit getSuit() {

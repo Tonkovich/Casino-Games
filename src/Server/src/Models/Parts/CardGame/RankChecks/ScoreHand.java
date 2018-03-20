@@ -31,7 +31,7 @@ public class ScoreHand {
     public ScoreHand(Hand playerHand, Hand houseHand) {
         this.playerHand = playerHand; // Im lazy so im using this for getPairSum()
         hand = playerHand.addAll(houseHand);
-        Collections.sort(hand.getCards(), new CardComparator());
+        Collections.sort(hand.getCards(), new Card()); // Passes cards to comparator and sorts
         getFrequencies();
         rank = HandRanking.HIGH_CARD;
         findHighCard();
