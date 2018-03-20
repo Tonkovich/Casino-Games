@@ -1,20 +1,17 @@
 package Models.Parts.CardGame.RankChecks;
 
 public enum HandRanking {
-    /*
-     * Increments of 15 to account for high card, (i.e) 14 for ace
-     */
     HIGH_CARD(0),
-    ONE_PAIR(15),
-    TWO_PAIR(30),
-    THREE_OAK(45),
-    STRAIGHT(60),
-    ROYAL_STRAIGHT(61),
-    FLUSH(75),
-    FULL_HOUSE(90),
-    FOUR_OAK(105),
-    STRAIGHT_FLUSH(120),
-    ROYAL_FLUSH(135);
+    ONE_PAIR(1),
+    TWO_PAIR(2),
+    THREE_OAK(3),
+    STRAIGHT(4),
+    ROYAL_STRAIGHT(5),
+    FLUSH(6),
+    FULL_HOUSE(7),
+    FOUR_OAK(8),
+    STRAIGHT_FLUSH(9),
+    ROYAL_FLUSH(10);
 
     private int handRanking;
 
