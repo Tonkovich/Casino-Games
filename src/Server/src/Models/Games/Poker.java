@@ -16,6 +16,7 @@ public class Poker implements CardGame {
     private double pot;
     private double prevBet = 0;
     private boolean gameReady = false;
+    private boolean initialRound;
     private HashMap<Integer, Hand> playerHands = new HashMap<>();
     private HashMap<Integer, Player> players = new HashMap<>();
     private Hand house;
@@ -29,6 +30,7 @@ public class Poker implements CardGame {
         turns = new PriorityQueue<>(); // Will keep track of player turns
         house = new Hand();
         pm = new PokerMessages();
+        initialRound = true;
         start(); // Start thread
     }
 
@@ -44,8 +46,40 @@ public class Poker implements CardGame {
         massSender(pm.addedToGame(player));
     }
 
+    /*
+       This method removes a player from the HashMap containing the Players in a Poker game.
+       Ex: Player decides to leave a Poker game after a round has finished.
+    */
+    public void removePlayer(int userID) {
+
+    }
+
     public Player getPlayer(int userID) {
         return players.get(userID);
+    }
+
+    /*
+        This method sets the Player role attribute (dealer, small blind, big blind, noRole*)
+    */
+    public void setPlayerRoles() {
+        // If initial round,
+        //  Iterate through the Queue of players,
+        //  setting first 3 players as the appropriate role and the rest with no roles.
+        Iterator<Player> itr = turns.iterator();
+        if (initialRound) {
+            itr.next().setPlayerRole("Dealer");
+            itr.next().setPlayerRole("Small Blind");
+            itr.next().setPlayerRole("Big Blind");
+
+            // Set the remaining players, if any, to have no role
+            while (itr.hasNext()) {
+                itr.next().setPlayerRole("No Role");
+            }
+        } else {
+            // Else subsequent rounds,
+            //  players' roles are changed. Roles move over by 1.
+
+        }
     }
 
     public void deal() {

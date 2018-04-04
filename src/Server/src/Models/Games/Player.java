@@ -11,6 +11,7 @@ public class Player implements Comparable<Player> {
     private String IPAddress;
     private int userID;
     private String username;
+    private String playerRole;
 
     public double getPlayerWallet() {
         /**
@@ -29,6 +30,14 @@ public class Player implements Comparable<Player> {
         } catch (UnknownHostException ex) {
             return null; // is this okay?
         }
+    }
+
+    public String getPlayerRole() {
+        return playerRole;
+    }
+
+    public void setPlayerRole(String playerRole) {
+        this.playerRole = playerRole;
     }
 
     public void setIPAddress(InetAddress IPAddress) {
