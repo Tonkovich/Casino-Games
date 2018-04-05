@@ -2,6 +2,7 @@
 CREATE TABLE Players
 (
   user_id  INTEGER     NOT NULL AUTO_INCREMENT,
+  username VARCHAR(50) NOT NULL,
   password VARCHAR(50) NOT NULL,
   wallet   DOUBLE      NOT NULL,
   PRIMARY KEY (user_id)

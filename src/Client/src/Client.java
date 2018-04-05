@@ -1,4 +1,6 @@
+import Parsers.ParseFactory;
 import Utils.ClientSocket;
+import Utils.Login;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -11,12 +13,14 @@ import java.net.InetAddress;
 import java.net.SocketException;
 
 public class Client {
-    /**
-     * No idea what is going to become of the client just yet
-     */
+
+    private static ClientSocket mySocket;
+    private static Login userLogin = new Login();
+
     public static void main(String[] args) throws IOException {
         InputStreamReader is = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(is);
+        ParseFactory p = ParseFactory.getInstance(); // Singleton
 
         /*
          * Initial start up of connections
@@ -37,12 +41,19 @@ public class Client {
             if (portNum.length() == 0)
                 portNum = "12000";
 
-            int portNumInt = Integer.parseInt(portNum);
-            ClientSocket mySocket = new ClientSocket(1337);
+            mySocket = new ClientSocket(1337);
+            mySocket.setReceiverHost(hostNameInet);
+            mySocket.setReceiverPort(Integer.parseInt(portNum));
 
             /*
              * End of start up of connections
              */
+
+            // Login
+            userLogin.login(mySocket);
+
+            // Start displaying menus
+            // TODO: Separate class and methods for exiting and etc
 
             while (true) {
                 System.out.println("Enter Message: ");
@@ -53,15 +64,14 @@ public class Client {
                         .add("test", incoming).build();
 
                 // Send message to server and wait for receive
-                mySocket.sendMessage(hostNameInet, portNumInt, json.toString());
-                incoming = mySocket.receiveMessage();
+                mySocket.sendMessage(json.toString());
 
-                // Convert Incoming message to JSON object
+                // ReceiveMessage
+                incoming = mySocket.receiveMessage();
                 JsonReader jsonReader = Json.createReader(new StringReader(incoming));
                 json = jsonReader.readObject();
 
-                // Print out message
-                System.out.println(json.getString("test"));
+                p.parse(json); // Interpret message
             }
         } catch (SocketException ex) {
             ex.printStackTrace();

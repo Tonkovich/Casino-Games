@@ -8,11 +8,14 @@ import java.net.SocketException;
 
 public class ClientSocket extends DatagramSocket {
 
+    InetAddress receiverHost;
+    int receiverPort;
+
     public ClientSocket(int portNum) throws SocketException {
         super(portNum);
     }
 
-    public void sendMessage(InetAddress receiverHost, int receiverPort, String message) throws IOException {
+    public void sendMessage(String message) throws IOException {
         byte[] sendBuffer = message.getBytes();
         DatagramPacket datagram = new DatagramPacket(sendBuffer, sendBuffer.length, receiverHost, receiverPort);
         this.send(datagram);
@@ -33,5 +36,13 @@ public class ClientSocket extends DatagramSocket {
         Message m = new Message();
         m.putVal(new String(receiveBuffer), datagram.getAddress(), datagram.getPort());
         return m;
+    }
+
+    public void setReceiverHost(InetAddress receiverHost) {
+        this.receiverHost = receiverHost;
+    }
+
+    public void setReceiverPort(int num) {
+        receiverPort = num;
     }
 }
