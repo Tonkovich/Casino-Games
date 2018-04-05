@@ -8,14 +8,14 @@ public class LoginMessages {
     public String incorrectLogin() {
         JsonObject json = Json.createObjectBuilder()
                 .add("header", "serverMessage")
-                .add("reject", "Username or password incorrect!").build();
+                .add("login", "reject").build();
         return json.toString();
     }
 
     public String successLogin() {
         JsonObject json = Json.createObjectBuilder()
                 .add("header", "serverMessage")
-                .add("login", "Success!").build();
+                .add("login", "success").build();
         return json.toString();
     }
 }
