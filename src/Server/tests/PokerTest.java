@@ -30,6 +30,7 @@ public class PokerTest {
             poker.addPlayer(3, user3); // All players have joined
 
             poker.deal(); // Start game
+            poker.initHouseCard();
 
             poker.drawNextCard();
             poker.drawNextCard(); // River done
