@@ -1,7 +1,6 @@
 package Parsers;
 
 import Utils.Database;
-import Utils.DatabaseException;
 
 import javax.json.JsonObject;
 import java.net.InetAddress;
@@ -17,11 +16,7 @@ public class AccessParse {
     public static AccessParse getInstance() {
         if (instance == null) {
             instance = new AccessParse();
-            try {
-                db = new Database(); // Creates but tests connection, will never throw since its tested at start up
-            } catch (DatabaseException ex) {
-                ex.getMessage();
-            }
+            db = Database.getInstance();
         }
         return instance;
     }

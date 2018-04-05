@@ -13,14 +13,20 @@ public class Database {
     private Sql2o sql2o;
     private Players players = Players.getInstance();
     private LoginMessages lm = new LoginMessages();
+    private static Database instance;
+
+    public static Database getInstance() {
+        return instance;
+    }
+
+    private Database() {
+
+    }
 
     // Calling this constructor creates sql2o object
-    public Database() throws DatabaseException {
+    public Database(String jdbcURL, String jdbcUser, String jdbcPass) throws DatabaseException {
+        instance = this;
         if (sql2o == null) { // Only do this once
-            String jdbcURL = System.getenv("JDBC-URL");
-            String jdbcUser = System.getenv("JDBC-USER");
-            String jdbcPass = System.getenv("JDBC-PASS");
-
             if (jdbcURL == null || jdbcURL.length() == 0 || jdbcUser == null || jdbcPass == null) {
                 throw new DatabaseException("Database not connecting"
                         + "\n URL: " + jdbcURL
