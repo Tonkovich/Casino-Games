@@ -24,18 +24,25 @@ public class ParseStore {
     }
 
     // First line from client will send message to different parsers
-    public void parse(JsonObject json) {
+    public void parse(JsonObject json, String ip) {
         if (json != null) {
             // Game actions input here
-            switch (json.getString("gameType")) {
-                case "Poker":
-                    pp.parse(json);
-                case "Slots":
-                    sp.parse(json);
+            if (json.getJsonObject("gameAction") != null) {
+                switch (json.getString("gameType")) {
+                    case "Poker":
+                        pp.parse(json);
+                        break;
+                    case "Slots":
+                        sp.parse(json);
+                        break;
+                    default:
+                        break;
+                }
             }
             // Login player
-            if (json.getJsonObject("login") != null) {
-                ap.parse(json.getJsonObject("login"));
+            else if (json.getJsonObject("login") != null) {
+                ap.parse(json.getJsonObject("login"), ip);
+                System.out.println("Login attempt by: " + ip);
             } else if (json.getJsonObject("heartbeat") != null) {
                 hb.receive(json.getJsonObject("heartbeat"));
             }
