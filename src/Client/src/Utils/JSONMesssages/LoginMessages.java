@@ -15,8 +15,7 @@ public class LoginMessages {
                 .add("login", Json.createObjectBuilder()
                         .add("username", username)
                         .add("password", password)
-                        .add("IPAddress", mySocket.getInetAddress().toString()
-                        ).build()
+                        .build()
                 ).build();
 
         boolean response = false;
@@ -27,13 +26,17 @@ public class LoginMessages {
             // TODO Timer to disconnect, assume server crashed
             JsonObject obj = jsonReader.readObject();
 
-            if (obj.getString("login") != null) {
-                response = true;
-            } else if (obj.getString("reject") != null) {
-                response = false;
-            } else {
-                response = false;
+            String login = obj.getString("login");
+            switch (login) {
+                case "reject":
+                    break;
+                case "success":
+                    response = true;
+                    break;
+                default:
+                    break;
             }
+
 
         } catch (IOException ex) {
             ex.getMessage();
