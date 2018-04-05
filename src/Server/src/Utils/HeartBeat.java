@@ -21,8 +21,8 @@ public class HeartBeat {
 
     private static HeartBeat instance;
     private boolean running = true;
-    private Players playersDB = Players.getInstance();
     private HeartbeatMessages hbm = new HeartbeatMessages();
+    private static Players playersDB;
 
     private static List<Integer> waitingReply;
 
@@ -30,6 +30,7 @@ public class HeartBeat {
         if (instance == null) {
             instance = new HeartBeat();
             waitingReply = new ArrayList<>();
+            playersDB = Players.getInstance();
         }
         return instance;
     }
@@ -67,7 +68,7 @@ public class HeartBeat {
 
     // Might not be the best implementation. Using casting to avoid possible conversion performance hits
     Thread t = new Thread(() -> {
-        while (true) {
+        while (running) {
             for (Object o : playersDB.getPlayers()) {
                 Player p = (Player) o;
                 send(p);
