@@ -18,6 +18,8 @@ public class Server {
      * The server class will be mainly responsible for interpreting incoming client messages and sending the data to the
      * appropriate method/location
      */
+
+
     public static void main(String[] args) throws DatabaseException, IOException {
         ParseStore ps = ParseStore.getInstance();
 
@@ -31,25 +33,25 @@ public class Server {
         String pass = config.getString("JDBC-PASS");
 
         // Connect to database
-        Database db = new Database(url, user, pass);
+        Database db = Database.getInstance();
+        db.startConnection(url, user, pass);
 
-        int serverPort = 12000; // Default port
-        if (args.length == 1)
-            serverPort = Integer.parseInt(args[0]);   // Argument is the port number
         try {
-            ServerSocket mySocket = new ServerSocket(serverPort);
-            System.out.println("Server is ready");
+            ServerSocket mySocket = ServerSocket.getInstance();
+            System.out.println("Server online");
 
             // Game loop waiting for messages
             while (true) {
                 Message request = mySocket.receiveMessageAndSender();
                 String message = request.getMessage();
+                String senderIP = request.getAddress().getHostAddress();
 
                 // Take incoming message and convert to JSON object
                 JsonReader jsonReader = Json.createReader(new StringReader(message));
                 JsonObject json = jsonReader.readObject();
 
-                ps.parse(json); // Parse
+                // TODO: Intercept heartbeat to prevent out of order messages
+                ps.parse(json, senderIP); // Parse
             }
         } catch (Exception ex) {
             ex.printStackTrace();
