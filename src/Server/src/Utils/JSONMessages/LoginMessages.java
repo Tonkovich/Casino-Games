@@ -12,10 +12,14 @@ public class LoginMessages {
         return json.toString();
     }
 
-    public String successLogin() {
+    public String successLogin(int userID, double wallet) {
+        // Send data on login
+
         JsonObject json = Json.createObjectBuilder()
                 .add("header", "serverMessage")
-                .add("login", "success").build();
+                .add("login", "success")
+                .add("userID", userID)
+                .add("wallet", wallet).build();
         return json.toString();
     }
 }
