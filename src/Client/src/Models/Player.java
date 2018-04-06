@@ -1,5 +1,21 @@
+package Models;
+
 public class Player {
-    private double playerWallet = 0; // Should only set as zero on "new Player()"
+
+    private static Player instance;
+
+    public static Player getInstance() {
+        if (instance == null) {
+            return instance = new Player();
+        }
+        return instance;
+    }
+
+    private Player() {
+
+    }
+
+    private double playerWallet = 0; // Should only set as zero on "new Models.Player()"
     private int userID;
     private String username;
 
