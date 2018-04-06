@@ -19,9 +19,9 @@ public class AccessParse {
         return instance;
     }
 
-    public void parse(JsonObject obj, String ip) {
+    public void parse(JsonObject obj, String ip, int port) {
         String username = obj.getString("username");
         String password = obj.getString("password");
-        db.loginPlayer(username, password, ip);
+        db.loginPlayer(username, password, ip, port);
     }
 }
