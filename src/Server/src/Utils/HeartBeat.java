@@ -2,10 +2,12 @@ package Utils;
 
 import Models.Games.Player;
 import Utils.JSONMessages.HeartbeatMessages;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.json.JsonObject;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HeartBeat {
     // TODO: Make thread that iterates through all players logged in
@@ -20,16 +22,17 @@ public class HeartBeat {
      */
 
     private static HeartBeat instance;
-    private boolean running = true;
+    private boolean running = false;
     private HeartbeatMessages hbm = new HeartbeatMessages();
     private static Players playersDB;
+    private static final Logger log = LogManager.getLogger(HeartBeat.class);
 
-    private static List<Integer> waitingReply;
+    private static Map<Integer, Integer> waitingReply;
 
     public static HeartBeat getInstance() {
         if (instance == null) {
             instance = new HeartBeat();
-            waitingReply = new ArrayList<>();
+            waitingReply = new HashMap<>();
             playersDB = Players.getInstance();
         }
         return instance;
@@ -41,15 +44,17 @@ public class HeartBeat {
     // Is called when server finds a heartBeat message
     public void receive(JsonObject obj) {
         int userID = obj.getInt("userID");
+        log.info(userID + " replied");
         waitingReply.remove(userID);
     }
 
     private void send(Player p) {
         p.sendMessage(hbm.heartBeatSend());
-        waitingReply.add(p.getUserID());
+        waitingReply.putIfAbsent(p.getUserID(), 3);
+        log.info("Sending heartbeat to " + p.getUserID() + ".." + waitingReply.get(p.getUserID()));
     }
 
-    private void DisconnectUser(int userID) {
+    private void disconnectUser(int userID) {
         playersDB.logoutPlayer(userID);
         // TODO: Just like what it says duh
         // Also read long comment above of how to implement
@@ -57,8 +62,8 @@ public class HeartBeat {
 
     public void start() {
         if (!running) {
-            t.start();
             running = true;
+            t.start();
         }
     }
 
@@ -66,20 +71,36 @@ public class HeartBeat {
         running = false;
     }
 
+    private void sleep() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+            log.error(ex.getMessage());
+        }
+    }
+
     // Might not be the best implementation. Using casting to avoid possible conversion performance hits
     Thread t = new Thread(() -> {
+        log.info("Heartbeat started");
         while (running) {
             for (Object o : playersDB.getPlayers()) {
                 Player p = (Player) o;
                 send(p);
             }
+            sleep(); // Pause to allow clients to reply
 
-            // TODO: sleep thread after all message sent, then after time, check waitingReply for still waiting
-            // TODO: disconnect them after said time has past and still exist
-            for (Integer i : waitingReply) {
-                // Look for waiting to reply players
+            // Clients have three missed chances
+            for (Integer i : waitingReply.keySet()) {
+                if (waitingReply.get(i) == 0) {
+                    disconnectUser(i);
+                } else {
+                    int j = waitingReply.get(i) - 1;
+                    waitingReply.put(i, j);
+                }
             }
+
         }
+        log.info("Heartbeat stopped: No users online");
     });
 
 }
