@@ -4,6 +4,8 @@ import Utils.DatabaseException;
 import Utils.Message;
 import Utils.ServerSocket;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -18,9 +20,12 @@ public class Server {
      * The server class will be mainly responsible for interpreting incoming client messages and sending the data to the
      * appropriate method/location
      */
+    private static final Logger log = LogManager.getLogger(Server.class);
 
 
     public static void main(String[] args) throws DatabaseException, IOException {
+        log.info("------------------------");
+        log.info("Server is starting...");
         ParseStore ps = ParseStore.getInstance();
 
         // Parse config
@@ -38,20 +43,22 @@ public class Server {
 
         try {
             ServerSocket mySocket = ServerSocket.getInstance();
-            System.out.println("Server online");
+            log.info("Server online");
+            log.info("------------------------");
 
             // Game loop waiting for messages
             while (true) {
                 Message request = mySocket.receiveMessageAndSender();
                 String message = request.getMessage();
                 String senderIP = request.getAddress().getHostAddress();
+                int senderPort = request.getPort();
 
                 // Take incoming message and convert to JSON object
                 JsonReader jsonReader = Json.createReader(new StringReader(message));
                 JsonObject json = jsonReader.readObject();
 
                 // TODO: Intercept heartbeat to prevent out of order messages
-                ps.parse(json, senderIP); // Parse
+                ps.parse(json, senderIP, senderPort); // Parse
             }
         } catch (Exception ex) {
             ex.printStackTrace();

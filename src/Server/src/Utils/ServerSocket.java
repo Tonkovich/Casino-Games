@@ -25,10 +25,14 @@ public class ServerSocket extends DatagramSocket {
         super(portNum);
     }
 
-    public void sendMessage(InetAddress receiverHost, int receiverPort, String message) throws IOException {
-        byte[] sendBuffer = message.getBytes();
-        DatagramPacket datagram = new DatagramPacket(sendBuffer, sendBuffer.length, receiverHost, receiverPort);
-        this.send(datagram);
+    public void sendMessage(InetAddress receiverHost, int receiverPort, String message) {
+        try {
+            byte[] sendBuffer = message.getBytes();
+            DatagramPacket datagram = new DatagramPacket(sendBuffer, sendBuffer.length, receiverHost, receiverPort);
+            this.send(datagram);
+        } catch (IOException ex) {
+
+        }
     }
 
     public String receiveMessage() throws IOException {
