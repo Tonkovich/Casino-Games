@@ -27,7 +27,7 @@ public class Client {
          */
 
         try {
-            System.out.println("Please enter server IP: ");
+            System.out.print("Please enter server IP: ");
             String hostName = br.readLine();
 
             if (hostName.length() == 0)
@@ -35,13 +35,13 @@ public class Client {
 
             InetAddress hostNameInet = InetAddress.getByName(hostName);
 
-            System.out.println("Please enter server port: ");
+            System.out.print("Please enter server port: ");
             String portNum = br.readLine();
 
             if (portNum.length() == 0)
                 portNum = "12000";
 
-            mySocket = new ClientSocket(1337);
+            mySocket = ClientSocket.getInstance();
             mySocket.setReceiverHost(hostNameInet);
             mySocket.setReceiverPort(Integer.parseInt(portNum));
 
