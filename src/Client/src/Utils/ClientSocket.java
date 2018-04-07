@@ -15,7 +15,7 @@ public class ClientSocket extends DatagramSocket {
     public static ClientSocket getInstance() {
         if (instance == null) {
             try {
-                instance = new ClientSocket(1337);
+                instance = new ClientSocket(0);
             } catch (SocketException ex) {
 
             }
