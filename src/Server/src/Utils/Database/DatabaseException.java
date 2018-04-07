@@ -1,4 +1,4 @@
-package Utils;
+package Utils.Database;
 
 public class DatabaseException extends Exception {
 

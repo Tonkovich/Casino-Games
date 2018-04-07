@@ -1,6 +1,7 @@
-package Utils;
+package Utils.Database;
 
 import Models.Games.Player;
+import Utils.Packet.HeartBeat;
 
 import java.util.Collection;
 import java.util.HashMap;

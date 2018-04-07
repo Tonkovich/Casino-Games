@@ -1,6 +1,6 @@
 package Parsers;
 
-import Utils.Database;
+import Utils.Database.Database;
 
 import javax.json.JsonObject;
 

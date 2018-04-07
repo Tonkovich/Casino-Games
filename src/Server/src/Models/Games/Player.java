@@ -1,6 +1,6 @@
 package Models.Games;
 
-import Utils.ServerSocket;
+import Utils.Packet.ServerSocket;
 
 import java.io.IOException;
 import java.net.InetAddress;

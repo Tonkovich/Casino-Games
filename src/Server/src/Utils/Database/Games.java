@@ -1,4 +1,4 @@
-package Utils;
+package Utils.Database;
 
 import Models.Games.Poker;
 import Models.Games.Slots;

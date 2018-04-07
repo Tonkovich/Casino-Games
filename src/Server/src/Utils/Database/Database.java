@@ -1,4 +1,4 @@
-package Utils;
+package Utils.Database;
 
 import Models.Games.Player;
 import Utils.JSONMessages.LoginMessages;

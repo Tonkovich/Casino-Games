@@ -1,4 +1,4 @@
-package Utils;
+package Utils.Packet;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

@@ -1,6 +1,7 @@
-package Utils;
+package Utils.Packet;
 
 import Models.Games.Player;
+import Utils.Database.Players;
 import Utils.JSONMessages.HeartbeatMessages;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

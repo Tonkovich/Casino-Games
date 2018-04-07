@@ -1,8 +1,8 @@
 import Parsers.ParseStore;
-import Utils.Database;
-import Utils.DatabaseException;
-import Utils.Message;
-import Utils.ServerSocket;
+import Utils.Database.Database;
+import Utils.Database.DatabaseException;
+import Utils.Packet.Message;
+import Utils.Packet.ServerSocket;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
