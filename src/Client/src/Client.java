@@ -27,7 +27,7 @@ public class Client {
          */
 
         try {
-            System.out.println("Please enter server IP: ");
+            System.out.print("Please enter server IP: ");
             String hostName = br.readLine();
 
             if (hostName.length() == 0)
@@ -35,18 +35,19 @@ public class Client {
 
             InetAddress hostNameInet = InetAddress.getByName(hostName);
 
-            System.out.println("Please enter server port: ");
+            System.out.print("Please enter server port: ");
             String portNum = br.readLine();
 
             if (portNum.length() == 0)
                 portNum = "12000";
 
-            mySocket = new ClientSocket(1337);
+            mySocket = ClientSocket.getInstance();
             mySocket.setReceiverHost(hostNameInet);
             mySocket.setReceiverPort(Integer.parseInt(portNum));
 
             /*
              * End of start up of connections
+             * TODO: Test for connection, send, and wait
              */
 
             // Login
@@ -56,20 +57,10 @@ public class Client {
             // TODO: Separate class and methods for exiting and etc
 
             while (true) {
-                System.out.println("Enter Message: ");
-                String incoming = br.readLine();
-
-                // Build JSON object and add
-                JsonObject json = Json.createObjectBuilder()
-                        .add("test", incoming).build();
-
-                // Send message to server and wait for receive
-                mySocket.sendMessage(json.toString());
-
                 // ReceiveMessage
-                incoming = mySocket.receiveMessage();
+                String incoming = mySocket.receiveMessage();
                 JsonReader jsonReader = Json.createReader(new StringReader(incoming));
-                json = jsonReader.readObject();
+                JsonObject json = jsonReader.readObject();
 
                 p.parse(json); // Interpret message
             }

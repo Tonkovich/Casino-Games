@@ -1,0 +1,6 @@
+{
+  "JDBC-URL": "jdbc:mysql://localhost:3306/casinogames",
+  "JDBC-USER": "root",
+  "JDBC-PASS": "",
+  "ServerPort": 12000
+}

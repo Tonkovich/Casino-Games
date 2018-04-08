@@ -1,6 +1,8 @@
 package Parsers;
 
-import Utils.HeartBeat;
+import Utils.Packet.HeartBeat;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.json.JsonObject;
 
@@ -11,6 +13,7 @@ public class ParseStore {
     private SlotParse sp = SlotParse.getInstance();
     private AccessParse ap = AccessParse.getInstance();
     private HeartBeat hb = HeartBeat.getInstance();
+    private static final Logger log = LogManager.getLogger(ParseStore.class);
 
     private ParseStore() {
         // Do nothing
@@ -24,20 +27,27 @@ public class ParseStore {
     }
 
     // First line from client will send message to different parsers
-    public void parse(JsonObject json) {
+    public void parse(JsonObject json, String ip, int port) {
         if (json != null) {
             // Game actions input here
-            switch (json.getString("gameType")) {
-                case "Poker":
-                    pp.parse(json);
-                case "Slots":
-                    sp.parse(json);
+            if (json.getJsonObject("gameAction") != null) {
+                switch (json.getString("gameType")) {
+                    case "Poker":
+                        pp.parse(json);
+                        break;
+                    case "Slots":
+                        sp.parse(json);
+                        break;
+                    default:
+                        break;
+                }
             }
             // Login player
-            if (json.getJsonObject("login") != null) {
-                ap.parse(json.getJsonObject("login"));
-            } else if (json.getJsonObject("heartbeat") != null) {
-                hb.receive(json.getJsonObject("heartbeat"));
+            else if (json.getJsonObject("login") != null) {
+                ap.parse(json.getJsonObject("login"), ip, port);
+                //log.info("Login attempt by: " + ip);
+            } else if (json.getString("heartBeat") != null) {
+                hb.receive(json);
             }
         }
     }

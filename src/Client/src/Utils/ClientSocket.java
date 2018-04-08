@@ -10,8 +10,20 @@ public class ClientSocket extends DatagramSocket {
 
     InetAddress receiverHost;
     int receiverPort;
+    private static ClientSocket instance;
 
-    public ClientSocket(int portNum) throws SocketException {
+    public static ClientSocket getInstance() {
+        if (instance == null) {
+            try {
+                instance = new ClientSocket(0);
+            } catch (SocketException ex) {
+
+            }
+        }
+        return instance;
+    }
+
+    private ClientSocket(int portNum) throws SocketException {
         super(portNum);
     }
 

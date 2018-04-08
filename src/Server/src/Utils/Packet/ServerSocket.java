@@ -1,4 +1,4 @@
-package Utils;
+package Utils.Packet;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -8,14 +8,31 @@ import java.net.SocketException;
 
 public class ServerSocket extends DatagramSocket {
 
-    public ServerSocket(int portNum) throws SocketException {
+    private static ServerSocket instance;
+
+    public static ServerSocket getInstance() {
+        if (instance == null) {
+            try {
+                instance = new ServerSocket(12000);
+            } catch (SocketException ex) {
+
+            }
+        }
+        return instance;
+    }
+
+    private ServerSocket(int portNum) throws SocketException {
         super(portNum);
     }
 
-    public void sendMessage(InetAddress receiverHost, int receiverPort, String message) throws IOException {
-        byte[] sendBuffer = message.getBytes();
-        DatagramPacket datagram = new DatagramPacket(sendBuffer, sendBuffer.length, receiverHost, receiverPort);
-        this.send(datagram);
+    public void sendMessage(InetAddress receiverHost, int receiverPort, String message) {
+        try {
+            byte[] sendBuffer = message.getBytes();
+            DatagramPacket datagram = new DatagramPacket(sendBuffer, sendBuffer.length, receiverHost, receiverPort);
+            this.send(datagram);
+        } catch (IOException ex) {
+
+        }
     }
 
     public String receiveMessage() throws IOException {

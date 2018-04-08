@@ -1,14 +1,15 @@
 package Models.Games;
 
-import Utils.ServerSocket;
+import Utils.Packet.ServerSocket;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class Player implements Comparable<Player> {
-    private double playerWallet = 0; // Should only set as zero on "new Player()"
-    private String IPAddress;
+    private ServerSocket socket = ServerSocket.getInstance();
+    private double wallet = 0; // Should only set as zero on "new Player()"
+    private String ip;
+    private int port;
     private int userID;
     private String username;
     private String playerRole;
@@ -17,19 +18,15 @@ public class Player implements Comparable<Player> {
         /**
          * Waiting until database is setup to figure out our process
          */
-        return playerWallet;
+        return wallet;
     }
 
     public void setPlayerWallet(double amount) {
-        playerWallet = amount;
+        wallet = amount;
     }
 
-    public InetAddress getIPAddress() {
-        try {
-            return InetAddress.getByName(IPAddress);
-        } catch (UnknownHostException ex) {
-            return null; // is this okay?
-        }
+    public String getIPAddress() {
+        return ip;
     }
 
     public String getPlayerRole() {
@@ -40,8 +37,16 @@ public class Player implements Comparable<Player> {
         this.playerRole = playerRole;
     }
 
-    public void setIPAddress(InetAddress IPAddress) {
-        this.IPAddress = IPAddress.getHostAddress();
+    public void setIPAddress(String ip) {
+        this.ip = ip;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public int getPort() {
+        return port;
     }
 
     public void setUserID(int incoming) {
@@ -62,10 +67,9 @@ public class Player implements Comparable<Player> {
 
     public void sendMessage(String json) {
         try {
-            ServerSocket client = new ServerSocket(12000);
-            client.sendMessage(InetAddress.getByName(IPAddress), 1337, json);
+            socket.sendMessage(InetAddress.getByName(getIPAddress()), port, json);
         } catch (IOException e) {
-            // Do nothing
+            System.out.println("Player sendMessage Failed");
         }
     }
 

@@ -1,6 +1,6 @@
 package Parsers;
 
-import Utils.Games;
+import Utils.Database.Games;
 
 import javax.json.JsonObject;
 

@@ -7,15 +7,17 @@ public class LoginMessages {
 
     public String incorrectLogin() {
         JsonObject json = Json.createObjectBuilder()
-                .add("header", "serverMessage")
-                .add("reject", "Username or password incorrect!").build();
+                .add("login", "reject").build();
         return json.toString();
     }
 
-    public String successLogin() {
+    public String successLogin(int userID, double wallet) {
+        // Send data on login
+
         JsonObject json = Json.createObjectBuilder()
-                .add("header", "serverMessage")
-                .add("login", "Success!").build();
+                .add("login", "success")
+                .add("userID", userID)
+                .add("wallet", wallet).build();
         return json.toString();
     }
 }
