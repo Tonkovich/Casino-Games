@@ -9,6 +9,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.StringReader;
+import java.util.Scanner;
 
 public class GameMenu {
 
@@ -19,6 +20,7 @@ public class GameMenu {
     public void display() {
         // Fetch options
         String options = getOptions();
+        log.info(options);
 
         // Display options
 
@@ -33,21 +35,51 @@ public class GameMenu {
         JsonObject obj = jsonReader.readObject();
         String options = "";
         if (obj.getJsonObject("available") != null) {
-            JsonObject optionParent = obj.getJsonObject("available");
-            int size = obj.getInt("size");
-            log.info("Available poker games\n");
-            for (int i = 0; i <= size; i++) {
-                options += i + ". Poker game";
-            }
+            options = chooseOption(obj);
+            log.info(options);
 
-        } else {
-
+        } else if (obj.getString("createGame") != null) {
+            log.info("No games available..");
+            log.info("Would you like to create one? (y/n)");
+            createGame();
         }
 
         return options;
     }
 
-    private void chooseOption() {
+    private String chooseOption(JsonObject obj) {
+        String options = "";
+        int size = obj.getInt("size");
+        log.info("Available poker games\n");
+        for (int i = 0; i <= size; i++) {
+            options += i + ". Poker game\n";
+        }
+        return options;
+    }
 
+    private void createGame() {
+        Scanner scan = new Scanner(System.in);
+        String result = scan.next();
+        if (result.equalsIgnoreCase("y")) {
+            // TODO Create game
+            /**
+             *
+             *
+             *
+             * Create Game logic here
+             * Max players, bigBlind, small blind, etc..
+             *
+             *
+             *
+             *
+             */
+        } else if (result.equalsIgnoreCase("n")) {
+            // TODO Maybe make something that will go back to game menu and give a choice, but for no just exit
+            log.info("Client logging off..");
+            System.exit(0);
+        } else {
+            log.info("Incorrect entry: Try again");
+            createGame();
+        }
     }
 }

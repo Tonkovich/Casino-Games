@@ -43,7 +43,7 @@ public class Database {
     }
 
     // Will login player and load player from DB
-    public void loginPlayer(String username, String password, String ip, int port) {
+    public void loginPlayer(String username, String password, String ip, int port, int heartBeatPort) {
         updateIP(ip, username);
         String playerSQL = "SELECT user_id, ip, username, wallet FROM Players p WHERE p.username = :username AND p.password = :password";
         try (Connection con = sql2o.open()) {
@@ -61,6 +61,7 @@ public class Database {
             if (player.size() == 1) {
                 newPlayer = player.get(0);
                 newPlayer.setPort(port);
+                newPlayer.setHeartBeatPort(heartBeatPort);
                 newPlayer.sendMessage(lm.successLogin(newPlayer.getUserID(), newPlayer.getPlayerWallet())); // First send success
                 players.loginPlayer(newPlayer.getUserID(), newPlayer); // Then heart beat, order must be kept
                 log.info(newPlayer.getUsername() + " has logged in.");

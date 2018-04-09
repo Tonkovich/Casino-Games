@@ -30,6 +30,7 @@ public class ParseStore {
     // First line from client will send message to different parsers
     public void parse(JsonObject json, String ip, int port) {
         if (json != null) {
+
             // Game actions input here
             if (json.getJsonObject("gameAction") != null) {
                 switch (json.getString("gameType")) {
@@ -47,15 +48,15 @@ public class ParseStore {
             else if (json.getJsonObject("login") != null) {
                 ap.parse(json.getJsonObject("login"), ip, port);
                 //log.info("Login attempt by: " + ip);
-            } else if (json.getString("heartBeat") != null) {
+            } else if (json.getJsonString("createGame") != null) {
+                // TODO
+            } else if (json.getJsonString("joinGame") != null) {
+                // TODO
+            } else if (json.getJsonString("heartBeat") != null) {
                 hb.receive(json);
-            } else if (json.getString("gameOptions") != null) {
+            } else if (json.getJsonString("gameOptions") != null) {
                 // Client requesting all available game options
                 gop.parse(json);
-            } else if (json.getString("createGame") != null) {
-                // TODO
-            } else if (json.getString("joinGame") != null) {
-                // TODO
             }
         }
     }

@@ -1,6 +1,7 @@
 import Graphics.GameMenu;
 import Parsers.ParseFactory;
 import Utils.ClientSocket;
+import Utils.HeartBeatSocket;
 import Utils.Login;
 
 import javax.json.Json;
@@ -16,6 +17,7 @@ import java.net.SocketException;
 public class Client {
 
     private static ClientSocket mySocket;
+    private static HeartBeatSocket hbs = HeartBeatSocket.getInstance();
     private static Login userLogin = new Login();
     private static GameMenu menu = new GameMenu();
 

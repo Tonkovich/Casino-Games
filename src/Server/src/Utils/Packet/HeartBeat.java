@@ -50,7 +50,7 @@ public class HeartBeat {
     }
 
     private void send(Player p) {
-        p.sendMessage(hbm.heartBeatSend());
+        p.sendHeartBeat(hbm.heartBeatSend());
         waitingReply.putIfAbsent(p.getUserID(), 3);
         log.info("Sending heartbeat to " + p.getUserID() + ".." + waitingReply.get(p.getUserID()));
     }
@@ -74,7 +74,7 @@ public class HeartBeat {
 
     private void sleep() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(5000); // 5 second standard
         } catch (InterruptedException ex) {
             log.error(ex.getMessage());
         }

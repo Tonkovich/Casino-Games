@@ -10,6 +10,7 @@ public class Player implements Comparable<Player> {
     private double wallet = 0; // Should only set as zero on "new Player()"
     private String ip;
     private int port;
+    private int heartBeatPort;
     private int userID;
     private String username;
     private String playerRole;
@@ -49,6 +50,10 @@ public class Player implements Comparable<Player> {
         return port;
     }
 
+    public void setHeartBeatPort(int heartBeatPort) {
+        this.heartBeatPort = heartBeatPort;
+    }
+
     public void setUserID(int incoming) {
         userID = incoming;
     }
@@ -70,6 +75,14 @@ public class Player implements Comparable<Player> {
             socket.sendMessage(InetAddress.getByName(getIPAddress()), port, json);
         } catch (IOException e) {
             System.out.println("Player sendMessage Failed");
+        }
+    }
+
+    public void sendHeartBeat(String json) {
+        try {
+            socket.sendMessage(InetAddress.getByName(getIPAddress()), heartBeatPort, json);
+        } catch (IOException e) {
+            System.out.println("Player sendHeartBeat Failed");
         }
     }
 
