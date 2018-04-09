@@ -1,5 +1,5 @@
-import Graphics.ConsoleHelper;
-import Graphics.Drawable;
+package Graphics;
+
 import Graphics.Parts.Constants;
 
 import java.util.ArrayList;

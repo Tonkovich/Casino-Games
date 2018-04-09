@@ -1,6 +1,6 @@
 import Models.Games.Player;
 import Models.Games.Poker;
-import Utils.Players;
+import Utils.Database.Players;
 import org.junit.Test;
 
 public class PokerTest {

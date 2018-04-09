@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.Scanner;
 
@@ -16,10 +15,11 @@ import java.util.Scanner;
 public class Login {
 
     private static LoginMessages lm = new LoginMessages();
+    private static ClientSocket mySocket = ClientSocket.getInstance();
     private static final Logger log = LogManager.getLogger(Login.class);
     private Player p = Player.getInstance();
 
-    public void login(ClientSocket mySocket) {
+    public void login() {
         Scanner scan = new Scanner(System.in);
         System.out.println("Please login \n");
 
@@ -32,33 +32,28 @@ public class Login {
 
         boolean resp = false;
 
-        try {
-            mySocket.sendMessage(lm.login(username, password));
-            JsonReader jsonReader = Json.createReader(new StringReader(mySocket.receiveMessage()));
-            // TODO Timer to disconnect, assume server crashed
-            JsonObject obj = jsonReader.readObject();
+        mySocket.sendMessage(lm.login(username, password));
+        JsonReader jsonReader = Json.createReader(new StringReader(mySocket.receiveMessage()));
+        // TODO Timer to disconnect, assume server crashed
+        JsonObject obj = jsonReader.readObject();
 
-            String login = obj.getString("login");
-            switch (login) {
-                case "reject":
-                    break;
-                case "success":
-                    resp = true;
-                    break;
-                default:
-                    break;
-            }
-            p.setUserID(obj.getInt("userID"));
-            p.setPlayerWallet(obj.getInt("wallet"));
-
-
-        } catch (IOException ex) {
-            ex.getMessage();
+        String login = obj.getString("login");
+        switch (login) {
+            case "reject":
+                break;
+            case "success":
+                resp = true;
+                break;
+            default:
+                break;
         }
+        p.setUserID(obj.getInt("userID"));
+        p.setPlayerWallet(obj.getInt("wallet"));
+
 
         if (!resp) {
             System.out.println("Username or password incorrect!");
-            login(mySocket); // Recurse, try again
+            login(); // Recurse, try again
 
             // TODO: Possible login limiter here
         } else {

@@ -1,9 +1,9 @@
-import Graphics.ConsoleHelper;
-import Graphics.Drawable;
+package Graphics;
+
 import Graphics.Parts.*;
+import Models.Player;
 
 import java.awt.*;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -49,7 +49,7 @@ public class GameBoard implements Drawable {
         communityCards.draw(console, position.y, position.x);
 
         // draw pot & betting info
-        drawInfoBox(console, origin, Constants.BoardLayout.BET_INFO_BOX);
+        //drawInfoBox(console, origin, Constants.BoardLayout.BET_INFO_BOX);
     }
 
 
@@ -61,14 +61,14 @@ public class GameBoard implements Drawable {
     private void drawPlayer(ConsoleHelper console, Player player, Point origin, Point nameAndBetPos, Point handPos) {
         // draw bot name + bet
         console.setCursor(getRelativePoint(origin, nameAndBetPos));
-        console.out.print(player.name + " bet $" + player.bet);
+        //console.out.print(player.name + " bet $" + player.bet);
 
         // draw bot hand
         Point handPosAbs = getRelativePoint(origin, handPos);
-        player.hand.draw(console, handPosAbs.y, handPosAbs.x);
+        //player.hand.draw(console, handPosAbs.y, handPosAbs.x);
     }
 
-    private void drawInfoBox(ConsoleHelper console, Point origin, Point position) {
+    /*private void drawInfoBox(ConsoleHelper console, Point origin, Point position) {
         Point boxPos = this.getRelativePoint(origin, position);
 
         // get text to display
@@ -130,5 +130,5 @@ public class GameBoard implements Drawable {
             console.out.print("─");
         console.out.print("─┘");
         console.out.print(ConsoleHelper.RESET_COLOR);
-    }
+    }*/
 }

@@ -27,17 +27,26 @@ public class ClientSocket extends DatagramSocket {
         super(portNum);
     }
 
-    public void sendMessage(String message) throws IOException {
-        byte[] sendBuffer = message.getBytes();
-        DatagramPacket datagram = new DatagramPacket(sendBuffer, sendBuffer.length, receiverHost, receiverPort);
-        this.send(datagram);
+    public void sendMessage(String message) {
+        try {
+            byte[] sendBuffer = message.getBytes();
+            DatagramPacket datagram = new DatagramPacket(sendBuffer, sendBuffer.length, receiverHost, receiverPort);
+            this.send(datagram);
+        } catch (IOException io) {
+
+        }
     }
 
-    public String receiveMessage() throws IOException {
-        byte[] receiveBuffer = new byte[100];
-        DatagramPacket datagram = new DatagramPacket(receiveBuffer, 100);
-        this.receive(datagram);
-        String message = new String(receiveBuffer);
+    public String receiveMessage() {
+        String message = "";
+        try {
+            byte[] receiveBuffer = new byte[100];
+            DatagramPacket datagram = new DatagramPacket(receiveBuffer, 100);
+            this.receive(datagram);
+            message = new String(receiveBuffer);
+        } catch (IOException io) {
+
+        }
         return message;
     }
 

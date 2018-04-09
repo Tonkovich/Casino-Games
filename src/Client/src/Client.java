@@ -1,3 +1,4 @@
+import Graphics.GameMenu;
 import Parsers.ParseFactory;
 import Utils.ClientSocket;
 import Utils.Login;
@@ -16,6 +17,7 @@ public class Client {
 
     private static ClientSocket mySocket;
     private static Login userLogin = new Login();
+    private static GameMenu menu = new GameMenu();
 
     public static void main(String[] args) throws IOException {
         InputStreamReader is = new InputStreamReader(System.in);
@@ -51,7 +53,10 @@ public class Client {
              */
 
             // Login
-            userLogin.login(mySocket);
+            userLogin.login();
+
+            // Initial display of games to play
+            menu.display();
 
             // Start displaying menus
             // TODO: Separate class and methods for exiting and etc
