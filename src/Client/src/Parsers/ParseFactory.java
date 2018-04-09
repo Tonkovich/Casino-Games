@@ -1,17 +1,18 @@
 package Parsers;
 
+import Graphics.GameMenu;
 import Models.Player;
 import Utils.ClientSocket;
 import Utils.JSONMesssages.HeartBeatMessage;
 
 import javax.json.JsonObject;
-import java.io.IOException;
 
 public class ParseFactory {
 
     private static ParseFactory instance;
     private ClientSocket socket = ClientSocket.getInstance();
     private HeartBeatMessage hb = new HeartBeatMessage();
+    private GameMenu gm = new GameMenu();
 
     private ParseFactory() {
     }
@@ -24,14 +25,11 @@ public class ParseFactory {
     }
 
     public void parse(JsonObject json) {
-        try {
-            if (!json.isNull("heartBeat")) {
-                Player p = Player.getInstance();
-                socket.sendMessage(hb.heartBeatSend(p.getUserID()));
-            }
-        } catch (IOException ex) {
+        if (!json.isNull("heartBeat")) {
+            Player p = Player.getInstance();
+            socket.sendMessage(hb.heartBeatSend(p.getUserID()));
+        } else if (!json.isNull("gameOptions")) {
+            gm.display(); // TODO Should be changed
         }
-
-
     }
 }
