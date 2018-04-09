@@ -13,6 +13,7 @@ public class ParseStore {
     private SlotParse sp = SlotParse.getInstance();
     private AccessParse ap = AccessParse.getInstance();
     private HeartBeat hb = HeartBeat.getInstance();
+    private GameOptionsParse gop = GameOptionsParse.getInstance();
     private static final Logger log = LogManager.getLogger(ParseStore.class);
 
     private ParseStore() {
@@ -48,6 +49,13 @@ public class ParseStore {
                 //log.info("Login attempt by: " + ip);
             } else if (json.getString("heartBeat") != null) {
                 hb.receive(json);
+            } else if (json.getString("gameOptions") != null) {
+                // Client requesting all available game options
+                gop.parse(json);
+            } else if (json.getString("createGame") != null) {
+                // TODO
+            } else if (json.getString("joinGame") != null) {
+                // TODO
             }
         }
     }
