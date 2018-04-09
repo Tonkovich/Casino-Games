@@ -17,6 +17,8 @@ public class Poker implements CardGame {
     private double prevBet = 0;
     private boolean gameReady = false;
     private boolean initialRound;
+    private String[] rolePositions;
+    private int currentPosOfDealer;
     private HashMap<Integer, Hand> playerHands = new HashMap<>();
     private HashMap<Integer, Player> players = new HashMap<>();
     private Hand house;
@@ -58,27 +60,70 @@ public class Poker implements CardGame {
         return players.get(userID);
     }
 
+    /**
+     * This method initializes an array of Strings that stores a player's role. The indices in
+     * this array represent that player's role (i.e., positions[0] refers to player 1's role).
+     * <p>
+     * This method is only used for the initial round of a poker game.
+     */
+    public void initializeRoles() {
+        int playersSize = players.size();
+        rolePositions = new String[playersSize];
+        currentPosOfDealer = 0;
+        // Setting first 3 positions as their appropriate roles
+        rolePositions[currentPosOfDealer] = "Dealer";
+        rolePositions[currentPosOfDealer + 1] = "Small Blind";
+        rolePositions[currentPosOfDealer + 2] = "Big Blind";
+
+        // Setting remaining positions as having no role, if players still remain
+        // Index starts at position after big blind
+        int nextPos = currentPosOfDealer + 3;
+        for (int i = nextPos; i < playersSize; i++) {
+            rolePositions[currentPosOfDealer + i] = "No Role";
+        }
+    }
+
+    /**
+     * This method shifts the positions of the roles by one so that each player's role will be
+     * changed.
+     * <p>
+     * By utilizing the modulo operator, I can effectively wrap around the array, thus
+     * treating the array as a circle (like a poker table).
+     */
+    public void shiftRoles() {
+        int i = 0;
+        int playersSize = players.size();
+        // Shifting the position of roles in the array
+        rolePositions[(currentPosOfDealer + (++i)) % playersSize] = "Dealer";
+        rolePositions[(currentPosOfDealer + (++i)) % playersSize] = "Small Blind";
+        rolePositions[(currentPosOfDealer + (++i)) % playersSize] = "Big Blind";
+
+        // Shifting remaining positions which are no role.
+        // Index starts at position after big blind's newly shifted position
+        int nextPos = currentPosOfDealer + i + 1;
+        for (int index = nextPos; index <= playersSize; index++) {
+            rolePositions[(currentPosOfDealer + index) % playersSize] = "No Role";
+        }
+        // The position of the dealer has been shifted by one.
+        currentPosOfDealer = (currentPosOfDealer + 1) % playersSize;
+    }
+
     /*
         This method sets the Player role attribute (dealer, small blind, big blind, noRole*)
     */
     public void setPlayerRoles() {
-        // If initial round,
-        //  Iterate through the Queue of players,
-        //  setting first 3 players as the appropriate role and the rest with no roles.
-        Iterator<Player> itr = turns.iterator();
         if (initialRound) {
-            itr.next().setPlayerRole("Dealer");
-            itr.next().setPlayerRole("Small Blind");
-            itr.next().setPlayerRole("Big Blind");
+            initializeRoles();
+            initialRound = false;
+        } else { // Else, it's a subsequent round so the roles are shifted.
+            shiftRoles();
+        }
 
-            // Set the remaining players, if any, to have no role
-            while (itr.hasNext()) {
-                itr.next().setPlayerRole("No Role");
-            }
-        } else {
-            // Else subsequent rounds,
-            //  players' roles are changed. Roles move over by 1.
-
+        int i = 0;
+        Iterator<Player> itr = players.values().iterator();
+        while (itr.hasNext()) {
+            itr.next().setPlayerRole(rolePositions[i]);
+            i++;
         }
     }
 
