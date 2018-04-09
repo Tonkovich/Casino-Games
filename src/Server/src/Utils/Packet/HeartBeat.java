@@ -24,6 +24,7 @@ public class HeartBeat {
 
     private static HeartBeat instance;
     private boolean running = false;
+    private boolean startedOnce = false;
     private HeartbeatMessages hbm = new HeartbeatMessages();
     private static Players playersDB;
     private static final Logger log = LogManager.getLogger(HeartBeat.class);
@@ -56,20 +57,29 @@ public class HeartBeat {
     }
 
     private void disconnectUser(int userID) {
+        log.info(playersDB.getPlayer(userID).getUsername() + " logged out");
         playersDB.logoutPlayer(userID);
         // TODO: Just like what it says duh
         // Also read long comment above of how to implement
     }
 
     public void start() {
-        if (!running) {
+        if (!running && !startedOnce) {
             running = true;
+            startedOnce = true; // Can't restart thread
             t.start();
+        } else if (startedOnce && !running) {
+            running = true;
         }
     }
 
     public void stop() {
         running = false;
+//        try {
+//            t.join();
+//        } catch (InterruptedException ex) {
+//            log.error(ex.getMessage());
+//        }
     }
 
     private void sleep() {
@@ -81,27 +91,31 @@ public class HeartBeat {
     }
 
     // Might not be the best implementation. Using casting to avoid possible conversion performance hits
-    Thread t = new Thread(() -> {
+    private Thread t = new Thread(() -> {
         log.info("Heartbeat started");
-        while (running) {
-            for (Object o : playersDB.getPlayers()) {
-                Player p = (Player) o;
-                send(p);
-            }
-            sleep(); // Pause to allow clients to reply
+        while (true) { // This is to keep the thread alive constantly, sloppy probably
+            sleep(); // Seems to keep logger alive..no idea why
+            while (running) { // Way to pause and resume thread
+                if (playersDB.getPlayers().size() > 0) {
+                    for (Object o : playersDB.getPlayers()) {
+                        Player p = (Player) o;
+                        send(p);
+                    }
+                    sleep(); // Pause to allow clients to reply
 
-            // Clients have three missed chances
-            for (Integer i : waitingReply.keySet()) {
-                if (waitingReply.get(i) == 0) {
-                    disconnectUser(i);
-                } else {
-                    int j = waitingReply.get(i) - 1;
-                    waitingReply.put(i, j);
+                    // Clients have three missed chances
+                    for (Integer i : waitingReply.keySet()) {
+                        if (waitingReply.get(i) == 0) {
+                            disconnectUser(i);
+                        } else {
+                            int j = waitingReply.get(i) - 1;
+                            waitingReply.put(i, j);
+                        }
+                    }
                 }
             }
-
         }
-        log.info("Heartbeat stopped: No users online");
+
     });
 
 }
