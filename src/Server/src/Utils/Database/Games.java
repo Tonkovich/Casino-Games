@@ -4,6 +4,7 @@ import Models.Games.Poker;
 import Models.Games.Slots;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class Games {
 
@@ -51,5 +52,10 @@ public class Games {
     public void createSlotGame(int userID) {
         Slots newGame = new Slots();
         slotGames.put(userID, newGame);
+    }
+
+    // Returns values to be used for listing all games
+    public Set<Integer> getPokerGames() {
+        return pokerGames.keySet();
     }
 }
