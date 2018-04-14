@@ -46,18 +46,17 @@ public class HeartBeat {
     // Is called when server finds a heartBeat message
     public void receive(JsonObject obj) {
         int userID = obj.getInt("userID");
-        log.info(userID + " replied");
+        //log.info(userID + " replied");
         waitingReply.remove(userID);
     }
 
     private void send(Player p) {
         p.sendHeartBeat(hbm.heartBeatSend());
         waitingReply.putIfAbsent(p.getUserID(), 3);
-        log.info("Sending heartbeat to " + p.getUserID() + ".." + waitingReply.get(p.getUserID()));
+        //log.info("Sending heartbeat to " + p.getUserID() + ".." + waitingReply.get(p.getUserID()));
     }
 
     private void disconnectUser(int userID) {
-        log.info(playersDB.getPlayer(userID).getUsername() + " logged out");
         playersDB.logoutPlayer(userID);
         // TODO: Just like what it says duh
         // Also read long comment above of how to implement

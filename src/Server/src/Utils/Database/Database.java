@@ -64,7 +64,6 @@ public class Database {
                 newPlayer.setHeartBeatPort(heartBeatPort);
                 newPlayer.sendMessage(lm.successLogin(newPlayer.getUserID(), newPlayer.getPlayerWallet())); // First send success
                 players.loginPlayer(newPlayer.getUserID(), newPlayer); // Then heart beat, order must be kept
-                log.info(newPlayer.getUsername() + " has logged in.");
             } else {
                 newPlayer.setIPAddress(ip);
                 newPlayer.sendMessage(lm.incorrectLogin());
