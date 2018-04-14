@@ -1,20 +1,19 @@
 package Parsers;
 
+import Utils.Database.Games;
 import Utils.Packet.HeartBeat;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.json.JsonObject;
 
 public class ParseStore {
 
     private static ParseStore instance;
-    private PokerParse pp = PokerParse.getInstance();
+    private Games gameDB = Games.getInstance();
     private SlotParse sp = SlotParse.getInstance();
-    private AccessParse ap = AccessParse.getInstance();
     private HeartBeat hb = HeartBeat.getInstance();
+    private PokerParse pp = PokerParse.getInstance();
+    private AccessParse ap = AccessParse.getInstance();
     private GameOptionsParse gop = GameOptionsParse.getInstance();
-    private static final Logger log = LogManager.getLogger(ParseStore.class);
 
     private ParseStore() {
         // Do nothing
@@ -49,9 +48,9 @@ public class ParseStore {
                 ap.parse(json.getJsonObject("login"), ip, port);
                 //log.info("Login attempt by: " + ip);
             } else if (json.getJsonString("createGame") != null) {
-                // TODO
+                gameDB.createPokerGame(json);
             } else if (json.getJsonString("joinGame") != null) {
-                // TODO
+                gameDB.joinPokerGame(json);
             } else if (json.getJsonString("heartBeat") != null) {
                 hb.receive(json);
             } else if (json.getJsonString("gameOptions") != null) {
