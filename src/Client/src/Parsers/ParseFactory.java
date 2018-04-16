@@ -1,6 +1,7 @@
 package Parsers;
 
 import Graphics.GameMenu;
+import Graphics.UserInterface;
 import Utils.ClientSocket;
 import Utils.JSONMesssages.HeartBeatMessage;
 
@@ -12,6 +13,7 @@ public class ParseFactory {
     private ClientSocket socket = ClientSocket.getInstance();
     private HeartBeatMessage hb = new HeartBeatMessage();
     private GameMenu gm = new GameMenu();
+    private UserInterface ui = UserInterface.getInstance();
 
     private ParseFactory() {
     }
@@ -24,12 +26,19 @@ public class ParseFactory {
     }
 
     public void parse(JsonObject json) {
-        if (!json.isNull("gameOptions")) {
+        if (json.getJsonString("gameOptions") != null) {
             gm.display(); // TODO Should be changed
+        } else if (json.getJsonString("pokerAction") != null) {
+            // TODO: Trigger user input, send to server, retrieve update
+        } else if (json.getJsonString("pokerMessage") != null) {
+            // TODO: Send to gameLog
+        } else if (json.getJsonString("startGUI") != null) {
+            // Called once the server has confirmed the client is in the game
+            ui.start(json);
+
+        } else if (json.getJsonString("updateGUI") != null) {
+            ui.update(json);
         }
-//        else if (!json.isNull("heartBeat")) {
-//            Player p = Player.getInstance();
-//            socket.sendMessage(hb.heartBeatSend(p.getUserID()));
-//        }
+
     }
 }
