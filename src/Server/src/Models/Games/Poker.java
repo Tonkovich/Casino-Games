@@ -20,8 +20,7 @@ public class Poker implements CardGame {
     private String[] rolePositions;
     private int currentPosOfDealer;
     private HashMap<Integer, Hand> playerHands = new HashMap<>();
-    public HashMap<Integer, Player> players = new LinkedHashMap<>();
-    //private HashMap<Integer, Player> players = new LinkedHashMap<>();
+    private HashMap<Integer, Player> players = new LinkedHashMap<>();
     private Hand house;
     private PriorityQueue<Player> turns;
     private Deck deck;
