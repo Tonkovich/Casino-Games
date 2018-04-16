@@ -27,4 +27,14 @@ public class GameOptionMessage {
         }
         return json.toString();
     }
+
+    public String startGUI() {
+        JsonObject json = Json.createObjectBuilder()
+                .add("startGUI", "starting GUI.").build();
+        return json.toString();
+    }
+
+    public String updateGUI() {
+        return null;
+    }
 }
