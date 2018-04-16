@@ -2,14 +2,17 @@ package Utils.Database;
 
 import Models.Games.Poker;
 import Models.Games.Slots;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import javax.json.JsonObject;
 import java.util.HashMap;
 import java.util.Set;
 
 public class Games {
 
+    private static final Logger log = LogManager.getLogger(Games.class);
     private Players playerDB = Players.getInstance();
-
     private static Games instance;
 
     public static Games getInstance(){
@@ -35,18 +38,25 @@ public class Games {
     }
 
 
-    public void createPokerGame(int initialUserID){
+    public void createPokerGame(JsonObject json) {
         Poker newGame = new Poker();
+        int userID = json.getInt("userID");
+
 
         // We will use initialUserID for gameID because no one will ever have it and it's easy
-        pokerGames.put(initialUserID, newGame);
+        pokerGames.put(userID, newGame);
+        log.info("New poker game created ID:" + userID);
     }
 
-    public void joinPokerGame(int userID, int gameID) {
+    public void joinPokerGame(JsonObject json) {
+        int gameID = json.getInt("gameID");
+        int userID = json.getInt("userID");
+
         Poker game = pokerGames.get(gameID);
 
         // Get user from PlayerDB
         pokerGames.get(gameID).addPlayer(userID, playerDB.getPlayer(userID));
+        log.info(playerDB.getPlayer(userID).getUsername() + " joined game ID:" + gameID);
     }
 
     public void createSlotGame(int userID) {
@@ -57,5 +67,10 @@ public class Games {
     // Returns values to be used for listing all games
     public Set<Integer> getPokerGames() {
         return pokerGames.keySet();
+    }
+
+    public void closePokerGame(int gameID) {
+        pokerGames.remove(gameID);
+        log.info("Poker game ID:" + gameID + " closed.");
     }
 }

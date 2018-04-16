@@ -15,7 +15,9 @@ import java.util.Scanner;
 public class Login {
 
     private static LoginMessages lm = new LoginMessages();
-    private static ClientSocket mySocket = ClientSocket.getInstance();
+    private static ClientSocket cs = ClientSocket.getInstance();
+    private static HeartBeatSocket hbs = HeartBeatSocket.getInstance();
+    private HeartBeat hb = HeartBeat.getInstance();
     private static final Logger log = LogManager.getLogger(Login.class);
     private Player p = Player.getInstance();
 
@@ -32,8 +34,9 @@ public class Login {
 
         boolean resp = false;
 
-        mySocket.sendMessage(lm.login(username, password));
-        JsonReader jsonReader = Json.createReader(new StringReader(mySocket.receiveMessage()));
+        hb.start(); // Start thread just in case to be ready
+        cs.sendMessage(lm.login(username, password, hbs.getHeartBeatPort()));
+        JsonReader jsonReader = Json.createReader(new StringReader(cs.receiveMessage()));
         // TODO Timer to disconnect, assume server crashed
         JsonObject obj = jsonReader.readObject();
 

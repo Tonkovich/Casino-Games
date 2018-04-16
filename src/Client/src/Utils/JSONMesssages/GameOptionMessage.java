@@ -15,4 +15,22 @@ public class GameOptionMessage {
                 .add("userID", p.getUserID()).build();
         return json.toString();
     }
+
+    public String joinGame(int gameID) {
+        JsonObject json = Json.createObjectBuilder()
+                .add("joinGame", "Join game.")
+                .add("gameID", gameID)
+                .add("userID", p.getUserID()).build();
+        return json.toString();
+    }
+
+    public String createGame(int maxPlayers, int bigBlind, int smallBlind) {
+        JsonObject json = Json.createObjectBuilder()
+                .add("createGame", "Create Game.")
+                .add("maxPlayers", maxPlayers)
+                .add("bigBlind", bigBlind)
+                .add("smallBlind", smallBlind)
+                .add("userID", p.getUserID()).build();
+        return json.toString();
+    }
 }

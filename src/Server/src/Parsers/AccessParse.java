@@ -22,6 +22,7 @@ public class AccessParse {
     public void parse(JsonObject obj, String ip, int port) {
         String username = obj.getString("username");
         String password = obj.getString("password");
-        db.loginPlayer(username, password, ip, port);
+        int heartBeatPort = obj.getInt("heartBeatPort");
+        db.loginPlayer(username, password, ip, port, heartBeatPort);
     }
 }

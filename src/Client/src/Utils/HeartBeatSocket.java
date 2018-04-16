@@ -6,16 +6,17 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-public class ClientSocket extends DatagramSocket {
+// Probably the worst way to do this but im crunched on time sooooo weeeee
+public class HeartBeatSocket extends DatagramSocket {
 
-    private InetAddress receiverHost;
-    private int receiverPort;
-    private static ClientSocket instance;
+    InetAddress receiverHost;
+    int receiverPort;
+    private static HeartBeatSocket instance;
 
-    public static ClientSocket getInstance() {
+    public static HeartBeatSocket getInstance() {
         if (instance == null) {
             try {
-                instance = new ClientSocket(0);
+                instance = new HeartBeatSocket(0);
             } catch (SocketException ex) {
 
             }
@@ -23,7 +24,7 @@ public class ClientSocket extends DatagramSocket {
         return instance;
     }
 
-    private ClientSocket(int portNum) throws SocketException {
+    private HeartBeatSocket(int portNum) throws SocketException {
         super(portNum);
     }
 
@@ -67,11 +68,7 @@ public class ClientSocket extends DatagramSocket {
         receiverPort = num;
     }
 
-    public InetAddress getReceiverHost() {
-        return this.receiverHost;
-    }
-
-    public int getReceiverPort() {
-        return this.receiverPort;
+    public int getHeartBeatPort() {
+        return super.getLocalPort();
     }
 }

@@ -1,7 +1,6 @@
 package Parsers;
 
 import Graphics.GameMenu;
-import Models.Player;
 import Utils.ClientSocket;
 import Utils.JSONMesssages.HeartBeatMessage;
 
@@ -25,11 +24,12 @@ public class ParseFactory {
     }
 
     public void parse(JsonObject json) {
-        if (!json.isNull("heartBeat")) {
-            Player p = Player.getInstance();
-            socket.sendMessage(hb.heartBeatSend(p.getUserID()));
-        } else if (!json.isNull("gameOptions")) {
+        if (!json.isNull("gameOptions")) {
             gm.display(); // TODO Should be changed
         }
+//        else if (!json.isNull("heartBeat")) {
+//            Player p = Player.getInstance();
+//            socket.sendMessage(hb.heartBeatSend(p.getUserID()));
+//        }
     }
 }
