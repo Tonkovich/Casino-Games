@@ -1,5 +1,7 @@
 package Models;
 
+import Graphics.Parts.Hand;
+
 public class Player {
 
     private static Player instance;
@@ -18,6 +20,7 @@ public class Player {
     private double playerWallet = 0; // Should only set as zero on "new Models.Player()"
     private int userID;
     private String username;
+    public Hand hand;
 
     public double getPlayerWallet() {
         return playerWallet;

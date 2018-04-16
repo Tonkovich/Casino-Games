@@ -1,6 +1,6 @@
 package Graphics;
 
-import Graphics.Parts.Constants;
+import Graphics.Parts.*;
 import Models.Player;
 
 import javax.json.JsonObject;
@@ -12,6 +12,7 @@ public class UserInterface {
     private static UserInterface instance;
     private ConsoleHelper console;
     private GameLog log = new GameLog(5);
+    private Player p = Player.getInstance();
     private GameBoard gb = new GameBoard(Player.getInstance());
 
     private UserInterface() {
@@ -34,6 +35,10 @@ public class UserInterface {
             log.add("Welcome to Texas Hold'em heads-up tournament style! We'll be");
             log.add("playing by standard rules. ");
 
+            Hand blankHand = new Hand();
+            blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
+            blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
+            p.hand = blankHand;
 
             draw(gb, log);
 

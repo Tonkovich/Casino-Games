@@ -64,11 +64,11 @@ public class GameBoard implements Drawable {
     private void drawPlayer(ConsoleHelper console, Player player, Point origin, Point nameAndBetPos, Point handPos) {
         // draw bot name + bet
         console.setCursor(getRelativePoint(origin, nameAndBetPos));
-        //console.out.print(player.name + " bet $" + player.bet);
+        //console.out.print(player.getUsername()+ " bet $" + player.bet);
 
         // draw bot hand
         Point handPosAbs = getRelativePoint(origin, handPos);
-        //player.hand.draw(console, handPosAbs.y, handPosAbs.x);
+        player.hand.draw(console, handPosAbs.y, handPosAbs.x);
     }
 
     private void drawInfoBox(ConsoleHelper console, Point origin, Point position) {
