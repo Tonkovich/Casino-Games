@@ -34,4 +34,23 @@ public enum Suit {
         }
         return num;
     }
+
+    public String getName() {
+        String result = "";
+        switch (suitValue) {
+            case "Hearts":
+                result = "Hearts";
+                break;
+            case "Spades":
+                result = "Spades";
+                break;
+            case "Clubs":
+                result = "Clubs";
+                break;
+            case "Diamonds":
+                result = "Diamonds";
+                break;
+        }
+        return result;
+    }
 }
