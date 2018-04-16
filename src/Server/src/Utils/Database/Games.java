@@ -2,6 +2,7 @@ package Utils.Database;
 
 import Models.Games.Poker;
 import Models.Games.Slots;
+import Utils.JSONMessages.GameOptionMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,6 +13,7 @@ import java.util.Set;
 public class Games {
 
     private static final Logger log = LogManager.getLogger(Games.class);
+    private GameOptionMessage gom = new GameOptionMessage();
     private Players playerDB = Players.getInstance();
     private static Games instance;
 
@@ -46,6 +48,7 @@ public class Games {
         // We will use initialUserID for gameID because no one will ever have it and it's easy
         pokerGames.put(userID, newGame);
         log.info("New poker game created ID:" + userID);
+        playerDB.getPlayer(userID).sendMessage(gom.startGUI());
     }
 
     public void joinPokerGame(JsonObject json) {
@@ -57,6 +60,7 @@ public class Games {
         // Get user from PlayerDB
         pokerGames.get(gameID).addPlayer(userID, playerDB.getPlayer(userID));
         log.info(playerDB.getPlayer(userID).getUsername() + " joined game ID:" + gameID);
+        playerDB.getPlayer(userID).sendMessage(gom.startGUI());
     }
 
     public void createSlotGame(int userID) {
