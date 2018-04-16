@@ -4,6 +4,8 @@ import Graphics.Parts.*;
 import Models.Player;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -11,19 +13,20 @@ import java.util.List;
  */
 public class GameBoard implements Drawable {
 
-    public Player human;
-    public List<Player> otherPlayers;
+    public Player human = Player.getInstance();
+    public List<Player> otherPlayers = new ArrayList<>();
     public Hand communityCards = new Hand();
     public int bigBlind = Constants.INITIAL_BIG_BLIND;
     public int smallBlind = Constants.INITIAL_BIG_BLIND / 2;
     public boolean isStarted;
+    public double pot = 0;
+    private Player p = Player.getInstance();
 
 
     private Card facedownCard = new Card(Suit.CLUBS, Rank.A, true);
 
-    public GameBoard(Player user, boolean isStarted) {
+    public GameBoard(Player user) {
         this.human = user;
-        this.isStarted = isStarted;
     }
 
     public void draw(ConsoleHelper console, int row, int col) {
@@ -68,15 +71,15 @@ public class GameBoard implements Drawable {
         //player.hand.draw(console, handPosAbs.y, handPosAbs.x);
     }
 
-    /*private void drawInfoBox(ConsoleHelper console, Point origin, Point position) {
+    private void drawInfoBox(ConsoleHelper console, Point origin, Point position) {
         Point boxPos = this.getRelativePoint(origin, position);
 
         // get text to display
         List<String> lines = Arrays.asList(
-                "   Pot: $" + (human.bet + bot.bet),
+                "   Pot: $" + (pot),
                 "Blinds: $" + (smallBlind) + " – $" + bigBlind,
-                " Your chips: $" + human.chips,
-                "Their chips: $" + bot.chips
+                " Your chips: $" + p.getPlayerWallet() //,
+                // "Their chips: $" + bot.chips
         );
         int innerBorderAt = 3; // TODO  May have to be changed for more players and dynamic
 
@@ -130,5 +133,5 @@ public class GameBoard implements Drawable {
             console.out.print("─");
         console.out.print("─┘");
         console.out.print(ConsoleHelper.RESET_COLOR);
-    }*/
+    }
 }
