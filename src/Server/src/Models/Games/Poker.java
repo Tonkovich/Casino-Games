@@ -5,6 +5,7 @@ import Models.Parts.CardGame.Deck;
 import Models.Parts.CardGame.Hand;
 import Models.Parts.CardGame.Ranking.EvaluateHand;
 import Utils.JSONMessages.PokerMessages;
+import Utils.JSONMessages.UserInterfaceMessages;
 
 import java.util.*;
 
@@ -21,6 +22,7 @@ public class Poker implements CardGame {
     private int currentPosOfDealer;
     private HashMap<Integer, Hand> playerHands = new HashMap<>();
     public HashMap<Integer, Player> players = new LinkedHashMap<>();
+    private UserInterfaceMessages ui = new UserInterfaceMessages();
     private Hand house;
     private PriorityQueue<Player> turns;
     private Deck deck;
@@ -143,6 +145,9 @@ public class Poker implements CardGame {
                 h.addCard(c);
             }
         }
+        // Update all clients
+        updateClients();
+
         // TODO: Start game here!!!
         massSender(pm.gameStarted());
     }
@@ -151,6 +156,7 @@ public class Poker implements CardGame {
         deck.drawCard(); // Burn one card
         massSender(pm.cardDrawn(deck.peek())); // Notify all
         house.addCard(deck.drawCard());
+        updateClients();
     }
 
     public double getPot() {
@@ -161,6 +167,7 @@ public class Poker implements CardGame {
         pot += amount;
         massSender(pm.addedToPot(amount, pot, turns.peek()));
         prevBet = amount;
+        updateClients();
     }
 
     public double getPrevBet() {
@@ -308,17 +315,24 @@ public class Poker implements CardGame {
         }
     }
 
-    // Handling a single winner
+    /**
+     * Single winner is handled here
+     *
+     * @param maxHighCard largest highcard in game
+     * @param rankMax     largest rank
+     * @param highcards   all player highcards
+     * @param ranks       all ranking of playerHands
+     */
     private void singleWinner(int maxHighCard, int rankMax, Map<Integer, Integer> highcards, Map<Integer, Integer> ranks) {
 
-        System.out.println("Single");
+        //System.out.println("Single");
 
         for (Integer i : highcards.keySet()) {
             if (highcards.get(i) == maxHighCard && ranks.get(i) == rankMax) {
                 Player player = players.get(i);
 
-                System.out.println("Player hand: " + playerHands.get(player.getUserID()).toString());
-                System.out.println(player.getUsername());
+                //System.out.println("Player hand: " + playerHands.get(player.getUserID()).toString());
+                //System.out.println(player.getUsername());
 
 
                 player.setPlayerWallet(player.getPlayerWallet() + getPot());
@@ -328,11 +342,17 @@ public class Poker implements CardGame {
         }
     }
 
-    // Handling multiple winners
+    /**
+     * Multiple winners are handled here
+     *
+     * @param duplicates  how many winners
+     * @param maxHighCard largest highcard
+     * @param highcards   hashmap of all highcards
+     */
     private void multipleWinners(int duplicates, int maxHighCard, Map<Integer, Integer> highcards) {
         double divPot = getPot() / duplicates + 1; // Split pot between players
 
-        System.out.println("Multiple");
+        //System.out.println("Multiple");
 
         List<Player> finalWinners = new ArrayList<>();
         for (Integer i : highcards.keySet()) {
@@ -340,7 +360,7 @@ public class Poker implements CardGame {
                 Player player = players.get(i);
                 finalWinners.add(players.get(i));
 
-                System.out.println(player.getUsername());
+                //System.out.println(player.getUsername());
 
 
                 player.sendMessage(pm.winnerMessage()); // Send each player winner message
@@ -351,9 +371,24 @@ public class Poker implements CardGame {
         massSender(pm.multipleWinners(finalWinners));
     }
 
+    /**
+     * Send messages to all clients
+     *
+     * @param message incoming json
+     */
     private void massSender(String message) {
         for (Player p : players.values()) {
             p.sendMessage(message);
+        }
+    }
+
+    /**
+     * Sends graphical updates to clients
+     */
+    private void updateClients() {
+        for (Integer i : playerHands.keySet()) {
+            String message = ui.updateClients(pot, playerHands.get(i), house);
+            players.get(i).sendMessage(message);
         }
     }
 
