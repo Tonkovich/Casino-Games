@@ -20,7 +20,8 @@ public class Poker implements CardGame {
     private String[] rolePositions;
     private int currentPosOfDealer;
     private HashMap<Integer, Hand> playerHands = new HashMap<>();
-    private HashMap<Integer, Player> players = new HashMap<>();
+    public HashMap<Integer, Player> players = new LinkedHashMap<>();
+    //private HashMap<Integer, Player> players = new LinkedHashMap<>();
     private Hand house;
     private PriorityQueue<Player> turns;
     private Deck deck;
@@ -33,7 +34,7 @@ public class Poker implements CardGame {
         house = new Hand();
         pm = new PokerMessages();
         initialRound = true;
-        start(); // Start thread
+        //start(); // Start thread
     }
 
     /*
@@ -91,18 +92,25 @@ public class Poker implements CardGame {
      * treating the array as a circle (like a poker table).
      */
     public void shiftRoles() {
-        int i = 0;
         int playersSize = players.size();
         // Shifting the position of roles in the array
-        rolePositions[(currentPosOfDealer + (++i)) % playersSize] = "Dealer";
-        rolePositions[(currentPosOfDealer + (++i)) % playersSize] = "Small Blind";
-        rolePositions[(currentPosOfDealer + (++i)) % playersSize] = "Big Blind";
+        rolePositions[(currentPosOfDealer + 1) % playersSize] = "Dealer";
+        rolePositions[(currentPosOfDealer + 2) % playersSize] = "Small Blind";
+        rolePositions[(currentPosOfDealer + 3) % playersSize] = "Big Blind";
 
         // Shifting remaining positions which are no role.
         // Index starts at position after big blind's newly shifted position
-        int nextPos = currentPosOfDealer + i + 1;
-        for (int index = nextPos; index <= playersSize; index++) {
-            rolePositions[(currentPosOfDealer + index) % playersSize] = "No Role";
+        int nextPos = (currentPosOfDealer + 4) % playersSize;
+        boolean isDone = false;
+        while (!isDone) {
+            // This conditional helps determine when to stop looping and setting No Role to players,
+            //  because the next element after nextPos will be the newly set Dealer so I don't want
+            //  to modify that one since it has just been changed to Dealer.
+            if (rolePositions[nextPos].equals("Dealer")) {
+                isDone = true;
+            }
+            rolePositions[nextPos] = "No Role";
+            nextPos++;
         }
         // The position of the dealer has been shifted by one.
         currentPosOfDealer = (currentPosOfDealer + 1) % playersSize;
