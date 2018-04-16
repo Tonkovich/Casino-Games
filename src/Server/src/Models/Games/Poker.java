@@ -110,7 +110,7 @@ public class Poker implements CardGame {
                 isDone = true;
             }
             rolePositions[nextPos] = "No Role";
-            nextPos++;
+            nextPos = (nextPos + 1) % playersSize;
         }
         // The position of the dealer has been shifted by one.
         currentPosOfDealer = (currentPosOfDealer + 1) % playersSize;
