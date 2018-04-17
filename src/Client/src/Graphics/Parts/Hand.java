@@ -9,6 +9,14 @@ public class Hand {
 
     private ArrayList<Card> cards = new ArrayList<>();
 
+    public Hand() {
+
+    }
+
+    public Hand(Card... c) {
+        cards.addAll(Arrays.asList(c));
+    }
+
     public void addCard(Card c) {
         cards.add(c);
     }
@@ -23,5 +31,9 @@ public class Hand {
             cards.get(i).draw(console, row, col + leftOffset);
             leftOffset += Constants.CARD_LAYOUT_WIDTH + Constants.CARD_BORDER_WIDTH * 2;
         }
+    }
+
+    public int getSize() {
+        return cards.size();
     }
 }
