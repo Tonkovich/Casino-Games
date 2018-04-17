@@ -18,8 +18,11 @@ public class Poker implements CardGame {
     private double prevBet = 0;
     private boolean gameReady = false;
     private boolean initialRound;
+    private boolean initialBettingRound;
     private String[] rolePositions;
     private int currentPosOfDealer;
+    public int bigBlind;
+    public int smallBlind;
     private HashMap<Integer, Hand> playerHands = new HashMap<>();
     public HashMap<Integer, Player> players = new LinkedHashMap<>();
     private UserInterfaceMessages ui = new UserInterfaceMessages();
@@ -35,6 +38,7 @@ public class Poker implements CardGame {
         house = new Hand();
         pm = new PokerMessages();
         initialRound = true;
+        initialBettingRound = true;
         //start(); // Start thread
     }
 
@@ -48,6 +52,8 @@ public class Poker implements CardGame {
         setPlayerHand(hand, userID);
         turns.add(player);
         massSender(pm.addedToGame(player));
+
+        //updateClients();
     }
 
     /*
@@ -387,7 +393,8 @@ public class Poker implements CardGame {
      */
     private void updateClients() {
         for (Integer i : playerHands.keySet()) {
-            String message = ui.updateClients(pot, playerHands.get(i), house);
+            // players.size() - 1, subtract user being updated
+            String message = ui.updateClients(pot, playerHands.get(i), house, initialBettingRound, players.size() - 1);
             players.get(i).sendMessage(message);
         }
     }
