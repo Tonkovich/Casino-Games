@@ -64,4 +64,57 @@ public enum Rank {
         }
         return true;
     }
+
+    /**
+     * Used for getting enum rank by value.
+     * i.e card val send from server
+     *
+     * @param val Incoming card value
+     * @return the correct enum rank
+     */
+    public static Rank getByVal(int val) {
+        Rank rank = A;
+        switch (val) {
+            case 1:
+                rank = A;
+                break;
+            case 2:
+                rank = TWO;
+                break;
+            case 3:
+                rank = THREE;
+                break;
+            case 4:
+                rank = FOUR;
+                break;
+            case 5:
+                rank = FIVE;
+                break;
+            case 6:
+                rank = SIX;
+                break;
+            case 7:
+                rank = SEVEN;
+                break;
+            case 8:
+                rank = EIGHT;
+                break;
+            case 9:
+                rank = NINE;
+                break;
+            case 10:
+                rank = TEN;
+                break;
+            case 11:
+                rank = JACK;
+                break;
+            case 12:
+                rank = QUEEN;
+                break;
+            case 13:
+                rank = KING;
+                break;
+        }
+        return rank;
+    }
 }

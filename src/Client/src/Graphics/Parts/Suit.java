@@ -16,25 +16,23 @@ public enum Suit {
     }
 
     // Used to translate JSON data into Suit
-    Suit(String name) {
+    public static Suit getByName(String name) {
+        Suit suit = CLUBS;
         switch (name) {
             case "Hearts":
-                this.symbol = "♥";
-                this.color = "red";
+                suit = HEARTS;
                 break;
             case "Spades":
-                this.symbol = "♠";
-                this.color = "black";
+                suit = SPADES;
                 break;
             case "Clubs":
-                this.symbol = "♣";
-                this.color = "black";
+                suit = CLUBS;
                 break;
             case "Diamonds":
-                this.symbol = "♦";
-                this.color = "red";
+                suit = DIAMONDS;
                 break;
         }
+        return suit;
     }
 
 }
