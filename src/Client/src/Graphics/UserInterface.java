@@ -1,11 +1,14 @@
 package Graphics;
 
 import Graphics.Parts.*;
+import Models.OtherPlayer;
 import Models.Player;
 
 import javax.json.JsonObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserInterface {
 
@@ -53,7 +56,50 @@ public class UserInterface {
 
     public void update(JsonObject json) {
         // TODO: Pick apart json object, load into board/log, and call draw
+        gb.pot = json.getJsonNumber("pot").doubleValue();
 
+        // Assemble players cards
+        JsonObject playerHand = json.getJsonObject("playerHand");
+
+        JsonObject playerCard1 = playerHand.getJsonObject("card1");
+        JsonObject playerCard2 = playerHand.getJsonObject("card2");
+
+        Suit card1Suit = Suit.getByName(playerCard1.getJsonString("suit").getString());
+        Rank card1Rank = Rank.getByVal(playerCard1.getInt("value"));
+        Card card1 = new Card(card1Suit, card1Rank, false);
+
+        Suit card2Suit = Suit.getByName(playerCard2.getJsonString("suit").getString());
+        Rank card2Rank = Rank.getByVal(playerCard2.getInt("value"));
+        Card card2 = new Card(card2Suit, card2Rank, false);
+
+        // Create player hand
+        Player player = Player.getInstance();
+        player.hand = new Hand(card1, card2);
+
+        // TODO: Assemble other players
+        int numOfPlayers = json.getInt("numberOfPlayers");
+        List<OtherPlayer> otherPlayers = new ArrayList<>();
+        for (int i = 0; i < numOfPlayers; i++) {
+            otherPlayers.add(new OtherPlayer());
+        }
+
+        // Assemble House Hand
+        boolean initialBettingRound = json.getBoolean("initialBettingRound");
+
+        // If its not the initial betting round, don't render house cards
+        if (!initialBettingRound) {
+            int size = json.getInt("houseHandSize"); // Meant to limit loop
+            JsonObject houseHand = json.getJsonObject("houseHand");
+            Hand hand = new Hand();
+            for (int i = 1; i <= size; i++) {
+                JsonObject houseCard = houseHand.getJsonObject("card" + i);
+                Suit cardSuit = Suit.getByName(houseCard.getJsonString("suit").getString());
+                Rank cardRank = Rank.getByVal(houseCard.getInt("value"));
+                Card card = new Card(cardSuit, cardRank, false);
+                hand.addCard(card);
+            }
+            gb.communityCards = hand;
+        }
     }
 
     private void draw(GameBoard board, GameLog log) {
