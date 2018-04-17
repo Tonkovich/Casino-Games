@@ -43,6 +43,8 @@ public class Games {
     public void createPokerGame(JsonObject json) {
         Poker newGame = new Poker();
         int userID = json.getInt("userID");
+        newGame.smallBlind = json.getInt("smallBlind");
+        newGame.bigBlind = json.getInt("bigBlind");
 
 
         // We will use initialUserID for gameID because no one will ever have it and it's easy
