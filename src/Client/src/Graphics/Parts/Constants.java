@@ -24,19 +24,6 @@ public class Constants {
     public static final int CARD_BORDER_WIDTH = 2;
 
 
-    // Gameplay
-    //******************************
-    /**
-     * The number of chips each player begins with.
-     */
-    public static final int INITIAL_CHIPS = 1000;
-
-    /**
-     * The minimum bet when the game starts.
-     */
-    public static final int INITIAL_BIG_BLIND = INITIAL_CHIPS / 100;
-
-
     // Overall layout
     //******************************
     public static class ScreenLayout {

@@ -1,6 +1,7 @@
 package Graphics;
 
 import Graphics.Parts.*;
+import Models.OtherPlayer;
 import Models.Player;
 
 import java.awt.*;
@@ -14,10 +15,10 @@ import java.util.List;
 public class GameBoard implements Drawable {
 
     public Player human = Player.getInstance();
-    public List<Player> otherPlayers = new ArrayList<>();
+    public List<OtherPlayer> otherPlayers = new ArrayList<>();
     public Hand communityCards = new Hand();
-    public int bigBlind = Constants.INITIAL_BIG_BLIND;
-    public int smallBlind = Constants.INITIAL_BIG_BLIND / 2;
+    public int bigBlind = 0;
+    public int smallBlind = 0;
     public boolean isStarted;
     public double pot = 0;
     private Player p = Player.getInstance();
@@ -33,11 +34,11 @@ public class GameBoard implements Drawable {
         Point origin = new Point(col, row);
 
         // draw players
-        for (Player p : otherPlayers) {
+        for (OtherPlayer p : otherPlayers) {
             // TODO adjust constants for spacing of places
-            drawPlayer(console, p, origin, Constants.BoardLayout.BOT_NAME_AND_BET, Constants.BoardLayout.BOT_HAND);
+            // TODO put math here then add to constant and replace points
+            drawOtherPlayer(console, p, origin, Constants.BoardLayout.BOT_NAME_AND_BET, Constants.BoardLayout.BOT_HAND);
         }
-        //drawPlayer(console, bot, origin, Constants.BoardLayout.BOT_NAME_AND_BET, Constants.BoardLayout.BOT_HAND);
         drawPlayer(console, human, origin, Constants.BoardLayout.USER_NAME_AND_BET, Constants.BoardLayout.USER_HAND);
 
         // draw pile
@@ -49,10 +50,12 @@ public class GameBoard implements Drawable {
 
         // draw community cards
         position = getRelativePoint(origin, Constants.BoardLayout.COMMUNITY_CARDS);
-        communityCards.draw(console, position.y, position.x);
+
+        if (communityCards.getSize() != 0)
+            communityCards.draw(console, position.y, position.x);
 
         // draw pot & betting info
-        //drawInfoBox(console, origin, Constants.BoardLayout.BET_INFO_BOX);
+        drawInfoBox(console, origin, Constants.BoardLayout.BET_INFO_BOX);
     }
 
 
@@ -69,6 +72,10 @@ public class GameBoard implements Drawable {
         // draw bot hand
         Point handPosAbs = getRelativePoint(origin, handPos);
         player.hand.draw(console, handPosAbs.y, handPosAbs.x);
+    }
+
+    private void drawOtherPlayer(ConsoleHelper console, OtherPlayer player, Point origin, Point nameAndBetPos, Point handPos) {
+        // TODO draw other players
     }
 
     private void drawInfoBox(ConsoleHelper console, Point origin, Point position) {
