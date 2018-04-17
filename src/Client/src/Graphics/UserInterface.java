@@ -54,9 +54,15 @@ public class UserInterface {
         }
     }
 
+    /**
+     * Updates the entire GUI for any possible changes
+     *
+     * @param json GUI data
+     */
     public void update(JsonObject json) {
-        // TODO: Pick apart json object, load into board/log, and call draw
         gb.pot = json.getJsonNumber("pot").doubleValue();
+        gb.smallBlind = json.getInt("smallBlind");
+        gb.bigBlind = json.getInt("bigBlind");
 
         // Assemble players cards
         JsonObject playerHand = json.getJsonObject("playerHand");

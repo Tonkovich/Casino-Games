@@ -46,14 +46,11 @@ public class Poker implements CardGame {
         Initialize all player info
      */
     public void addPlayer(int userID, Player player) {
-        // TODO: Make max number of players 6
         Hand hand = new Hand(); // Create empty hand
         players.put(userID, player);
         setPlayerHand(hand, userID);
         turns.add(player);
         massSender(pm.addedToGame(player));
-
-        //updateClients();
     }
 
     /*
@@ -156,6 +153,7 @@ public class Poker implements CardGame {
 
         // TODO: Start game here!!!
         massSender(pm.gameStarted());
+        setGameReady();
     }
 
     public void drawNextCard() {
@@ -394,7 +392,8 @@ public class Poker implements CardGame {
     private void updateClients() {
         for (Integer i : playerHands.keySet()) {
             // players.size() - 1, subtract user being updated
-            String message = ui.updateClients(pot, playerHands.get(i), house, initialBettingRound, players.size() - 1);
+            String message = ui.updateClients(pot, playerHands.get(i), house, initialBettingRound
+                    , players.size() - 1, smallBlind, bigBlind);
             players.get(i).sendMessage(message);
         }
     }

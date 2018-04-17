@@ -66,6 +66,10 @@ public class GameMenu {
             System.out.println();
             System.out.print("Max Players: ");
             int maxPlayers = scan.nextInt();
+            if (maxPlayers > 4) {
+                System.out.println("Server only allows 4 max..setting to 4");
+                maxPlayers = 4;
+            }
             System.out.print("\nBig blind: ");
             int bigBlind = scan.nextInt();
             System.out.print("\nSmall blind: ");

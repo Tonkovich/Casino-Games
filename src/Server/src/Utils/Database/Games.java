@@ -72,7 +72,13 @@ public class Games {
 
     // Returns values to be used for listing all games
     public Set<Integer> getPokerGames() {
-        return pokerGames.keySet();
+        Set<Integer> allAvailableGames = pokerGames.keySet();
+        for (Integer i : allAvailableGames) {
+            if (pokerGames.get(i).players.size() == 4 || pokerGames.get(i).isGameReady()) {
+                allAvailableGames.remove(i);
+            }
+        }
+        return allAvailableGames;
     }
 
     public void closePokerGame(int gameID) {

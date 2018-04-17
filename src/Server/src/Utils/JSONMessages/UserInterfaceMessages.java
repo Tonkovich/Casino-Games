@@ -9,7 +9,8 @@ import javax.json.JsonObjectBuilder;
 
 public class UserInterfaceMessages {
 
-    public String updateClients(double pot, Hand pHand, Hand hHand, boolean initialBettingRound, int numOfPlayers) {
+    public String updateClients(double pot, Hand pHand, Hand hHand, boolean initialBettingRound
+            , int numOfPlayers, int smallBlind, int bigBlind) {
         Card card1 = pHand.getCards().get(0);
         Card card2 = pHand.getCards().get(1);
 
@@ -44,6 +45,8 @@ public class UserInterfaceMessages {
                 .add("houseHandSize", i)
                 .add("initialBettingRound", initialBettingRound)
                 .add("numberOfPlayers", numOfPlayers)
+                .add("bigBlind", bigBlind)
+                .add("smallBlind", smallBlind)
                 .build();
         return json.toString();
     }
