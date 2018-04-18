@@ -47,25 +47,29 @@ public class Games {
         int userID = json.getInt("userID");
         newGame.smallBlind = json.getInt("smallBlind");
         newGame.bigBlind = json.getInt("bigBlind");
+        newGame.maxSetPlayer = json.getInt("maxPlayers");
 
         newGame.addPlayer(userID, playerDB.getPlayer(userID));
 
         // We will use initialUserID for gameID because no one will ever have it and it's easy
         pokerGames.put(userID, newGame);
         log.info("New poker game created ID:" + userID);
-        playerDB.getPlayer(userID).sendMessage(gom.startGUI(userID));
+        //playerDB.getPlayer(userID).sendMessage(gom.startGUI(userID));
     }
 
     public void joinPokerGame(JsonObject json) {
         int gameID = json.getInt("gameID");
         int userID = json.getInt("userID");
 
-        Poker game = pokerGames.get(gameID);
+        try {
+            Poker game = pokerGames.get(gameID);
 
-        // Get user from PlayerDB
-        game.addPlayer(userID, playerDB.getPlayer(userID));
-        log.info(playerDB.getPlayer(userID).getUsername() + " joined game ID:" + gameID);
-        playerDB.getPlayer(userID).sendMessage(gom.startGUI(gameID));
+            // Get user from PlayerDB
+            game.addPlayer(userID, playerDB.getPlayer(userID));
+            log.info(playerDB.getPlayer(userID).getUsername() + " joined game ID:" + gameID);
+        } catch (NullPointerException ex) {
+
+        }
     }
 
     public void createSlotGame(int userID) {

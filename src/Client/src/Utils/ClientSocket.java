@@ -40,8 +40,8 @@ public class ClientSocket extends DatagramSocket {
     public String receiveMessage() {
         String message = "";
         try {
-            byte[] receiveBuffer = new byte[100];
-            DatagramPacket datagram = new DatagramPacket(receiveBuffer, 100);
+            byte[] receiveBuffer = new byte[2048]; // 2048 for large JSON data
+            DatagramPacket datagram = new DatagramPacket(receiveBuffer, 2048);
             this.receive(datagram);
             message = new String(receiveBuffer);
         } catch (IOException io) {
@@ -51,8 +51,8 @@ public class ClientSocket extends DatagramSocket {
     }
 
     public Message receiveMessageAndSender() throws IOException {
-        byte[] receiveBuffer = new byte[100];
-        DatagramPacket datagram = new DatagramPacket(receiveBuffer, 100);
+        byte[] receiveBuffer = new byte[2048];
+        DatagramPacket datagram = new DatagramPacket(receiveBuffer, 2048);
         this.receive(datagram);
         Message m = new Message();
         m.putVal(new String(receiveBuffer), datagram.getAddress(), datagram.getPort());

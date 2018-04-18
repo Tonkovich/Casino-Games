@@ -34,9 +34,10 @@ public class ParseFactory {
             // TODO: Send to gameLog
         } else if (json.getJsonString("startGUI") != null) {
             // Called once the server has confirmed the client is in the game
-            ui.start(json);
+            //ui.start(json);
 
         } else if (json.getJsonString("updateGUI") != null) {
+            System.out.println("Test");
             ui.update(json);
         }
 

@@ -9,6 +9,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 // TODO: Implement more input checks
@@ -18,26 +19,28 @@ public class GameMenu {
     private ClientSocket cs = ClientSocket.getInstance();
     private GameOptionMessage gmo = new GameOptionMessage();
     private static final Logger log = LogManager.getLogger(GameMenu.class);
+    private ArrayList<Integer> allGameIDs = new ArrayList<>();
 
     public void display() {
         // Fetch options and choose
-        String options = getOptions();
-        log.info(options);
+        getOptions();
     }
 
-    private String getOptions() {
+    private void getOptions() {
         Scanner scan = new Scanner(System.in);
         cs.sendMessage(gmo.gameOptionsSend());
         JsonReader jsonReader = Json.createReader(new StringReader(cs.receiveMessage()));
         JsonObject obj = jsonReader.readObject();
-        String options = "";
         if (obj.getJsonObject("available") != null) {
-            options = chooseOption(obj);
+            String options = chooseOption(obj);
             log.info(options);
-            log.info("Please enter the lobbies number to join: ");
+            log.info("Please enter the lobby's number to join: ");
             int option = scan.nextInt();
-            if (0 < option && option <= obj.getInt("size")) {
+            if (allGameIDs.contains(option)) {
                 joinGame(option);
+            } else {
+                // Incorrect choice
+                incorrectOption(obj);
             }
 
         } else if (obj.getString("createGame") != null) {
@@ -45,16 +48,18 @@ public class GameMenu {
             log.info("Would you like to create one? (y/n)");
             createGame();
         }
-
-        return options;
+        scan.close();
     }
 
     private String chooseOption(JsonObject obj) {
         String options = "";
         int size = obj.getInt("size");
+        JsonObject available = obj.getJsonObject("available");
+
         log.info("Available poker games\n");
-        for (int i = 1; i <= size; i++) {
-            options += i + ". Poker game\n";
+        for (int i = 0; i < size; i++) {
+            options += available.getInt("" + i) + ". Poker game\n";
+            allGameIDs.add(available.getInt("" + i));
         }
         return options;
     }
@@ -86,9 +91,25 @@ public class GameMenu {
             log.info("Incorrect entry: Try again");
             createGame();
         }
+        scan.close();
     }
 
     private void joinGame(int option) {
         cs.sendMessage(gmo.joinGame(option));
+    }
+
+    private void incorrectOption(JsonObject obj) {
+        Scanner scan = new Scanner(System.in);
+        log.info("Wrong selection try again: ");
+        String options = chooseOption(obj);
+        log.info(options);
+        int option = scan.nextInt();
+        if (allGameIDs.contains(option)) {
+            scan.close();
+            joinGame(option);
+        } else {
+            // Incorrect choice
+            incorrectOption(obj);
+        }
     }
 }

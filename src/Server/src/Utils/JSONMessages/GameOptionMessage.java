@@ -14,8 +14,11 @@ public class GameOptionMessage {
         if (gameIDs.size() != 0) {
 
             JsonObjectBuilder options = Json.createObjectBuilder();
-            for (Integer i : gameIDs) {
-                options.add("available" + i, i);
+
+            int i = 0;
+            for (Integer j : gameIDs) {
+                options.add("" + i, j);
+                i++;
             }
             json = Json.createObjectBuilder()
                     .add("gameOptions", "") // Serve as header
@@ -38,9 +41,5 @@ public class GameOptionMessage {
                 .add("smallBlind", smallBlind)
                 .add("bigBlind", bigBlind).build();
         return json.toString();
-    }
-
-    public String updateGUI() {
-        return null;
     }
 }

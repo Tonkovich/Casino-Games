@@ -9,7 +9,7 @@ public interface CardGame extends Game {
 
     void setPlayerHand(Hand playerCards, int userID);
 
-    void deal();
+    void deal(int userID);
 
     void drawNextCard();
 

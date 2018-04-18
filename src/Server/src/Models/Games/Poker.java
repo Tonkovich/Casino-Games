@@ -24,6 +24,7 @@ public class Poker implements CardGame {
     private int currentPosOfDealer;
     public int bigBlind;
     public int smallBlind;
+    public int maxSetPlayer;
     private HashMap<Integer, Hand> playerHands = new HashMap<>();
     public HashMap<Integer, Player> players = new LinkedHashMap<>();
     private UserInterfaceMessages ui = new UserInterfaceMessages();
@@ -51,9 +52,11 @@ public class Poker implements CardGame {
         players.put(userID, player);
         setPlayerHand(hand, userID);
         turns.add(player);
+        deal(userID);
         massSender(pm.addedToGame(player));
-        if (players.size() == 4)
+        if (players.size() == maxSetPlayer) {
             maxPlayers = true;
+        }
     }
 
     /*
@@ -142,15 +145,13 @@ public class Poker implements CardGame {
         }
     }
 
-    public void deal() {
-        initHouseCard(); // Start house cards
-        for (Hand h : playerHands.values()) {
-            for (int i = 0; i < 2; i++) { // Two cards: Texas Hold'em
-                Card c = deck.drawCard();
-                c.setIsPlayers(true);
-                h.addCard(c);
-            }
+    public void deal(int userID) {
+        for (int i = 0; i < 2; i++) { // Two cards: Texas Hold'em
+            Card c = deck.drawCard();
+            c.setIsPlayers(true);
+            playerHands.get(userID).addCard(c);
         }
+
         // Update all clients
         updateClients();
 

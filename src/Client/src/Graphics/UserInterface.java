@@ -28,33 +28,22 @@ public class UserInterface {
         return instance;
     }
 
-    public void start(JsonObject json) {
-        try {
-            console = new ConsoleHelper();
-            console.initialise();
-            console.clear();
-            gb.bigBlind = json.getInt("bigBlind");
-            gb.smallBlind = json.getInt("smallBlind");
+    /*public void start(JsonObject json) {
+        startConsole();
+        gb.bigBlind = json.getInt("bigBlind");
+        gb.smallBlind = json.getInt("smallBlind");
 
-            // Welcome message
-            log.add("Welcome to Texas Hold'em heads-up tournament style! We'll be");
-            log.add("playing by standard rules. ");
+        // Welcome message
+        log.add("Welcome to Texas Hold'em heads-up tournament style! We'll be");
+        log.add("playing by standard rules. ");
 
-            Hand blankHand = new Hand();
-            blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
-            blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
-            p.hand = blankHand;
+        Hand blankHand = new Hand();
+        blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
+        blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
+        p.hand = blankHand;
 
-            draw(gb, log);
-
-        } catch (UnsupportedEncodingException ex) {
-
-        } catch (InterruptedException ex) {
-
-        } catch (IOException ex) {
-
-        }
-    }
+        draw(gb, log);
+    }*/
 
     /**
      * Updates the entire GUI for any possible changes
@@ -62,6 +51,13 @@ public class UserInterface {
      * @param json GUI data
      */
     public void update(JsonObject json) {
+        // If update is called and client i
+        if (console == null) {
+            startConsole(); // If client is just joining, start first, then update
+            log.add("Welcome to Texas Hold'em heads-up tournament style! We'll be");
+            log.add("playing by standard rules. ");
+        }
+        console.clear();
         gb.pot = json.getJsonNumber("pot").doubleValue();
         gb.smallBlind = json.getInt("smallBlind");
         gb.bigBlind = json.getInt("bigBlind");
@@ -84,12 +80,18 @@ public class UserInterface {
         Player player = Player.getInstance();
         player.hand = new Hand(card1, card2);
 
-        // TODO: Assemble other players
+        // Assemble other players
         int numOfPlayers = json.getInt("numberOfPlayers");
         List<OtherPlayer> otherPlayers = new ArrayList<>();
         for (int i = 0; i < numOfPlayers; i++) {
             otherPlayers.add(new OtherPlayer());
+            Hand blankHand = new Hand();
+            blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
+            blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
+            otherPlayers.get(i).hand = blankHand;
         }
+
+        gb.otherPlayers = otherPlayers;
 
         // Assemble House Hand
         boolean initialBettingRound = json.getBoolean("initialBettingRound");
@@ -99,7 +101,7 @@ public class UserInterface {
             int size = json.getInt("houseHandSize"); // Meant to limit loop
             JsonObject houseHand = json.getJsonObject("houseHand");
             Hand hand = new Hand();
-            for (int i = 1; i <= size; i++) {
+            for (int i = 1; i < size; i++) {
                 JsonObject houseCard = houseHand.getJsonObject("card" + i);
                 Suit cardSuit = Suit.getByName(houseCard.getJsonString("suit").getString());
                 Rank cardRank = Rank.getByVal(houseCard.getInt("value"));
@@ -108,6 +110,7 @@ public class UserInterface {
             }
             gb.communityCards = hand;
         }
+        draw(gb, log);
     }
 
     private void draw(GameBoard board, GameLog log) {
@@ -116,6 +119,20 @@ public class UserInterface {
         log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
 
         console.setCursor(Constants.ScreenLayout.USER_INPUT);
+    }
+
+    private void startConsole() {
+        try {
+            console = new ConsoleHelper();
+            console.initialise();
+            console.clear();
+        } catch (UnsupportedEncodingException ex) {
+
+        } catch (InterruptedException ex) {
+
+        } catch (IOException ex) {
+
+        }
     }
 
 

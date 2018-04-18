@@ -21,7 +21,9 @@ public class UserInterfaceMessages {
         for (Card c : hHand.getCards()) {
             houseHand.add("card" + i, Json.createObjectBuilder()
                     .add("suit", c.getSuit().getName())
-                    .add("value", c.getCardValue().getVal())).build();
+                    .add("value", c.getCardValue().getVal())
+                    .build()
+            );
             i++;
         }
 
@@ -31,15 +33,11 @@ public class UserInterfaceMessages {
                 .add("playerHand", Json.createObjectBuilder()
                         .add("card1", Json.createObjectBuilder()
                                 .add("suit", card1.getSuit().getName())
-                                .add("value", card1.getCardValue().getVal())
-                                .build()
-                        )
-                        .add("card2", Json.createObjectBuilder()
+                                .add("value", card1.getCardValue().getVal()).build()
+                        ).add("card2", Json.createObjectBuilder()
                                 .add("suit", card2.getSuit().getName())
-                                .add("value", card2.getCardValue().getVal())
-                                .build()
-                        )
-                        .build()
+                                .add("value", card2.getCardValue().getVal()).build()
+                        ).build()
                 )
                 .add("houseHand", houseHand.build())
                 .add("houseHandSize", i)
@@ -48,6 +46,7 @@ public class UserInterfaceMessages {
                 .add("bigBlind", bigBlind)
                 .add("smallBlind", smallBlind)
                 .build();
+
         return json.toString();
     }
 }

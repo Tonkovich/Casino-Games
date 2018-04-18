@@ -1,10 +1,13 @@
 package Models;
 
+import Graphics.Parts.Hand;
+
 public class OtherPlayer {
     private double playerWallet = 0; // Should only set as zero on "new Models.Player()"
     private int userID;
     private double betAmount;
     private String username;
+    public Hand hand;
 
     public double getPlayerWallet() {
         return playerWallet;
