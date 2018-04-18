@@ -34,10 +34,10 @@ public class GameBoard implements Drawable {
         Point origin = new Point(col, row);
 
         // draw players
+        int i = 1; // multiplier to separate cards
         for (OtherPlayer p : otherPlayers) {
-            // TODO adjust constants for spacing of places
-            // TODO put math here then add to constant and replace points
-            drawOtherPlayer(console, p, origin, Constants.BoardLayout.BOT_NAME_AND_BET, Constants.BoardLayout.BOT_HAND);
+            drawOtherPlayer(console, p, origin, Constants.BoardLayout.BOT_NAME_AND_BET, Constants.BoardLayout.BOT_HAND, i);
+            i++;
         }
         drawPlayer(console, human, origin, Constants.BoardLayout.USER_NAME_AND_BET, Constants.BoardLayout.USER_HAND);
 
@@ -74,8 +74,21 @@ public class GameBoard implements Drawable {
         player.hand.draw(console, handPosAbs.y, handPosAbs.x);
     }
 
-    private void drawOtherPlayer(ConsoleHelper console, OtherPlayer player, Point origin, Point nameAndBetPos, Point handPos) {
-        // TODO draw other players
+    private void drawOtherPlayer(ConsoleHelper console, OtherPlayer player, Point origin, Point nameAndBetPos, Point handPos, int i) {
+        // draw bot name + bet
+        console.setCursor(getRelativePoint(origin, nameAndBetPos));
+        //console.out.print(player.getUsername()+ " bet $" + player.bet);
+
+        // draw bot hand
+        Point handPosAbs = getRelativePoint(origin, handPos);
+
+        if (i == 1) {
+            player.hand.draw(console, handPosAbs.y, handPosAbs.x);
+        } else if (i == 2) {
+            player.hand.draw(console, handPosAbs.y, handPosAbs.x + 22);
+        } else if (i == 3) {
+            player.hand.draw(console, handPosAbs.y, handPosAbs.x + 44);
+        }
     }
 
     private void drawInfoBox(ConsoleHelper console, Point origin, Point position) {
