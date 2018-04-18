@@ -54,8 +54,7 @@ public class UserInterface {
         // If update is called and client i
         if (console == null) {
             startConsole(); // If client is just joining, start first, then update
-            log.add("Welcome to Texas Hold'em heads-up tournament style! We'll be");
-            log.add("playing by standard rules. ");
+            log.add("Welcome to Texas Hold'em! Standard rules apply.");
         }
         console.clear();
         gb.pot = json.getJsonNumber("pot").doubleValue();
@@ -89,6 +88,44 @@ public class UserInterface {
             blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
             blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
             otherPlayers.get(i).hand = blankHand;
+        }
+
+        // Assemble their bets
+        JsonObject allBets = json.getJsonObject("playerBets");
+        int allBetsSize = json.getInt("playerBetsSize");
+        for (int i = 1; i <= allBetsSize; i++) {
+            if (i == 1) {
+                // Users bets
+                player.setCurrentBet(allBets.getJsonNumber("player1").doubleValue());
+            } else {
+                // Other players bets, i - 2 because loop above starts at 0
+                otherPlayers.get(i - 2).setCurrentBet(allBets.getJsonNumber("player" + i).doubleValue());
+            }
+        }
+
+        // Assemble their names
+        JsonObject allNames = json.getJsonObject("allUsernames");
+        for (int i = 1; i <= allBetsSize; i++) {
+            if (i == 1) {
+                // Users bets
+                player.setUsername(allNames.getJsonString("name1").getString());
+            } else {
+                // Other players bets, i - 2 because loop above starts at 0
+                otherPlayers.get(i - 2).setUsername(allNames.getJsonString("name" + i).getString());
+            }
+        }
+
+
+        // Assemble their wallets
+        JsonObject allWallets = json.getJsonObject("allWallets");
+        for (int i = 1; i <= allBetsSize; i++) {
+            if (i == 1) {
+                // Users bets
+                player.setPlayerWallet(allWallets.getJsonNumber("wallet1").doubleValue());
+            } else {
+                // Other players bets, i - 2 because loop above starts at 0
+                otherPlayers.get(i - 2).setPlayerWallet(allWallets.getJsonNumber("wallet" + i).doubleValue());
+            }
         }
 
         gb.otherPlayers = otherPlayers;

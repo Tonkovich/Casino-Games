@@ -67,7 +67,7 @@ public class GameBoard implements Drawable {
     private void drawPlayer(ConsoleHelper console, Player player, Point origin, Point nameAndBetPos, Point handPos) {
         // draw bot name + bet
         console.setCursor(getRelativePoint(origin, nameAndBetPos));
-        //console.out.print(player.getUsername()+ " bet $" + player.bet);
+        console.out.print("You bet $" + player.getCurrentBet());
 
         // draw bot hand
         Point handPosAbs = getRelativePoint(origin, handPos);
@@ -75,18 +75,47 @@ public class GameBoard implements Drawable {
     }
 
     private void drawOtherPlayer(ConsoleHelper console, OtherPlayer player, Point origin, Point nameAndBetPos, Point handPos, int i) {
-        // draw bot name + bet
-        console.setCursor(getRelativePoint(origin, nameAndBetPos));
-        //console.out.print(player.getUsername()+ " bet $" + player.bet);
 
-        // draw bot hand
         Point handPosAbs = getRelativePoint(origin, handPos);
 
         if (i == 1) {
+            Point newNameAndBetPost = nameAndBetPos.getLocation();
+            // Current bet amount
+            console.setCursor(getRelativePoint(origin, nameAndBetPos));
+            console.out.print(player.getUsername() + " bet $" + player.getBetAmount());
+            // Wallet
+            newNameAndBetPost.y += 1;
+            console.setCursor(getRelativePoint(origin, newNameAndBetPost));
+            console.out.print("Wallet $" + player.getPlayerWallet());
+
+            // Hand
             player.hand.draw(console, handPosAbs.y, handPosAbs.x);
         } else if (i == 2) {
+            Point newNameAndBetPost = nameAndBetPos.getLocation();
+            // Current bet amount
+            newNameAndBetPost.x += 22;
+            console.setCursor(getRelativePoint(origin, newNameAndBetPost));
+            console.out.print(player.getUsername() + " bet $" + player.getBetAmount());
+            // Wallet
+            newNameAndBetPost.y += 1;
+            console.setCursor(getRelativePoint(origin, newNameAndBetPost));
+            console.out.print("Wallet $" + player.getPlayerWallet());
+
+
+            // Hand
             player.hand.draw(console, handPosAbs.y, handPosAbs.x + 22);
         } else if (i == 3) {
+            Point newNameAndBetPost = nameAndBetPos.getLocation();
+            // Current bet amount
+            newNameAndBetPost.x += 44;
+            console.setCursor(getRelativePoint(origin, newNameAndBetPost));
+            console.out.print(player.getUsername() + " bet $" + player.getBetAmount());
+            // Wallet
+            newNameAndBetPost.y += 1;
+            console.setCursor(getRelativePoint(origin, newNameAndBetPost));
+            console.out.print("Wallet $" + player.getPlayerWallet());
+
+            // Hand
             player.hand.draw(console, handPosAbs.y, handPosAbs.x + 44);
         }
     }

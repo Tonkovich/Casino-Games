@@ -1,16 +1,18 @@
 package Utils.JSONMessages;
 
+import Models.Games.Player;
 import Models.Parts.CardGame.Card;
 import Models.Parts.CardGame.Hand;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import java.util.Collection;
 
 public class UserInterfaceMessages {
 
     public String updateClients(double pot, Hand pHand, Hand hHand, boolean initialBettingRound
-            , int numOfPlayers, int smallBlind, int bigBlind) {
+            , int numOfPlayers, int smallBlind, int bigBlind, Collection<Double> playerBets, Collection<Player> players) {
         Card card1 = pHand.getCards().get(0);
         Card card2 = pHand.getCards().get(1);
 
@@ -25,6 +27,29 @@ public class UserInterfaceMessages {
                     .build()
             );
             i++;
+        }
+
+        JsonObjectBuilder allPlayerBets = Json.createObjectBuilder();
+        int j = 1;
+        for (Double d : playerBets) {
+            allPlayerBets.add("player" + j, d);
+            j++;
+        }
+
+        JsonObjectBuilder allUsernames = Json.createObjectBuilder();
+
+        int k = 1;
+        for (Player p : players) {
+            allUsernames.add("name" + k, p.getUsername());
+            k++;
+        }
+
+        JsonObjectBuilder allWallets = Json.createObjectBuilder();
+
+        int w = 1;
+        for (Player p : players) {
+            allWallets.add("wallet" + w, p.getPlayerWallet());
+            w++;
         }
 
         JsonObject json = Json.createObjectBuilder()
@@ -45,6 +70,10 @@ public class UserInterfaceMessages {
                 .add("numberOfPlayers", numOfPlayers)
                 .add("bigBlind", bigBlind)
                 .add("smallBlind", smallBlind)
+                .add("playerBets", allPlayerBets.build())
+                .add("playerBetsSize", playerBets.size())
+                .add("allUsernames", allUsernames.build())
+                .add("allWallets", allWallets.build())
                 .build();
 
         return json.toString();

@@ -19,6 +19,7 @@ public class Player {
 
     private double playerWallet = 0; // Should only set as zero on "new Models.Player()"
     private int userID;
+    private double currentBet;
     private String username;
     public Hand hand;
 
@@ -44,6 +45,14 @@ public class Player {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public double getCurrentBet() {
+        return currentBet;
+    }
+
+    public void setCurrentBet(double amount) {
+        currentBet = amount;
     }
 
 }

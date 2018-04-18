@@ -15,7 +15,7 @@ public interface CardGame extends Game {
 
     double getPot();
 
-    void addToPot(double amount);
+    void addToPot(double amount, int userID);
 
     boolean isMoveAllowed(Player player);
 

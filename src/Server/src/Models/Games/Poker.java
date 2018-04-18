@@ -19,19 +19,20 @@ public class Poker implements CardGame {
     private boolean gameReady = false;
     public boolean maxPlayers = false;
     private boolean initialRound;
-    private boolean initialBettingRound;
+    private boolean initialBettingRound; // Same as initialRound?
     private String[] rolePositions;
     private int currentPosOfDealer;
     public int bigBlind;
     public int smallBlind;
     public int maxSetPlayer;
-    private HashMap<Integer, Hand> playerHands = new HashMap<>();
-    public HashMap<Integer, Player> players = new LinkedHashMap<>();
+    private HashMap<Integer, Hand> playerHands = new LinkedHashMap<>();
+    private HashMap<Integer, Double> playerBets = new LinkedHashMap<>();
+    public HashMap<Integer, Player> players = new LinkedHashMap<>(); // All linkedHashMap to ensure order on placement
     private UserInterfaceMessages ui = new UserInterfaceMessages();
     private Hand house;
     private PriorityQueue<Player> turns;
     private Deck deck;
-    private Timer timer;
+    private Timer timer; // TODO: Needed?? HeartBeat could solve this
     private PokerMessages pm;
 
     public Poker() {
@@ -50,6 +51,7 @@ public class Poker implements CardGame {
     public void addPlayer(int userID, Player player) {
         Hand hand = new Hand(); // Create empty hand
         players.put(userID, player);
+        playerBets.put(userID, 0.0); // Initialize bets
         setPlayerHand(hand, userID);
         turns.add(player);
         deal(userID);
@@ -64,7 +66,9 @@ public class Poker implements CardGame {
        Ex: Player decides to leave a Poker game after a round has finished.
     */
     public void removePlayer(int userID) {
-
+        /**
+         * If player it's player turn, remove, updateClients, next player, keep pot same, update left player in DB
+         */
     }
 
     public Player getPlayer(int userID) {
@@ -153,11 +157,9 @@ public class Poker implements CardGame {
         }
 
         // Update all clients
-        updateClients();
-
-        // TODO: Start game here!!!
-        massSender(pm.gameStarted());
         setGameReady();
+        updateClients();
+        massSender(pm.gameStarted());
     }
 
     public void drawNextCard() {
@@ -171,9 +173,10 @@ public class Poker implements CardGame {
         return pot;
     }
 
-    public void addToPot(double amount) {
+    public void addToPot(double amount, int userID) {
         pot += amount;
-        massSender(pm.addedToPot(amount, pot, turns.peek()));
+        playerBets.put(userID, playerBets.get(userID) + amount);
+        massSender(pm.addedToPot(amount, pot, players.get(userID)));
         prevBet = amount;
         updateClients();
     }
@@ -183,11 +186,12 @@ public class Poker implements CardGame {
     }
 
     public void fold(int userID) {
-        // TODO: Remove players hand and etc
+        // TODO: Is this really the right way?
         turns.remove();
         massSender(pm.userFold(players.get(userID).getUsername()));
     }
 
+    // TODO: Is this really needed?
     public boolean isMoveAllowed(Player player) {
         return (player.getUserID() == turns.peek().getUserID());
     }
@@ -228,8 +232,11 @@ public class Poker implements CardGame {
     }
 
     private void initHouseCard() {
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++) {
             house.addCard(deck.drawCard());
+        }
+        initialBettingRound = false;
+        updateClients();
     }
 
     public void getWinner() {
@@ -397,7 +404,7 @@ public class Poker implements CardGame {
         for (Integer i : playerHands.keySet()) {
             // players.size() - 1, subtract user being updated
             String message = ui.updateClients(pot, playerHands.get(i), house, initialBettingRound
-                    , players.size() - 1, smallBlind, bigBlind);
+                    , players.size() - 1, smallBlind, bigBlind, playerBets.values(), players.values());
             players.get(i).sendMessage(message);
         }
     }

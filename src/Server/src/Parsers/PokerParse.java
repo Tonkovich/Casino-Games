@@ -31,17 +31,16 @@ public class PokerParse {
         if (jo.getJsonObject("bet") != null) {
             JsonObject jo1 = jo.getJsonObject("bet");
             double amount = jo1.getJsonNumber("amount").doubleValue();
-            games.getPokerGame(gameID).addToPot(amount);
+            games.getPokerGame(gameID).addToPot(amount, userID);
         } else if (jo.getJsonObject("raise") != null) {
             JsonObject jo1 = jo.getJsonObject("raise");
             double amount = jo1.getJsonNumber("amount").doubleValue();
             if (games.getPokerGame(gameID).getPrevBet() != 0) {
                 double prevBet = games.getPokerGame(gameID).getPrevBet();
-                games.getPokerGame(gameID).addToPot(prevBet + amount);
+                games.getPokerGame(gameID).addToPot(prevBet + amount, userID);
             }
         } else if (jo.getJsonObject("fold") != null) {
             games.getPokerGame(gameID).fold(userID);
         }
-
     }
 }

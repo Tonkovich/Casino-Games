@@ -8,6 +8,7 @@ public class OtherPlayer {
     private double betAmount;
     private String username;
     public Hand hand;
+    private double currentBet;
 
     public double getPlayerWallet() {
         return playerWallet;
@@ -39,5 +40,13 @@ public class OtherPlayer {
 
     public double getBetAmount() {
         return betAmount;
+    }
+
+    public double getCurrentBet() {
+        return currentBet;
+    }
+
+    public void setCurrentBet(double amount) {
+        currentBet = amount;
     }
 }
