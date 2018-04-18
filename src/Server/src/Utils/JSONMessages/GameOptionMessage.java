@@ -1,5 +1,7 @@
 package Utils.JSONMessages;
 
+import Utils.Database.Games;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -28,9 +30,13 @@ public class GameOptionMessage {
         return json.toString();
     }
 
-    public String startGUI() {
+    public String startGUI(int gameID) {
+        int bigBlind = Games.getInstance().getPokerGame(gameID).bigBlind;
+        int smallBlind = Games.getInstance().getPokerGame(gameID).smallBlind;
         JsonObject json = Json.createObjectBuilder()
-                .add("startGUI", "starting GUI.").build();
+                .add("startGUI", "starting GUI.")
+                .add("smallBlind", smallBlind)
+                .add("bigBlind", bigBlind).build();
         return json.toString();
     }
 
