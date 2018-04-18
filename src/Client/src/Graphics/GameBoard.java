@@ -17,8 +17,8 @@ public class GameBoard implements Drawable {
     public Player human = Player.getInstance();
     public List<OtherPlayer> otherPlayers = new ArrayList<>();
     public Hand communityCards = new Hand();
-    public int bigBlind = 0;
-    public int smallBlind = 0;
+    public int bigBlind;
+    public int smallBlind;
     public boolean isStarted;
     public double pot = 0;
     private Player p = Player.getInstance();

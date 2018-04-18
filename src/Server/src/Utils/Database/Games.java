@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.json.JsonObject;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class Games {
@@ -42,15 +43,17 @@ public class Games {
 
     public void createPokerGame(JsonObject json) {
         Poker newGame = new Poker();
+
         int userID = json.getInt("userID");
         newGame.smallBlind = json.getInt("smallBlind");
         newGame.bigBlind = json.getInt("bigBlind");
 
+        newGame.addPlayer(userID, playerDB.getPlayer(userID));
 
         // We will use initialUserID for gameID because no one will ever have it and it's easy
         pokerGames.put(userID, newGame);
         log.info("New poker game created ID:" + userID);
-        playerDB.getPlayer(userID).sendMessage(gom.startGUI());
+        playerDB.getPlayer(userID).sendMessage(gom.startGUI(userID));
     }
 
     public void joinPokerGame(JsonObject json) {
@@ -60,9 +63,9 @@ public class Games {
         Poker game = pokerGames.get(gameID);
 
         // Get user from PlayerDB
-        pokerGames.get(gameID).addPlayer(userID, playerDB.getPlayer(userID));
+        game.addPlayer(userID, playerDB.getPlayer(userID));
         log.info(playerDB.getPlayer(userID).getUsername() + " joined game ID:" + gameID);
-        playerDB.getPlayer(userID).sendMessage(gom.startGUI());
+        playerDB.getPlayer(userID).sendMessage(gom.startGUI(gameID));
     }
 
     public void createSlotGame(int userID) {
@@ -72,10 +75,11 @@ public class Games {
 
     // Returns values to be used for listing all games
     public Set<Integer> getPokerGames() {
-        Set<Integer> allAvailableGames = pokerGames.keySet();
-        for (Integer i : allAvailableGames) {
-            if (pokerGames.get(i).players.size() == 4 || pokerGames.get(i).isGameReady()) {
-                allAvailableGames.remove(i);
+        Set<Integer> allGames = pokerGames.keySet();
+        Set<Integer> allAvailableGames = new LinkedHashSet<>();
+        for (Integer i : allGames) {
+            if (!pokerGames.get(i).maxPlayers) {
+                allAvailableGames.add(i);
             }
         }
         return allAvailableGames;

@@ -33,6 +33,8 @@ public class UserInterface {
             console = new ConsoleHelper();
             console.initialise();
             console.clear();
+            gb.bigBlind = json.getInt("bigBlind");
+            gb.smallBlind = json.getInt("smallBlind");
 
             // Welcome message
             log.add("Welcome to Texas Hold'em heads-up tournament style! We'll be");

@@ -34,6 +34,7 @@ public class GameMenu {
         if (obj.getJsonObject("available") != null) {
             options = chooseOption(obj);
             log.info(options);
+            log.info("Please enter the lobbies number to join: ");
             int option = scan.nextInt();
             if (0 < option && option <= obj.getInt("size")) {
                 joinGame(option);

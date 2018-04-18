@@ -17,6 +17,7 @@ public class Poker implements CardGame {
     private double pot;
     private double prevBet = 0;
     private boolean gameReady = false;
+    public boolean maxPlayers = false;
     private boolean initialRound;
     private boolean initialBettingRound;
     private String[] rolePositions;
@@ -51,6 +52,8 @@ public class Poker implements CardGame {
         setPlayerHand(hand, userID);
         turns.add(player);
         massSender(pm.addedToGame(player));
+        if (players.size() == 4)
+            maxPlayers = true;
     }
 
     /*
