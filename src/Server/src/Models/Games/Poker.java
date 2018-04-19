@@ -157,9 +157,7 @@ public class Poker implements CardGame {
         }
 
         // Update all clients
-        setGameReady();
         updateClients();
-        massSender(pm.gameStarted());
     }
 
     public void drawNextCard() {
@@ -404,9 +402,23 @@ public class Poker implements CardGame {
         for (Integer i : playerHands.keySet()) {
             // players.size() - 1, subtract user being updated
             String message = ui.updateClients(pot, playerHands.get(i), house, initialBettingRound
-                    , players.size() - 1, smallBlind, bigBlind, playerBets.values(), players.values());
+                    , players.size() - 1, smallBlind, bigBlind, playerBets.values(), players.values()
+                    , prevBet, players.keySet());
             players.get(i).sendMessage(message);
         }
+    }
+
+    /**
+     * Will send user requests to either (fold, check, or raise) or (fold, call, or raise)
+     * based off message used. See PokerMessages pokerAction type messages.
+     * <p>
+     * i.e Other user has bet, send call type. Or no one bet, send check type
+     *
+     * @param message pokerAction message
+     * @param userID  user receiving message
+     */
+    public void askPlayerForInput(String message, int userID) {
+        players.get(userID).sendMessage(message);
     }
 
 

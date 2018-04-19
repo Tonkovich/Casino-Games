@@ -26,8 +26,8 @@ public class GameBoard implements Drawable {
 
     private Card facedownCard = new Card(Suit.CLUBS, Rank.A, true);
 
-    public GameBoard(Player user) {
-        this.human = user;
+    GameBoard() {
+
     }
 
     public void draw(ConsoleHelper console, int row, int col) {

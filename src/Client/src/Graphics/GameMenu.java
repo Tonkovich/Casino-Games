@@ -17,6 +17,7 @@ import java.util.Scanner;
 public class GameMenu {
 
     private ClientSocket cs = ClientSocket.getInstance();
+    private UserInterface ui = UserInterface.getInstance();
     private GameOptionMessage gmo = new GameOptionMessage();
     private static final Logger log = LogManager.getLogger(GameMenu.class);
     private ArrayList<Integer> allGameIDs = new ArrayList<>();
@@ -38,6 +39,7 @@ public class GameMenu {
             int option = scan.nextInt();
             if (allGameIDs.contains(option)) {
                 joinGame(option);
+                ui.gameID = option;
             } else {
                 // Incorrect choice
                 incorrectOption(obj);

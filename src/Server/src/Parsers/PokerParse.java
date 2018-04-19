@@ -27,20 +27,25 @@ public class PokerParse {
     public void parse(JsonObject json) {
         int gameID = json.getInt("gameID");
         int userID = json.getInt("userID");
-        JsonObject jo = json.getJsonObject("action");
-        if (jo.getJsonObject("bet") != null) {
-            JsonObject jo1 = jo.getJsonObject("bet");
-            double amount = jo1.getJsonNumber("amount").doubleValue();
+        if (json.getJsonNumber("call") != null) {
+            double amount = json.getJsonNumber("call").doubleValue();
             games.getPokerGame(gameID).addToPot(amount, userID);
-        } else if (jo.getJsonObject("raise") != null) {
-            JsonObject jo1 = jo.getJsonObject("raise");
-            double amount = jo1.getJsonNumber("amount").doubleValue();
+        } else if (json.getJsonString("check") != null) {
+            // TODO: Just have respond, implement this
+        } else if (json.getJsonNumber("raise") != null) {
+            double amount = json.getJsonNumber("raise").doubleValue();
+
             if (games.getPokerGame(gameID).getPrevBet() != 0) {
                 double prevBet = games.getPokerGame(gameID).getPrevBet();
                 games.getPokerGame(gameID).addToPot(prevBet + amount, userID);
+            } else {
+                // First bet
+                games.getPokerGame(gameID).addToPot(amount, userID);
             }
-        } else if (jo.getJsonObject("fold") != null) {
+        } else if (json.getJsonString("fold") != null) {
             games.getPokerGame(gameID).fold(userID);
         }
+
+
     }
 }

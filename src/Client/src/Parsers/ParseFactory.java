@@ -27,17 +27,12 @@ public class ParseFactory {
 
     public void parse(JsonObject json) {
         if (json.getJsonString("gameOptions") != null) {
-            gm.display(); // TODO Should be changed
+            gm.display();
         } else if (json.getJsonString("pokerAction") != null) {
-            // TODO: Trigger user input, send to server, retrieve update
+            ui.getInput(json.getBoolean("otherUserBet"), json);
         } else if (json.getJsonString("pokerMessage") != null) {
-            // TODO: Send to gameLog
-        } else if (json.getJsonString("startGUI") != null) {
-            // Called once the server has confirmed the client is in the game
-            //ui.start(json);
-
+            ui.updateLog(json);
         } else if (json.getJsonString("updateGUI") != null) {
-            System.out.println("Test");
             ui.update(json);
         }
 

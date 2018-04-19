@@ -3,12 +3,16 @@ package Graphics;
 import Graphics.Parts.*;
 import Models.OtherPlayer;
 import Models.Player;
+import Utils.ClientSocket;
+import Utils.JSONMesssages.PokerActionMessage;
 
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserInterface {
 
@@ -16,7 +20,11 @@ public class UserInterface {
     private ConsoleHelper console;
     private GameLog log = new GameLog(5);
     private Player p = Player.getInstance();
-    private GameBoard gb = new GameBoard(Player.getInstance());
+    private GameBoard gb = new GameBoard();
+    private PokerActionMessage pm = new PokerActionMessage();
+    private ClientSocket cs = ClientSocket.getInstance();
+    public int gameID;
+    public double prevBet;
 
     private UserInterface() {
     }
@@ -27,23 +35,6 @@ public class UserInterface {
         }
         return instance;
     }
-
-    /*public void start(JsonObject json) {
-        startConsole();
-        gb.bigBlind = json.getInt("bigBlind");
-        gb.smallBlind = json.getInt("smallBlind");
-
-        // Welcome message
-        log.add("Welcome to Texas Hold'em heads-up tournament style! We'll be");
-        log.add("playing by standard rules. ");
-
-        Hand blankHand = new Hand();
-        blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
-        blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
-        p.hand = blankHand;
-
-        draw(gb, log);
-    }*/
 
     /**
      * Updates the entire GUI for any possible changes
@@ -60,6 +51,7 @@ public class UserInterface {
         gb.pot = json.getJsonNumber("pot").doubleValue();
         gb.smallBlind = json.getInt("smallBlind");
         gb.bigBlind = json.getInt("bigBlind");
+        prevBet = json.getJsonNumber("prevBet").doubleValue();
 
         // Assemble players cards
         JsonObject playerHand = json.getJsonObject("playerHand");
@@ -76,59 +68,60 @@ public class UserInterface {
         Card card2 = new Card(card2Suit, card2Rank, false);
 
         // Create player hand
-        Player player = Player.getInstance();
-        player.hand = new Hand(card1, card2);
+
+        p.hand = new Hand(card1, card2);
 
         // Assemble other players
+        JsonArray playerIDs = json.getJsonArray("playerIDs");
+
         int numOfPlayers = json.getInt("numberOfPlayers");
-        List<OtherPlayer> otherPlayers = new ArrayList<>();
-        for (int i = 0; i < numOfPlayers; i++) {
-            otherPlayers.add(new OtherPlayer());
-            Hand blankHand = new Hand();
-            blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
-            blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
-            otherPlayers.get(i).hand = blankHand;
+
+        Map<Integer, OtherPlayer> otherPlayers = new HashMap<>();
+
+        for (int i = 0; i < playerIDs.size(); i++) {
+            int j = playerIDs.getJsonNumber(i).intValue();
+            if (j != p.getUserID()) {
+                otherPlayers.put(j, new OtherPlayer());
+                otherPlayers.get(j).setUserID(j); // Assign userID
+
+                Hand blankHand = new Hand();
+                blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
+                blankHand.addCard(new Card(Suit.CLUBS, Rank.A, true));
+                otherPlayers.get(j).hand = blankHand;
+            }
         }
+        for (OtherPlayer p : otherPlayers.values()) {
+            System.out.println(p.getUsername() + " ");
+        }
+
 
         // Assemble their bets
         JsonObject allBets = json.getJsonObject("playerBets");
-        int allBetsSize = json.getInt("playerBetsSize");
-        for (int i = 1; i <= allBetsSize; i++) {
-            if (i == 1) {
-                // Users bets
-                player.setCurrentBet(allBets.getJsonNumber("player1").doubleValue());
-            } else {
-                // Other players bets, i - 2 because loop above starts at 0
-                otherPlayers.get(i - 2).setCurrentBet(allBets.getJsonNumber("player" + i).doubleValue());
-            }
+        for (OtherPlayer op : otherPlayers.values()) {
+            op.setCurrentBet(allBets.getJsonNumber("player" + op.getUserID()).doubleValue());
         }
+        p.setCurrentBet(allBets.getJsonNumber("player" + p.getUserID()).doubleValue());
+
+
 
         // Assemble their names
         JsonObject allNames = json.getJsonObject("allUsernames");
-        for (int i = 1; i <= allBetsSize; i++) {
-            if (i == 1) {
-                // Users bets
-                player.setUsername(allNames.getJsonString("name1").getString());
-            } else {
-                // Other players bets, i - 2 because loop above starts at 0
-                otherPlayers.get(i - 2).setUsername(allNames.getJsonString("name" + i).getString());
-            }
+        for (OtherPlayer op : otherPlayers.values()) {
+            op.setUsername(allNames.getJsonString("name" + op.getUserID()).getString());
         }
+        p.setUsername(allNames.getJsonString("name" + p.getUserID()).getString());
+
 
 
         // Assemble their wallets
         JsonObject allWallets = json.getJsonObject("allWallets");
-        for (int i = 1; i <= allBetsSize; i++) {
-            if (i == 1) {
-                // Users bets
-                player.setPlayerWallet(allWallets.getJsonNumber("wallet1").doubleValue());
-            } else {
-                // Other players bets, i - 2 because loop above starts at 0
-                otherPlayers.get(i - 2).setPlayerWallet(allWallets.getJsonNumber("wallet" + i).doubleValue());
-            }
+        for (OtherPlayer op : otherPlayers.values()) {
+            op.setPlayerWallet(allWallets.getJsonNumber("wallet" + op.getUserID()).doubleValue());
         }
+        p.setPlayerWallet(allWallets.getJsonNumber("wallet" + p.getUserID()).doubleValue());
 
-        gb.otherPlayers = otherPlayers;
+
+        gb.otherPlayers = new ArrayList<>(otherPlayers.values());
 
         // Assemble House Hand
         boolean initialBettingRound = json.getBoolean("initialBettingRound");
@@ -150,12 +143,80 @@ public class UserInterface {
         draw(gb, log);
     }
 
+    public void getInput(boolean otherUserBet, JsonObject json) {
+        checkInput(json, otherUserBet);
+    }
+
+
+    private void checkInput(JsonObject json, boolean otherUserBet) {
+
+        String newMessage = json.getString("pokerAction");
+        log.add(newMessage);
+
+        log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+
+        console.setCursor(Constants.ScreenLayout.USER_INPUT);
+        console.clearFromCursorLine();
+        console.out.print("> ");
+
+        String result = console.console.readLine();
+
+
+        if (result.trim().equalsIgnoreCase("f")) {
+            cs.sendMessage(pm.fold(gameID, p.getUserID()));
+        } else if (result.trim().equalsIgnoreCase("c") && otherUserBet) {
+            cs.sendMessage(pm.call(gameID, p.getUserID(), prevBet));
+
+        } else if (result.trim().equalsIgnoreCase("ch") && !otherUserBet) {
+            cs.sendMessage(pm.check(gameID, p.getUserID()));
+
+        } else if (result.trim().equalsIgnoreCase("r")) {
+            // Ask for amount and add to prevBet
+            log.add("How much?");
+            log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+            console.clearFromCursorLine();
+            console.out.print("> ");
+            String amount = console.console.readLine();
+            try {
+                double raise = Double.parseDouble(amount);
+                if (raise < 0 || raise == 0) {
+                    log.add("Incorrect Number: Try again");
+                    log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+                    checkInput(json, otherUserBet);
+                }
+                cs.sendMessage(pm.raise(gameID, p.getUserID(), raise + prevBet));
+            } catch (NumberFormatException ex) {
+                log.add("Incorrect Number: Try again");
+                log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+                checkInput(json, otherUserBet);
+            }
+        } else {
+            // Incorrect input, try again
+            log.add("Incorrect choice: Try again");
+            log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+            checkInput(json, otherUserBet);
+        }
+        console.clearFromCursorLine();
+        console.out.print("> ");
+    }
+
+
+
     private void draw(GameBoard board, GameLog log) {
         console.clear();
         board.draw(console, Constants.ScreenLayout.GAME_BOARD.y, Constants.ScreenLayout.GAME_BOARD.x);
         log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
-
         console.setCursor(Constants.ScreenLayout.USER_INPUT);
+    }
+
+    public void updateLog(JsonObject json) {
+        if (console == null) {
+            startConsole(); // If client is just joining, start first, then update
+            log.add("Welcome to Texas Hold'em! Standard rules apply.");
+        }
+        String newMessage = json.getString("pokerMessage");
+        log.add(newMessage);
+        log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
     }
 
     private void startConsole() {

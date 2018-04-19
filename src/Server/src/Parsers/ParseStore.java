@@ -31,7 +31,7 @@ public class ParseStore {
         if (json != null) {
 
             // Game actions input here
-            if (json.getJsonObject("gameAction") != null) {
+            if (json.getJsonString("gameAction") != null) {
                 switch (json.getString("gameType")) {
                     case "Poker":
                         pp.parse(json);

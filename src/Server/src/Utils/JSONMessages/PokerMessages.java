@@ -55,11 +55,11 @@ public class PokerMessages implements CardGameMessages {
         return json.toString();
     }
 
-    public String moveNotAllowed() {
-        JsonObject json = Json.createObjectBuilder()
-                .add("pokerMessage", "Move not allowed").build();
-        return json.toString();
-    }
+//    public String moveNotAllowed() {
+//        JsonObject json = Json.createObjectBuilder()
+//                .add("pokerMessage", "Move not allowed").build();
+//        return json.toString();
+//    }
 
     public String gameReady() {
         JsonObject json = Json.createObjectBuilder()
@@ -76,13 +76,27 @@ public class PokerMessages implements CardGameMessages {
 
     public String gameCompleted() {
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerMessage", "Round over: Play again(y/n)").build();
+                .add("pokerAction", "Round over: Play again(y/n)").build();
         return json.toString();
     }
 
     public String userFold(String name) {
         JsonObject json = Json.createObjectBuilder()
                 .add("pokerMessage", name + " folds.").build();
+        return json.toString();
+    }
+
+    public String betWithCheck() {
+        JsonObject json = Json.createObjectBuilder()
+                .add("pokerAction", "Do you want to (f)old or (ch)eck or (r)aise")
+                .add("otherUserBet", false).build();
+        return json.toString();
+    }
+
+    public String betWithCall() {
+        JsonObject json = Json.createObjectBuilder()
+                .add("pokerAction", "Do you want to (f)old or (c)all or (r)aise")
+                .add("otherUserBet", true).build();
         return json.toString();
     }
 }
