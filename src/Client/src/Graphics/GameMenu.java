@@ -1,5 +1,6 @@
 package Graphics;
 
+import Models.Player;
 import Utils.ClientSocket;
 import Utils.JSONMesssages.GameOptionMessage;
 import org.apache.logging.log4j.LogManager;
@@ -18,6 +19,7 @@ public class GameMenu {
 
     private ClientSocket cs = ClientSocket.getInstance();
     private UserInterface ui = UserInterface.getInstance();
+    private Player p = Player.getInstance();
     private GameOptionMessage gmo = new GameOptionMessage();
     private static final Logger log = LogManager.getLogger(GameMenu.class);
     private ArrayList<Integer> allGameIDs = new ArrayList<>();
@@ -35,14 +37,21 @@ public class GameMenu {
         if (obj.getJsonObject("available") != null) {
             String options = chooseOption(obj);
             log.info(options);
-            log.info("Please enter the lobby's number to join: ");
-            int option = scan.nextInt();
-            if (allGameIDs.contains(option)) {
-                joinGame(option);
-                ui.gameID = option;
-            } else {
-                // Incorrect choice
-                incorrectOption(obj);
+            log.info("Please enter the lobby's number to join or type 'c' to create: ");
+            String option = scan.nextLine();
+            if (!option.equalsIgnoreCase("c")) {
+                int optionInt = Integer.parseInt(option);
+                if (allGameIDs.contains(optionInt)) {
+                    joinGame(optionInt);
+                    ui.gameID = optionInt;
+                } else {
+                    // Incorrect choice
+                    incorrectOption(obj);
+                }
+            } else if (option.trim().equalsIgnoreCase("c")) {
+                log.info("Would you like to create one? (y/n)");
+                createGame();
+                ui.gameID = p.getUserID();
             }
 
         } else if (obj.getString("createGame") != null) {
@@ -85,6 +94,7 @@ public class GameMenu {
 
             log.info("Game being created, please wait...");
             cs.sendMessage(gmo.createGame(maxPlayers, bigBlind, smallBlind));
+            ui.gameID = p.getUserID();
         } else if (result.equalsIgnoreCase("n")) {
             // TODO Maybe make something that will go back to game menu and give a choice, but for no just exit
             log.info("Client logging off..");

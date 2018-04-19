@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.StringReader;
 
 
+
 public class Server {
     /**
      * The server class will be mainly responsible for interpreting incoming client messages and sending the data to the
@@ -22,14 +23,14 @@ public class Server {
      */
     private static final Logger log = LogManager.getLogger(Server.class);
 
-
     public static void main(String[] args) throws DatabaseException, IOException {
         log.info("------------------------");
         log.info("Server is starting...");
         ParseStore ps = ParseStore.getInstance();
 
         // Parse config
-        File file = new File("src/Server/config.json");
+        File file = new File("src/Server/src/config.json");
+
         String jsonConfig = FileUtils.readFileToString(file, "UTF-8");
         JsonReader configReader = Json.createReader(new StringReader(jsonConfig));
         JsonObject config = configReader.readObject();
@@ -64,4 +65,6 @@ public class Server {
             ex.printStackTrace();
         }
     }
+
+
 }

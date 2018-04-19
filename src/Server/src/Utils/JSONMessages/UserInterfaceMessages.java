@@ -12,7 +12,7 @@ public class UserInterfaceMessages {
 
     // TODO: Handle prev bet
     public String updateClients(double pot, Hand pHand, Hand hHand, boolean initialBettingRound
-            , int numOfPlayers, int smallBlind, int bigBlind, Collection<Double> playerBets, Collection<Player> players
+            , int smallBlind, int bigBlind, Collection<Double> playerBets, Collection<Player> players
             , double prevBet, Set<Integer> playerIDs) {
 
         Card card1 = pHand.getCards().get(0);
@@ -72,7 +72,6 @@ public class UserInterfaceMessages {
                 .add("houseHand", houseHand.build())
                 .add("houseHandSize", i)
                 .add("initialBettingRound", initialBettingRound)
-                .add("numberOfPlayers", numOfPlayers)
                 .add("bigBlind", bigBlind)
                 .add("smallBlind", smallBlind)
                 .add("playerBets", allPlayerBets.build())

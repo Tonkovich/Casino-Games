@@ -46,7 +46,8 @@ public class ParseStore {
             // Login player
             else if (json.getJsonObject("login") != null) {
                 ap.parse(json.getJsonObject("login"), ip, port);
-                //log.info("Login attempt by: " + ip);
+            } else if (json.getJsonObject("createAccount") != null) {
+                ap.createAccount(json.getJsonObject("createAccount"), ip, port);
             } else if (json.getJsonString("createGame") != null) {
                 gameDB.createPokerGame(json);
             } else if (json.getJsonString("joinGame") != null) {

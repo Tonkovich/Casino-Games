@@ -48,6 +48,8 @@ public class Games {
         newGame.smallBlind = json.getInt("smallBlind");
         newGame.bigBlind = json.getInt("bigBlind");
         newGame.maxSetPlayer = json.getInt("maxPlayers");
+        newGame.gameID = userID;
+        newGame.pt.setGameID(userID);
 
         newGame.addPlayer(userID, playerDB.getPlayer(userID));
 

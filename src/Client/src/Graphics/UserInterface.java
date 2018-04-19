@@ -74,8 +74,6 @@ public class UserInterface {
         // Assemble other players
         JsonArray playerIDs = json.getJsonArray("playerIDs");
 
-        int numOfPlayers = json.getInt("numberOfPlayers");
-
         Map<Integer, OtherPlayer> otherPlayers = new HashMap<>();
 
         for (int i = 0; i < playerIDs.size(); i++) {

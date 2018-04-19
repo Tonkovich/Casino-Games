@@ -32,7 +32,7 @@ public class PokerTest {
                 System.out.println("Comment out message sender to test.");
             }
 
-            poker.deal(); // Start game
+            //poker.deal(); // Start game
 
             poker.drawNextCard();
             poker.drawNextCard(); // River done

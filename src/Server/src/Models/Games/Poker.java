@@ -14,26 +14,29 @@ import java.util.*;
  */
 public class Poker implements CardGame {
 
+    // TODO: Make getters/setters for thread???
     private double pot;
+    public int gameID;
+    private Deck deck;
+    private Hand house;
+    public int bigBlind;
+    public int smallBlind;
+    public int maxSetPlayer;
+    private PokerMessages pm;
     private double prevBet = 0;
+    private String[] rolePositions;
+    private int currentPosOfDealer;
     private boolean gameReady = false;
     public boolean maxPlayers = false;
     private boolean initialRound;
     private boolean initialBettingRound; // Same as initialRound?
-    private String[] rolePositions;
-    private int currentPosOfDealer;
-    public int bigBlind;
-    public int smallBlind;
-    public int maxSetPlayer;
+    private PriorityQueue<Player> turns;
+    public PokerThread pt = new PokerThread();
     private HashMap<Integer, Hand> playerHands = new LinkedHashMap<>();
     private HashMap<Integer, Double> playerBets = new LinkedHashMap<>();
     public HashMap<Integer, Player> players = new LinkedHashMap<>(); // All linkedHashMap to ensure order on placement
     private UserInterfaceMessages ui = new UserInterfaceMessages();
-    private Hand house;
-    private PriorityQueue<Player> turns;
-    private Deck deck;
     private Timer timer; // TODO: Needed?? HeartBeat could solve this
-    private PokerMessages pm;
 
     public Poker() {
         deck = new Deck(); // Deck is loaded and shuffled
@@ -42,7 +45,8 @@ public class Poker implements CardGame {
         pm = new PokerMessages();
         initialRound = true;
         initialBettingRound = true;
-        //start(); // Start thread
+        Thread t = new Thread(new PokerThread());
+        t.start(); // Start thread
     }
 
     /*
@@ -402,7 +406,7 @@ public class Poker implements CardGame {
         for (Integer i : playerHands.keySet()) {
             // players.size() - 1, subtract user being updated
             String message = ui.updateClients(pot, playerHands.get(i), house, initialBettingRound
-                    , players.size() - 1, smallBlind, bigBlind, playerBets.values(), players.values()
+                    , smallBlind, bigBlind, playerBets.values(), players.values()
                     , prevBet, players.keySet());
             players.get(i).sendMessage(message);
         }
@@ -421,19 +425,4 @@ public class Poker implements CardGame {
         players.get(userID).sendMessage(message);
     }
 
-
-    //// IMPLEMENTATION CODE /////
-
-
-    public void start() {
-        boolean cont = true;
-        Thread t = new Thread(() -> {
-            while (cont) {
-                /**
-                 * GAME INSTANCE LOGIC HERE
-                 */
-            }
-        });
-        t.start();
-    }
 }

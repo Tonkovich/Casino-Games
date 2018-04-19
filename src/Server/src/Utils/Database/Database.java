@@ -79,4 +79,49 @@ public class Database {
                 .addParameter("ip", ip)
                 .executeUpdate();
     }
+
+    public void updateWallet(int userID, int amount) {
+        String sql = "UPDATE Players p SET p.wallet = :wallet WHERE p.user_id = :userID";
+        Connection con = sql2o.open();
+        con.createQuery(sql)
+                .addParameter("wallet", amount)
+                .addParameter("userID", userID)
+                .executeUpdate();
+    }
+
+    public void createAccount(String username, String password, String ip, int port, int heartBeatPort) {
+        String playerSQL = "INSERT INTO Players (username, password, wallet, ip) VALUES (:username, :password, :wallet, :ip)";
+        Player p = new Player();
+        if (!playerExists(username, password)) {
+            try (Connection con = sql2o.open()) {
+                con.createQuery(playerSQL)
+                        .addParameter("username", username)
+                        .addParameter("password", password)
+                        .addParameter("wallet", 300)
+                        .addParameter("ip", ip)
+                        .executeUpdate();
+
+            } catch (Exception e) {
+                e.getMessage();
+            }
+            loginPlayer(username, password, ip, port, heartBeatPort);
+        } else {
+            // Send message
+            p.setIPAddress(ip);
+            p.sendMessage(lm.incorrectLogin()); // Works as a rejection message
+        }
+    }
+
+    private boolean playerExists(String username, String password) {
+        String playerSQL = "SELECT username FROM Players p WHERE p.username = :username AND p.password = :password";
+        try (Connection con = sql2o.open()) {
+            List<Player> player = con.createQuery(playerSQL)
+                    .addParameter("username", username)
+                    .addParameter("password", password)
+                    .addColumnMapping("username", "username")
+                    .executeAndFetch(Player.class);
+
+            return !(player.isEmpty());
+        }
+    }
 }

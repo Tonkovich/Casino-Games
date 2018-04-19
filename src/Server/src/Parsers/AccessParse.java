@@ -25,4 +25,11 @@ public class AccessParse {
         int heartBeatPort = obj.getInt("heartBeatPort");
         db.loginPlayer(username, password, ip, port, heartBeatPort);
     }
+
+    public void createAccount(JsonObject obj, String ip, int port) {
+        String username = obj.getString("username");
+        String password = obj.getString("password");
+        int heartBeatPort = obj.getInt("heartBeatPort");
+        db.createAccount(username, password, ip, port, heartBeatPort);
+    }
 }

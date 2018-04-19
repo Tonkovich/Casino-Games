@@ -18,4 +18,16 @@ public class LoginMessages {
         return json.toString();
     }
 
+    public String createAccount(String username, String password, int heartBeatPort) {
+        JsonObject json = Json.createObjectBuilder()
+                .add("createAccount", Json.createObjectBuilder()
+                        .add("username", username)
+                        .add("password", password)
+                        .add("heartBeatPort", heartBeatPort)
+                        .build()
+                ).build();
+
+        return json.toString();
+    }
+
 }

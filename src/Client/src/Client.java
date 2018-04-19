@@ -60,16 +60,12 @@ public class Client {
             // Initial display of games to play
             menu.display();
 
-            // Start displaying menus
-            // TODO: Separate class and methods for exiting and etc
-
             while (true) {
                 // ReceiveMessage
                 String incoming = mySocket.receiveMessage();
                 JsonReader jsonReader = Json.createReader(new StringReader(incoming));
                 JsonObject json = jsonReader.readObject();
-
-                p.parse(json); // Interpret message
+                p.parse(json);
             }
         } catch (SocketException ex) {
             ex.printStackTrace();
