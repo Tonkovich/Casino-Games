@@ -18,13 +18,31 @@ public class PokerThread implements Runnable {
     @Override
     public void run() {
         pk = gameDB.getPokerGame(gameID);
-        while (true) {
-            /**
-             *
-             * Thread code here
-             *
-             *
-             */
+        initialBetting();
+        for (int i = 0; i < 3; i++) {
+            if (i != 0) {
+                betting();
+            }
+            nextRound();
         }
+        betting(); // All five cards down, final betting
+        completeGame();
     }
+
+    public void initialBetting() {
+
+    }
+
+    public void betting() {
+
+    }
+
+    public void nextRound() {
+
+    }
+
+    public void completeGame() {
+
+    }
+
 }

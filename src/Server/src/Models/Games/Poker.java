@@ -225,15 +225,11 @@ public class Poker implements CardGame {
         massSender(pm.gameCompleted());
     }
 
-
-    //// PRIVATE METHODS ////
-
-
     private void resetPot() {
         pot = 0;
     }
 
-    private void initHouseCard() {
+    public void initHouseCard() {
         for (int i = 0; i < 3; i++) {
             house.addCard(deck.drawCard());
         }
