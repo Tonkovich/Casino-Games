@@ -5,7 +5,7 @@ import Utils.Packet.ServerSocket;
 import java.io.IOException;
 import java.net.InetAddress;
 
-public class Player implements Comparable<Player> {
+public class Player {
     private ServerSocket socket = ServerSocket.getInstance();
     private double wallet = 0; // Should only set as zero on "new Player()"
     private String ip;
@@ -16,9 +16,6 @@ public class Player implements Comparable<Player> {
     private String playerRole;
 
     public double getPlayerWallet() {
-        /**
-         * Waiting until database is setup to figure out our process
-         */
         return wallet;
     }
 
@@ -86,7 +83,7 @@ public class Player implements Comparable<Player> {
         }
     }
 
-    public int compareTo(Player anotherPlayer) {
-        return userID - anotherPlayer.getUserID();
-    }
+//    public int compareTo(Player anotherPlayer) {
+//        return userID - anotherPlayer.getUserID();
+//    }
 }

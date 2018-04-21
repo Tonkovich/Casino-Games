@@ -8,6 +8,7 @@ import Utils.JSONMessages.PokerMessages;
 import Utils.JSONMessages.UserInterfaceMessages;
 
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * This class will hold all data and logic pertaining to the poker game
@@ -30,7 +31,7 @@ public class Poker implements CardGame {
     public boolean maxPlayers = false;
     private boolean initialRound;
     private boolean initialBettingRound; // Same as initialRound?
-    private PriorityQueue<Player> turns;
+    private ArrayBlockingQueue<Player> turns;
     public PokerThread pt = new PokerThread();
     private HashMap<Integer, Hand> playerHands = new LinkedHashMap<>();
     private HashMap<Integer, Double> playerBets = new LinkedHashMap<>();
@@ -40,7 +41,7 @@ public class Poker implements CardGame {
 
     public Poker() {
         deck = new Deck(); // Deck is loaded and shuffled
-        turns = new PriorityQueue<>(); // Will keep track of player turns
+        turns = new ArrayBlockingQueue<>(4); // Will keep track of player turns
         house = new Hand();
         pm = new PokerMessages();
         initialRound = true;
