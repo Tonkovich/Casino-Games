@@ -26,15 +26,15 @@ public class Poker implements CardGame {
     private PokerMessages pm;
     private double prevBet = 0;
     private String[] rolePositions;
-    private int currentPosOfDealer;
+    private int currentPosOfSmallBlind;
     private boolean gameReady = false;
     public boolean maxPlayers = false;
     private boolean initialRound;
     private boolean initialBettingRound; // Same as initialRound?
-    private ArrayBlockingQueue<Player> turns;
+    public ArrayBlockingQueue<Player> turns;
     public PokerThread pt = new PokerThread();
     private HashMap<Integer, Hand> playerHands = new LinkedHashMap<>();
-    private HashMap<Integer, Double> playerBets = new LinkedHashMap<>();
+    public HashMap<Integer, Double> playerBets = new LinkedHashMap<>();
     public HashMap<Integer, Player> players = new LinkedHashMap<>(); // All linkedHashMap to ensure order on placement
     private UserInterfaceMessages ui = new UserInterfaceMessages();
     private Timer timer; // TODO: Needed?? HeartBeat could solve this
@@ -89,17 +89,16 @@ public class Poker implements CardGame {
     public void initializeRoles() {
         int playersSize = players.size();
         rolePositions = new String[playersSize];
-        currentPosOfDealer = 0;
-        // Setting first 3 positions as their appropriate roles
-        rolePositions[currentPosOfDealer] = "Dealer";
-        rolePositions[currentPosOfDealer + 1] = "Small Blind";
-        rolePositions[currentPosOfDealer + 2] = "Big Blind";
+        currentPosOfSmallBlind = 0;
+        // Setting first 2 positions as their appropriate roles
+        rolePositions[currentPosOfSmallBlind] = "Small Blind";
+        rolePositions[currentPosOfSmallBlind + 1] = "Big Blind";
 
         // Setting remaining positions as having no role, if players still remain
         // Index starts at position after big blind
-        int nextPos = currentPosOfDealer + 3;
+        int nextPos = currentPosOfSmallBlind + 2;
         for (int i = nextPos; i < playersSize; i++) {
-            rolePositions[currentPosOfDealer + i] = "No Role";
+            rolePositions[currentPosOfSmallBlind + i] = "No Role";
         }
     }
 
@@ -113,26 +112,25 @@ public class Poker implements CardGame {
     public void shiftRoles() {
         int playersSize = players.size();
         // Shifting the position of roles in the array
-        rolePositions[(currentPosOfDealer + 1) % playersSize] = "Dealer";
-        rolePositions[(currentPosOfDealer + 2) % playersSize] = "Small Blind";
-        rolePositions[(currentPosOfDealer + 3) % playersSize] = "Big Blind";
+        rolePositions[(currentPosOfSmallBlind + 1) % playersSize] = "Small Blind";
+        rolePositions[(currentPosOfSmallBlind + 2) % playersSize] = "Big Blind";
 
         // Shifting remaining positions which are no role.
         // Index starts at position after big blind's newly shifted position
-        int nextPos = (currentPosOfDealer + 4) % playersSize;
+        int nextPos = (currentPosOfSmallBlind + 3) % playersSize;
         boolean isDone = false;
         while (!isDone) {
             // This conditional helps determine when to stop looping and setting No Role to players,
-            //  because the next element after nextPos will be the newly set Dealer so I don't want
-            //  to modify that one since it has just been changed to Dealer.
-            if (rolePositions[nextPos].equals("Dealer")) {
+            //  because the next element after nextPos will be the newly set Small Blind so I don't
+            //  want to modify that one since it has just been changed to Dealer.
+            if (rolePositions[nextPos].equals("Small Blind")) {
                 isDone = true;
             }
             rolePositions[nextPos] = "No Role";
             nextPos = (nextPos + 1) % playersSize;
         }
         // The position of the dealer has been shifted by one.
-        currentPosOfDealer = (currentPosOfDealer + 1) % playersSize;
+        currentPosOfSmallBlind = (currentPosOfSmallBlind + 1) % playersSize;
     }
 
     /*
