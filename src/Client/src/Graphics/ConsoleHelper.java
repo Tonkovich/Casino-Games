@@ -17,12 +17,12 @@ public class ConsoleHelper {
     /**
      * The console input stream.
      */
-    public final InputStream in;
+    public InputStream in;
 
     /**
      * The console output stream.
      */
-    public final PrintStream out;
+    public PrintStream out;
 
     // Private properties
     //******************************
@@ -72,7 +72,7 @@ public class ConsoleHelper {
      * @throws UnsupportedEncodingException The console doesn't support Unicode output.
      */
     public ConsoleHelper() throws UnsupportedEncodingException {
-        this.in = System.in;
+        //this.in = System.in;
         this.out = new PrintStream(System.out, true, "UTF-8");
         this.isWindows = System.getProperty("os.name").contains("Windows");
     }
@@ -85,8 +85,11 @@ public class ConsoleHelper {
      */
     public void initialise() throws IOException, InterruptedException {
         // switch console to Unicode
-        if (isWindows)
-            new ProcessBuilder("cmd", "/c", "chcp 65001").inheritIO().start().waitFor();
+        if (isWindows) {
+            Process process = new ProcessBuilder("cmd", "/c", "chcp 65001").inheritIO().start();
+            in = process.getInputStream();
+            process.waitFor();
+        }
     }
 
     /**

@@ -23,6 +23,6 @@ public interface CardGame extends Game {
 
     boolean isGameReady();
 
-    void completeRound();
+    void completeGame();
 
 }

@@ -17,7 +17,6 @@ public class Poker implements CardGame {
 
     // TODO: Make getters/setters for thread???
     private double pot;
-    public int gameID;
     private Deck deck;
     private Hand house;
     public int bigBlind;
@@ -30,24 +29,26 @@ public class Poker implements CardGame {
     private boolean gameReady = false;
     public boolean maxPlayers = false;
     private boolean initialRound;
+    public boolean gameDone = false;
     private boolean initialBettingRound; // Same as initialRound?
     public ArrayBlockingQueue<Player> turns;
-    public PokerThread pt = new PokerThread();
+    public PokerThread pt;
     private HashMap<Integer, Hand> playerHands = new LinkedHashMap<>();
     public HashMap<Integer, Double> playerBets = new LinkedHashMap<>();
     public HashMap<Integer, Player> players = new LinkedHashMap<>(); // All linkedHashMap to ensure order on placement
     private UserInterfaceMessages ui = new UserInterfaceMessages();
     private Timer timer; // TODO: Needed?? HeartBeat could solve this
+    private Thread t;
 
-    public Poker() {
+    public Poker(int gameID) {
         deck = new Deck(); // Deck is loaded and shuffled
         turns = new ArrayBlockingQueue<>(4); // Will keep track of player turns
         house = new Hand();
         pm = new PokerMessages();
         initialRound = true;
         initialBettingRound = true;
-        Thread t = new Thread(new PokerThread());
-        t.start(); // Start thread
+        t = new Thread(pt = new PokerThread(gameID));
+        //pt = new PokerThread(gameID);
     }
 
     /*
@@ -63,6 +64,7 @@ public class Poker implements CardGame {
         massSender(pm.addedToGame(player));
         if (players.size() == maxSetPlayer) {
             maxPlayers = true;
+            t.start();
         }
     }
 
@@ -165,7 +167,6 @@ public class Poker implements CardGame {
 
     public void drawNextCard() {
         deck.drawCard(); // Burn one card
-        massSender(pm.cardDrawn(deck.peek())); // Notify all
         house.addCard(deck.drawCard());
         updateClients();
     }
@@ -178,7 +179,15 @@ public class Poker implements CardGame {
         pot += amount;
         playerBets.put(userID, playerBets.get(userID) + amount);
         massSender(pm.addedToPot(amount, pot, players.get(userID)));
-        prevBet = amount;
+        if (amount > prevBet) {
+            // Raise
+            prevBet = amount - prevBet;
+        } else if (amount == prevBet) {
+            // Call
+            prevBet = amount;
+        } else {
+            // Only small blind will trigger else, just do nothing
+        }
         updateClients();
     }
 
@@ -215,13 +224,15 @@ public class Poker implements CardGame {
     }
 
     // Final game code
-    public void completeRound() {
+    public void completeGame() {
+        gameDone = true;
         getWinner();
         deck.clearDeck();
         resetPot();
 
         // Round over, play again?
         massSender(pm.gameCompleted());
+        updateClients(); // Also shows other players cards
     }
 
     private void resetPot() {
@@ -402,7 +413,7 @@ public class Poker implements CardGame {
             // players.size() - 1, subtract user being updated
             String message = ui.updateClients(pot, playerHands.get(i), house, initialBettingRound
                     , smallBlind, bigBlind, playerBets.values(), players.values()
-                    , prevBet, players.keySet());
+                    , prevBet, players.keySet(), gameDone, playerHands);
             players.get(i).sendMessage(message);
         }
     }

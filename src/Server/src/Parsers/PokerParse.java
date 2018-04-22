@@ -30,8 +30,10 @@ public class PokerParse {
         if (json.getJsonNumber("call") != null) {
             double amount = json.getJsonNumber("call").doubleValue();
             games.getPokerGame(gameID).addToPot(amount, userID);
+            games.getPokerGame(gameID).pt.responded = true;
         } else if (json.getJsonString("check") != null) {
             // TODO: Just have respond, implement this
+            games.getPokerGame(gameID).pt.responded = true;
         } else if (json.getJsonNumber("raise") != null) {
             double amount = json.getJsonNumber("raise").doubleValue();
 
@@ -42,8 +44,10 @@ public class PokerParse {
                 // First bet
                 games.getPokerGame(gameID).addToPot(amount, userID);
             }
+            games.getPokerGame(gameID).pt.responded = true;
         } else if (json.getJsonString("fold") != null) {
             games.getPokerGame(gameID).fold(userID);
+            games.getPokerGame(gameID).pt.responded = true;
         }
 
 

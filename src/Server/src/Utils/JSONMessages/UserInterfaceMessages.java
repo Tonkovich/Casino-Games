@@ -6,6 +6,7 @@ import Models.Parts.CardGame.Hand;
 
 import javax.json.*;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Set;
 
 public class UserInterfaceMessages {
@@ -13,7 +14,7 @@ public class UserInterfaceMessages {
     // TODO: Handle prev bet
     public String updateClients(double pot, Hand pHand, Hand hHand, boolean initialBettingRound
             , int smallBlind, int bigBlind, Collection<Double> playerBets, Collection<Player> players
-            , double prevBet, Set<Integer> playerIDs) {
+            , double prevBet, Set<Integer> playerIDs, boolean gameDone, HashMap<Integer, Hand> playerHands) {
 
         Card card1 = pHand.getCards().get(0);
         Card card2 = pHand.getCards().get(1);
@@ -57,6 +58,21 @@ public class UserInterfaceMessages {
             allWallets.add("wallet" + p.getUserID(), p.getPlayerWallet());
         }
 
+        JsonObjectBuilder finalCards = Json.createObjectBuilder();
+        for (Integer w : playerHands.keySet()) {
+            finalCards.add("player" + w, Json.createObjectBuilder()
+                    .add("card1", Json.createObjectBuilder()
+                            .add("suit", playerHands.get(w).getCards().get(0).getSuit().getName())
+                            .add("value", playerHands.get(w).getCards().get(0).getCardValue().getVal())
+                    )
+                    .add("card2", Json.createObjectBuilder()
+                            .add("suit", playerHands.get(w).getCards().get(1).getSuit().getName())
+                            .add("value", playerHands.get(w).getCards().get(1).getCardValue().getVal())
+                    )
+            );
+        }
+
+
         JsonObject json = Json.createObjectBuilder()
                 .add("updateGUI", "updating gui..")
                 .add("pot", pot)
@@ -79,6 +95,8 @@ public class UserInterfaceMessages {
                 .add("allWallets", allWallets.build())
                 .add("prevBet", prevBet)
                 .add("playerIDs", playerIDArray)
+                .add("gameDone", gameDone)
+                .add("otherPlayersHands", finalCards.build())
                 .build();
         return json.toString();
     }

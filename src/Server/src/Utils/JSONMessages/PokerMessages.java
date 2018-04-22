@@ -1,7 +1,6 @@
 package Utils.JSONMessages;
 
 import Models.Games.Player;
-import Models.Parts.CardGame.Card;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -49,18 +48,6 @@ public class PokerMessages implements CardGameMessages {
         return json.toString();
     }
 
-    public String cardDrawn(Card c) {
-        JsonObject json = Json.createObjectBuilder()
-                .add("pokerMessage", c.getCardValue().getVal() + " of " + c.getSuit().getVal()).build();
-        return json.toString();
-    }
-
-//    public String moveNotAllowed() {
-//        JsonObject json = Json.createObjectBuilder()
-//                .add("pokerMessage", "Move not allowed").build();
-//        return json.toString();
-//    }
-
     public String gameReady() {
         JsonObject json = Json.createObjectBuilder()
                 .add("pokerMessage", "Game ready!\nGame starting...").build();
@@ -69,14 +56,14 @@ public class PokerMessages implements CardGameMessages {
 
     public String addedToPot(double amount, double pot, Player player) {
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerMessage", player.getUsername() + " added " + amount
-                        + " to the pot, Current: " + pot).build();
+                .add("pokerMessage", player.getUsername() + " added " + amount + " to the pot.").build();
         return json.toString();
     }
 
     public String gameCompleted() {
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerAction", "Round over: Play again(y/n)").build();
+                .add("pokerAction", "Round over: Play again(y/n)")
+                .add("otherUserBet", false).build();
         return json.toString();
     }
 

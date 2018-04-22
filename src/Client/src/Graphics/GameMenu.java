@@ -59,7 +59,7 @@ public class GameMenu {
             log.info("Would you like to create one? (y/n)");
             createGame();
         }
-        scan.close();
+        //scan.close();
     }
 
     private String chooseOption(JsonObject obj) {
@@ -103,7 +103,7 @@ public class GameMenu {
             log.info("Incorrect entry: Try again");
             createGame();
         }
-        scan.close();
+        //scan.close();
     }
 
     private void joinGame(int option) {
@@ -123,5 +123,6 @@ public class GameMenu {
             // Incorrect choice
             incorrectOption(obj);
         }
+        //scan.close();
     }
 }

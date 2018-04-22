@@ -8,7 +8,9 @@ import Utils.JSONMesssages.PokerActionMessage;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,7 +120,6 @@ public class UserInterface {
         }
         p.setPlayerWallet(allWallets.getJsonNumber("wallet" + p.getUserID()).doubleValue());
 
-
         gb.otherPlayers = new ArrayList<>(otherPlayers.values());
 
         // Assemble House Hand
@@ -138,6 +139,37 @@ public class UserInterface {
             }
             gb.communityCards = hand;
         }
+
+        // Final card flop at end of game
+        // TODO: Not secure and client probably shouldn't see this but crunched on time weeeeeeeeeeeeeeeeeeeeeeeeee
+
+        boolean gameDone = json.getBoolean("gameDone");
+        if (gameDone) {
+            JsonObject allCards = json.getJsonObject("otherPlayersHands");
+            for (int i = 0; i < playerIDs.size(); i++) {
+                int j = playerIDs.getJsonNumber(i).intValue();
+                if (j != p.getUserID()) {
+                    Hand newHand = new Hand();
+
+                    JsonObject incomingHand = allCards.getJsonObject("player" + j);
+
+                    JsonObject newCard1 = incomingHand.getJsonObject("card1");
+                    Suit newSuit1 = Suit.getByName(newCard1.getString("suit"));
+                    Rank newRank1 = Rank.getByVal(newCard1.getInt("value"));
+
+                    JsonObject newCard2 = incomingHand.getJsonObject("card2");
+                    Suit newSuit2 = Suit.getByName(newCard2.getString("suit"));
+                    Rank newRank2 = Rank.getByVal(newCard2.getInt("value"));
+
+                    newHand.addCard(new Card(newSuit1, newRank1, false));
+                    newHand.addCard(new Card(newSuit2, newRank2, false));
+
+
+                    otherPlayers.get(j).hand = newHand;
+                }
+            }
+        }
+
         draw(gb, log);
     }
 
@@ -147,7 +179,8 @@ public class UserInterface {
 
 
     private void checkInput(JsonObject json, boolean otherUserBet) {
-
+        InputStreamReader is = new InputStreamReader(System.in);
+        BufferedReader br = new BufferedReader(is);
         String newMessage = json.getString("pokerAction");
         log.add(newMessage);
 
@@ -156,9 +189,12 @@ public class UserInterface {
         console.setCursor(Constants.ScreenLayout.USER_INPUT);
         console.clearFromCursorLine();
         console.out.print("> ");
+        String result = "";
+        try {
+            result = br.readLine();
+        } catch (IOException ex) {
 
-        String result = console.console.readLine();
-
+        }
 
         if (result.trim().equalsIgnoreCase("f")) {
             cs.sendMessage(pm.fold(gameID, p.getUserID()));
@@ -174,14 +210,22 @@ public class UserInterface {
             log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
             console.clearFromCursorLine();
             console.out.print("> ");
-            String amount = console.console.readLine();
+            String amount = "";
+            try {
+                amount = br.readLine();
+            } catch (IOException ex) {
+
+            }
+
             try {
                 double raise = Double.parseDouble(amount);
-                if (raise < 0 || raise == 0) {
+                boolean insufficientFunds = !((raise + p.getPlayerWallet()) > p.getPlayerWallet());
+                if (raise < 0 || raise == 0 || insufficientFunds) {
                     log.add("Incorrect Number: Try again");
                     log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
                     checkInput(json, otherUserBet);
                 }
+                // TODO If raise == wallet, send all in message instead
                 cs.sendMessage(pm.raise(gameID, p.getUserID(), raise + prevBet));
             } catch (NumberFormatException ex) {
                 log.add("Incorrect Number: Try again");
@@ -196,6 +240,7 @@ public class UserInterface {
         }
         console.clearFromCursorLine();
         console.out.print("> ");
+        //scan.close();
     }
 
 

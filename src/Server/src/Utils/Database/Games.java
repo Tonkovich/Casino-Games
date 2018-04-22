@@ -42,14 +42,12 @@ public class Games {
 
 
     public void createPokerGame(JsonObject json) {
-        Poker newGame = new Poker();
-
         int userID = json.getInt("userID");
+        Poker newGame = new Poker(userID);
+
         newGame.smallBlind = json.getInt("smallBlind");
         newGame.bigBlind = json.getInt("bigBlind");
         newGame.maxSetPlayer = json.getInt("maxPlayers");
-        newGame.gameID = userID;
-        newGame.pt.setGameID(userID);
 
         newGame.addPlayer(userID, playerDB.getPlayer(userID));
 
