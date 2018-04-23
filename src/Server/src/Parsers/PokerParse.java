@@ -31,22 +31,17 @@ public class PokerParse {
         int userID = json.getInt("userID");
         if (json.getJsonString("call") != null) {
             games.getPokerGame(gameID).addToPotCall(userID);
-            games.getPokerGame(gameID).pt.responded = true;
             // TODO Possibly move responded on success of add to pot, or isAllowed()
         } else if (json.getJsonString("check") != null) {
-            games.getPokerGame(gameID).pt.responded = true;
             games.getPokerGame(gameID).check();
         } else if (json.getJsonNumber("raise") != null) {
             double amount = json.getJsonNumber("raise").doubleValue();
             games.getPokerGame(gameID).addToPotRaise(amount, userID);
-            games.getPokerGame(gameID).pt.responded = true;
         } else if (json.getJsonString("fold") != null) {
             games.getPokerGame(gameID).fold(userID);
-            games.getPokerGame(gameID).pt.responded = true;
         } else if (json.getJsonNumber("bet") != null) {
             double amount = json.getJsonNumber("bet").doubleValue();
             games.getPokerGame(gameID).addToPotBet(amount, userID);
-            games.getPokerGame(gameID).pt.responded = true;
         } else if (json.getBoolean("readyUp")) {
             players.getPlayer(userID).setReady(json.getBoolean("readyUp"));
         }

@@ -24,9 +24,6 @@ public class Poker implements CardGame {
     public int smallBlind;
     public int maxSetPlayer;
     private PokerMessages pm;
-    private double prevBet = 0;
-    private int currentUser = 0;
-    private boolean initialBet = true;
     private String[] rolePositions;
     public boolean gameDone = false;
     private boolean gameReady = false;
@@ -37,10 +34,11 @@ public class Poker implements CardGame {
     public LinkedList<Player> turns;
     public Database db = Database.getInstance();
     private HashMap<Integer, Hand> playerHands = new LinkedHashMap<>();
-    public HashMap<Integer, Double> playerBets = new LinkedHashMap<>();
+    public Map<Integer, Double> playerBets = Collections.synchronizedMap(new LinkedHashMap<>());
     public HashMap<Integer, Player> players = new LinkedHashMap<>(); // All linkedHashMap to ensure order on placement
     private UserInterfaceMessages ui = new UserInterfaceMessages();
     private Thread t;
+    private int gameID;
 
     public Poker(int gameID) {
         deck = new Deck(); // Deck is loaded and shuffled
@@ -50,6 +48,7 @@ public class Poker implements CardGame {
         initialRound = true;
         initialBettingRound = true;
         t = new Thread(pt = new PokerThread(gameID));
+        this.gameID = gameID;
     }
 
     /*
@@ -193,6 +192,7 @@ public class Poker implements CardGame {
         players.get(userID).setPlayerWallet(players.get(userID).getPlayerWallet() - callAmount);
 
         massSender(pm.addedToPot(callAmount, pot, players.get(userID)));
+        pt.responded = true;
         updateClients();
     }
 
@@ -212,6 +212,7 @@ public class Poker implements CardGame {
         playerBets.put(userID, playerBets.get(userID) + raiseAmount);
         massSender(pm.addedToPot(raiseAmount, pot, players.get(userID)));
         players.get(userID).setPlayerWallet(players.get(userID).getPlayerWallet() - raiseAmount);
+        pt.responded = true;
         updateClients();
     }
 
@@ -223,15 +224,12 @@ public class Poker implements CardGame {
         p.setPlayerWallet(p.getPlayerWallet() - amount); // Adjust their wallet
 
         massSender(pm.addedToPot(amount, pot, players.get(userID))); // Send message
+        pt.responded = true;
         updateClients(); // Update all clients
     }
 
-    public double getPrevBet() {
-        return prevBet;
-    }
-
     public void check() {
-        currentUser++;
+        pt.responded = true;
         updateClients();
     }
 
@@ -239,6 +237,7 @@ public class Poker implements CardGame {
         // TODO: Is this really the right way?
         turns.remove();
         massSender(pm.userFold(players.get(userID).getUsername()));
+        pt.responded = true;
         updateClients();
     }
 
@@ -275,8 +274,6 @@ public class Poker implements CardGame {
         gameDone = false;
         initialRound = true;
         initialBettingRound = true;
-        initialBet = true;
-        prevBet = 0;
         deck = new Deck(); // Deck is loaded and shuffled
         resetPot();
         house = new Hand();
@@ -285,7 +282,9 @@ public class Poker implements CardGame {
             deal(p.getUserID());
             playerBets.put(p.getUserID(), 0.0);
         }
-        currentUser = 0;
+        pt = new PokerThread(gameID);
+        t = new Thread(pt);
+        t.start();
         updateClients();
     }
 
@@ -475,7 +474,7 @@ public class Poker implements CardGame {
             // players.size() - 1, subtract user being updated
             String message = ui.updateClients(pot, playerHands.get(i), house, initialBettingRound
                     , smallBlind, bigBlind, playerBets.values(), players.values()
-                    , prevBet, players.keySet(), gameDone, playerHands);
+                    , 0.0, players.keySet(), gameDone, playerHands);
             players.get(i).sendMessage(message);
         }
     }

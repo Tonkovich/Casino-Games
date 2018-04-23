@@ -22,25 +22,22 @@ public class PokerThread implements Runnable {
     @Override
     public void run() {
         pk = gameDB.getPokerGame(gameID);
-        while (true) {
-            //checkIfAllReady(); // This will pause game until all players ready
-            applyBlinds();
-            for (int i = 0; i < 3; i++) {
-                betting();
-                if (i != 0) {
-                    nextRound();
-                } else {
-                    pk.initHouseCard();
-                }
-            }
-            betting(); // All five cards down, final betting
-            pk.completeGame();
-            if (checkIfAllReady()) {
-                pk.startNewGame();
+        //checkIfAllReady(); // This will pause game until all players ready
+        applyBlinds();
+        for (int i = 0; i < 3; i++) {
+            betting();
+            if (i != 0) {
+                nextRound();
             } else {
-                pk.exitGame();
-                break;
+                pk.initHouseCard();
             }
+        }
+        betting(); // All five cards down, final betting
+        pk.completeGame();
+        if (checkIfAllReady()) {
+            pk.startNewGame();
+        } else {
+            pk.exitGame();
         }
     }
 
@@ -63,10 +60,13 @@ public class PokerThread implements Runnable {
                 pk.askPlayerForInput(pm.betWithCall(), i);
                 responded = false;
                 // TODO: start time
-            } else {
+            } else if (pk.playerBets.get(i) == maxBet) {
                 pk.askPlayerForInput(pm.betWithCheck(), i);
                 responded = false;
                 // TODO: start time
+            } else {
+                pk.askPlayerForInput(pm.betWithCheck(), i);
+                responded = false;
             }
             while (!responded) {
                 // loop used to wait for response
