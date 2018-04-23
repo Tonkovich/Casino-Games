@@ -4,11 +4,11 @@ import Models.Parts.CardGame.Card;
 import Models.Parts.CardGame.Deck;
 import Models.Parts.CardGame.Hand;
 import Models.Parts.CardGame.Ranking.EvaluateHand;
+import Utils.Database.Database;
 import Utils.JSONMessages.PokerMessages;
 import Utils.JSONMessages.UserInterfaceMessages;
 
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * This class will hold all data and logic pertaining to the poker game
@@ -20,35 +20,36 @@ public class Poker implements CardGame {
     private Deck deck;
     private Hand house;
     public int bigBlind;
+    public PokerThread pt;
     public int smallBlind;
     public int maxSetPlayer;
     private PokerMessages pm;
     private double prevBet = 0;
+    private int currentUser = 0;
+    private boolean initialBet = true;
     private String[] rolePositions;
-    private int currentPosOfSmallBlind;
+    public boolean gameDone = false;
     private boolean gameReady = false;
     public boolean maxPlayers = false;
+    private int currentPosOfSmallBlind;
     private boolean initialRound;
-    public boolean gameDone = false;
     private boolean initialBettingRound; // Same as initialRound?
-    public ArrayBlockingQueue<Player> turns;
-    public PokerThread pt;
+    public LinkedList<Player> turns;
+    public Database db = Database.getInstance();
     private HashMap<Integer, Hand> playerHands = new LinkedHashMap<>();
     public HashMap<Integer, Double> playerBets = new LinkedHashMap<>();
     public HashMap<Integer, Player> players = new LinkedHashMap<>(); // All linkedHashMap to ensure order on placement
     private UserInterfaceMessages ui = new UserInterfaceMessages();
-    private Timer timer; // TODO: Needed?? HeartBeat could solve this
     private Thread t;
 
     public Poker(int gameID) {
         deck = new Deck(); // Deck is loaded and shuffled
-        turns = new ArrayBlockingQueue<>(4); // Will keep track of player turns
+        turns = new LinkedList<>(); // Will keep track of player turns
         house = new Hand();
         pm = new PokerMessages();
         initialRound = true;
         initialBettingRound = true;
         t = new Thread(pt = new PokerThread(gameID));
-        //pt = new PokerThread(gameID);
     }
 
     /*
@@ -64,7 +65,7 @@ public class Poker implements CardGame {
         massSender(pm.addedToGame(player));
         if (players.size() == maxSetPlayer) {
             maxPlayers = true;
-            t.start();
+            t.start(); // TODO: Remove will be replaced with checkIfReady method in thread
         }
     }
 
@@ -93,8 +94,8 @@ public class Poker implements CardGame {
         rolePositions = new String[playersSize];
         currentPosOfSmallBlind = 0;
         // Setting first 2 positions as their appropriate roles
-        rolePositions[currentPosOfSmallBlind] = "Small Blind";
-        rolePositions[currentPosOfSmallBlind + 1] = "Big Blind";
+        rolePositions[currentPosOfSmallBlind] = "Big Blind";
+        rolePositions[currentPosOfSmallBlind + 1] = "Small Blind";
 
         // Setting remaining positions as having no role, if players still remain
         // Index starts at position after big blind
@@ -114,8 +115,8 @@ public class Poker implements CardGame {
     public void shiftRoles() {
         int playersSize = players.size();
         // Shifting the position of roles in the array
-        rolePositions[(currentPosOfSmallBlind + 1) % playersSize] = "Small Blind";
-        rolePositions[(currentPosOfSmallBlind + 2) % playersSize] = "Big Blind";
+        rolePositions[(currentPosOfSmallBlind + 1) % playersSize] = "Big Blind";
+        rolePositions[(currentPosOfSmallBlind + 2) % playersSize] = "Small Blind";
 
         // Shifting remaining positions which are no role.
         // Index starts at position after big blind's newly shifted position
@@ -175,35 +176,70 @@ public class Poker implements CardGame {
         return pot;
     }
 
-    public void addToPot(double amount, int userID) {
-        pot += amount;
-        playerBets.put(userID, playerBets.get(userID) + amount);
-        massSender(pm.addedToPot(amount, pot, players.get(userID)));
-        if (amount > prevBet) {
-            // Raise
-            prevBet = amount - prevBet;
-        } else if (amount == prevBet) {
-            // Call
-            prevBet = amount;
-        } else {
-            // Only small blind will trigger else, just do nothing
+    public void addToPotCall(int userID) {
+
+        // Find the amount to substract
+        double maxBet = 0;
+        for (Double j : playerBets.values()) {
+            maxBet = j > maxBet ? j : maxBet;
         }
+
+        double currentPlayerBet = playerBets.get(userID);
+        double callAmount = maxBet - currentPlayerBet;
+
+
+        pot += callAmount;
+        playerBets.put(userID, playerBets.get(userID) + callAmount);
+        players.get(userID).setPlayerWallet(players.get(userID).getPlayerWallet() - callAmount);
+
+        massSender(pm.addedToPot(callAmount, pot, players.get(userID)));
         updateClients();
+    }
+
+    public void addToPotRaise(double amount, int userID) {
+
+        double maxBet = 0;
+        for (Double j : playerBets.values()) {
+            maxBet = j > maxBet ? j : maxBet;
+        }
+
+        double currentPlayerBet = playerBets.get(userID);
+        double owe = maxBet - currentPlayerBet;
+        double raiseAmount = owe + amount;
+
+
+        pot += raiseAmount;
+        playerBets.put(userID, playerBets.get(userID) + raiseAmount);
+        massSender(pm.addedToPot(raiseAmount, pot, players.get(userID)));
+        players.get(userID).setPlayerWallet(players.get(userID).getPlayerWallet() - raiseAmount);
+        updateClients();
+    }
+
+    public void addToPotBet(double amount, int userID) {
+        Player p = players.get(userID);
+
+        pot += amount;
+        playerBets.put(userID, playerBets.get(userID) + amount); // Increase their bet
+        p.setPlayerWallet(p.getPlayerWallet() - amount); // Adjust their wallet
+
+        massSender(pm.addedToPot(amount, pot, players.get(userID))); // Send message
+        updateClients(); // Update all clients
     }
 
     public double getPrevBet() {
         return prevBet;
     }
 
+    public void check() {
+        currentUser++;
+        updateClients();
+    }
+
     public void fold(int userID) {
         // TODO: Is this really the right way?
         turns.remove();
         massSender(pm.userFold(players.get(userID).getUsername()));
-    }
-
-    // TODO: Is this really needed?
-    public boolean isMoveAllowed(Player player) {
-        return (player.getUserID() == turns.peek().getUserID());
+        updateClients();
     }
 
     public void setGameReady() {
@@ -227,12 +263,34 @@ public class Poker implements CardGame {
     public void completeGame() {
         gameDone = true;
         getWinner();
-        deck.clearDeck();
-        resetPot();
 
-        // Round over, play again?
-        massSender(pm.gameCompleted());
+        massSender(pm.gameCompleted()); // Ask if they wanna play again
         updateClients(); // Also shows other players cards
+    }
+
+    /**
+     * Resets the game entirely
+     */
+    public void startNewGame() {
+        gameDone = false;
+        initialRound = true;
+        initialBettingRound = true;
+        initialBet = true;
+        prevBet = 0;
+        deck = new Deck(); // Deck is loaded and shuffled
+        resetPot();
+        house = new Hand();
+        for (Player p : players.values()) {
+            playerHands.put(p.getUserID(), new Hand());
+            deal(p.getUserID());
+            playerBets.put(p.getUserID(), 0.0);
+        }
+        currentUser = 0;
+        updateClients();
+    }
+
+    public void exitGame() {
+        massSender(pm.exitGame());
     }
 
     private void resetPot() {
@@ -240,6 +298,8 @@ public class Poker implements CardGame {
     }
 
     public void initHouseCard() {
+        deck.drawCard();
+        deck.drawCard(); // Burn two
         for (int i = 0; i < 3; i++) {
             house.addCard(deck.drawCard());
         }
@@ -359,6 +419,7 @@ public class Poker implements CardGame {
 
 
                 player.setPlayerWallet(player.getPlayerWallet() + getPot());
+                db.updateWallet(i, player.getPlayerWallet() + getPot());
                 players.get(i).sendMessage(pm.winnerMessage());
                 massSender(pm.winnerMessageOthers(players.get(i)));
             }
@@ -388,6 +449,7 @@ public class Poker implements CardGame {
 
                 player.sendMessage(pm.winnerMessage()); // Send each player winner message
                 player.setPlayerWallet(player.getPlayerWallet() + divPot); // Give them their winnings
+                db.updateWallet(i, player.getPlayerWallet() + divPot);
             }
         }
 

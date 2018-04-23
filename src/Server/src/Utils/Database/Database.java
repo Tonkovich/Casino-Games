@@ -80,7 +80,7 @@ public class Database {
                 .executeUpdate();
     }
 
-    public void updateWallet(int userID, int amount) {
+    public void updateWallet(int userID, double amount) {
         String sql = "UPDATE Players p SET p.wallet = :wallet WHERE p.user_id = :userID";
         Connection con = sql2o.open();
         con.createQuery(sql)

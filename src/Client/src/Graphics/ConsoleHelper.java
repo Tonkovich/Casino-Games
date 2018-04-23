@@ -19,6 +19,8 @@ public class ConsoleHelper {
      */
     public InputStream in;
 
+    public Process process;
+
     /**
      * The console output stream.
      */
@@ -86,7 +88,7 @@ public class ConsoleHelper {
     public void initialise() throws IOException, InterruptedException {
         // switch console to Unicode
         if (isWindows) {
-            Process process = new ProcessBuilder("cmd", "/c", "chcp 65001").inheritIO().start();
+            process = new ProcessBuilder("cmd", "/c", "chcp 65001").inheritIO().start();
             in = process.getInputStream();
             process.waitFor();
         }
@@ -129,5 +131,9 @@ public class ConsoleHelper {
      */
     public void setCursor(Point coordinate) {
         this.setCursor(coordinate.y, coordinate.x);
+    }
+
+    public void killProcess() {
+        process.destroy();
     }
 }

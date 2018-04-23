@@ -11,6 +11,7 @@ public class PokerThread implements Runnable {
     private int gameID;
     public boolean responded = false;
     private double maxBet = 0;
+    private boolean allReady;
 
 
     public PokerThread(int gameID) {
@@ -21,23 +22,26 @@ public class PokerThread implements Runnable {
     @Override
     public void run() {
         pk = gameDB.getPokerGame(gameID);
-        //while(true) {
-        applyBlinds();
-        for (int i = 0; i < 3; i++) {
+        while (true) {
+            //checkIfAllReady(); // This will pause game until all players ready
+            applyBlinds();
+            for (int i = 0; i < 3; i++) {
                 betting();
-            if (i != 0) {
-                nextRound();
+                if (i != 0) {
+                    nextRound();
+                } else {
+                    pk.initHouseCard();
+                }
+            }
+            betting(); // All five cards down, final betting
+            pk.completeGame();
+            if (checkIfAllReady()) {
+                pk.startNewGame();
             } else {
-                pk.initHouseCard();
+                pk.exitGame();
+                break;
             }
         }
-        betting(); // All five cards down, final betting
-        completeGame();
-        //if(newGame()){
-        //   break;
-        //}
-        // Send UI update to players to go back to game menu
-        //}
     }
 
     private void applyBlinds() {
@@ -45,9 +49,9 @@ public class PokerThread implements Runnable {
         // Blinds posted after initial assigning, modify maxBet
         for (Player p : pk.players.values()) {
             if (p.getPlayerRole().equals("Big Blind")) {
-                pk.addToPot(pk.bigBlind, p.getUserID());
+                pk.addToPotBet(pk.bigBlind, p.getUserID());
             } else if (p.getPlayerRole().equals("Small Blind")) {
-                pk.addToPot(pk.smallBlind, p.getUserID());
+                pk.addToPotBet(pk.smallBlind, p.getUserID());
             }
         }
     }
@@ -64,15 +68,16 @@ public class PokerThread implements Runnable {
                 responded = false;
                 // TODO: start time
             }
-            while (responded == false) {
+            while (!responded) {
                 // loop used to wait for response
                 try {
-                    Thread.sleep(1);
+                    Thread.sleep(1); // Keeps this loop alive, no idea why
                 } catch (InterruptedException ex) {
 
                 }
                 // TODO: Have timer limit, if reached kick player pk.removePlayer() or fold automatically
             }
+            // Find max bet
             for (Double j : pk.playerBets.values()) {
                 maxBet = j > maxBet ? j : maxBet;
             }
@@ -91,13 +96,21 @@ public class PokerThread implements Runnable {
         pk.drawNextCard();
     }
 
-    private void completeGame() {
-        pk.completeGame();
-    }
-
-    private boolean newGame() {
+    private boolean checkIfAllReady() {
+        while (!allReady) {
+            if (!(pk.players.size() > 1)) {
+                return false; // Not enough players exit
+            }
+            int counter = 0;
+            for (Player p : pk.players.values()) {
+                if (p.isReady()) {
+                    counter++;
+                }
+            }
+            if (counter == pk.players.size()) {
+                allReady = true;
+            }
+        }
         return true;
     }
-
-
 }

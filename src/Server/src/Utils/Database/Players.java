@@ -13,7 +13,6 @@ public class Players {
 
     private static Players instance;
     private HashMap<Integer, Player> players = new HashMap<>();
-    private int playerCount = players.size();
     private static HeartBeat hb;
     private static final Logger log = LogManager.getLogger(Players.class);
 
@@ -40,7 +39,7 @@ public class Players {
     }
 
     public void logoutPlayer(int userID) {
-//        log.info(getPlayer(userID).getUsername() + " logged out.");
+        log.info(getPlayer(userID).getUsername() + " logged out.");
         players.remove(userID);
         if (players.size() == 0) {
             hb.stop(); // Stop heartbeat

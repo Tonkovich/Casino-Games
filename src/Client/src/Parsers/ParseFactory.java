@@ -2,16 +2,12 @@ package Parsers;
 
 import Graphics.GameMenu;
 import Graphics.UserInterface;
-import Utils.ClientSocket;
-import Utils.JSONMesssages.HeartBeatMessage;
 
 import javax.json.JsonObject;
 
 public class ParseFactory {
 
     private static ParseFactory instance;
-    private ClientSocket socket = ClientSocket.getInstance();
-    private HeartBeatMessage hb = new HeartBeatMessage();
     private GameMenu gm = new GameMenu();
     private UserInterface ui = UserInterface.getInstance();
 
@@ -29,11 +25,15 @@ public class ParseFactory {
         if (json.getJsonString("gameOptions") != null) {
             gm.display();
         } else if (json.getJsonString("pokerAction") != null) {
-            ui.getInput(json.getBoolean("otherUserBet"), json);
+            ui.getInput(json);
         } else if (json.getJsonString("pokerMessage") != null) {
             ui.updateLog(json);
         } else if (json.getJsonString("updateGUI") != null) {
             ui.update(json);
+        } else if (json.getJsonString("pokerExit") != null) {
+            ui.exitGame();
+        } else if (json.getJsonString("incorrectInput") != null) {
+            // TODO, handled when illegal action done
         }
 
     }

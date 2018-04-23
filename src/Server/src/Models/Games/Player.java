@@ -14,6 +14,7 @@ public class Player {
     private int userID;
     private String username;
     private String playerRole;
+    private boolean ready = false;
 
     public double getPlayerWallet() {
         return wallet;
@@ -82,6 +83,15 @@ public class Player {
             System.out.println("Player sendHeartBeat Failed");
         }
     }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
 
 //    public int compareTo(Player anotherPlayer) {
 //        return userID - anotherPlayer.getUserID();

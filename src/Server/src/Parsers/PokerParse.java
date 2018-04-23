@@ -1,6 +1,7 @@
 package Parsers;
 
 import Utils.Database.Games;
+import Utils.Database.Players;
 
 import javax.json.JsonObject;
 
@@ -8,6 +9,7 @@ public class PokerParse {
 
     private static PokerParse instance;
     private Games games = Games.getInstance();
+    private Players players = Players.getInstance();
 
     private PokerParse() {
     }
@@ -27,29 +29,26 @@ public class PokerParse {
     public void parse(JsonObject json) {
         int gameID = json.getInt("gameID");
         int userID = json.getInt("userID");
-        if (json.getJsonNumber("call") != null) {
-            double amount = json.getJsonNumber("call").doubleValue();
-            games.getPokerGame(gameID).addToPot(amount, userID);
+        if (json.getJsonString("call") != null) {
+            games.getPokerGame(gameID).addToPotCall(userID);
             games.getPokerGame(gameID).pt.responded = true;
+            // TODO Possibly move responded on success of add to pot, or isAllowed()
         } else if (json.getJsonString("check") != null) {
-            // TODO: Just have respond, implement this
             games.getPokerGame(gameID).pt.responded = true;
+            games.getPokerGame(gameID).check();
         } else if (json.getJsonNumber("raise") != null) {
             double amount = json.getJsonNumber("raise").doubleValue();
-
-            if (games.getPokerGame(gameID).getPrevBet() != 0) {
-                double prevBet = games.getPokerGame(gameID).getPrevBet();
-                games.getPokerGame(gameID).addToPot(prevBet + amount, userID);
-            } else {
-                // First bet
-                games.getPokerGame(gameID).addToPot(amount, userID);
-            }
+            games.getPokerGame(gameID).addToPotRaise(amount, userID);
             games.getPokerGame(gameID).pt.responded = true;
         } else if (json.getJsonString("fold") != null) {
             games.getPokerGame(gameID).fold(userID);
             games.getPokerGame(gameID).pt.responded = true;
+        } else if (json.getJsonNumber("bet") != null) {
+            double amount = json.getJsonNumber("bet").doubleValue();
+            games.getPokerGame(gameID).addToPotBet(amount, userID);
+            games.getPokerGame(gameID).pt.responded = true;
+        } else if (json.getBoolean("readyUp")) {
+            players.getPlayer(userID).setReady(json.getBoolean("readyUp"));
         }
-
-
     }
 }

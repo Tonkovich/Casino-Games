@@ -8,9 +8,11 @@ import java.util.List;
 
 public class PokerMessages implements CardGameMessages {
 
+    String spaces = "                                                                    ";
+
     public String winnerMessageOthers(Player player) {
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerMessage", player.getUsername() + " won!").build();
+                .add("pokerMessage", player.getUsername() + " won!" + spaces).build();
         return json.toString();
     }
 
@@ -20,70 +22,79 @@ public class PokerMessages implements CardGameMessages {
             allPlayers += p.getUsername() + ", ";
         }
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerMessage", allPlayers + " won!").build();
+                .add("pokerMessage", allPlayers + " won!" + spaces).build();
         return json.toString();
     }
 
     public String winnerMessage() {
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerMessage", "You won!").build();
+                .add("pokerMessage", "You won!" + spaces).build();
         return json.toString();
     }
 
     public String gameStarted() {
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerMessage", "Game has started").build();
+                .add("pokerMessage", "Game has started" + spaces).build();
         return json.toString();
     }
 
     public String waiting() {
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerMessage", "Waiting...").build();
+                .add("pokerMessage", "Waiting..." + spaces).build();
         return json.toString();
     }
 
     public String addedToGame(Player player) {
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerMessage", player.getUsername() + " joined the game").build();
+                .add("pokerMessage", player.getUsername() + " joined the game" + spaces).build();
         return json.toString();
     }
 
     public String gameReady() {
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerMessage", "Game ready!\nGame starting...").build();
+                .add("pokerMessage", "Game ready!\nGame starting..." + spaces).build();
         return json.toString();
     }
 
     public String addedToPot(double amount, double pot, Player player) {
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerMessage", player.getUsername() + " added " + amount + " to the pot.").build();
+                .add("pokerMessage", player.getUsername() + " added " + amount + " to the pot." + spaces).build();
         return json.toString();
     }
 
     public String gameCompleted() {
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerAction", "Round over: Play again(y/n)")
-                .add("otherUserBet", false).build();
+                .add("pokerAction", "Round over: Play again(y/n)" + spaces)
+                .add("otherUserBet", false)
+                .add("newGame", true).build();
         return json.toString();
     }
 
     public String userFold(String name) {
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerMessage", name + " folds.").build();
+                .add("pokerMessage", name + " folds." + spaces).build();
         return json.toString();
     }
 
     public String betWithCheck() {
         JsonObject json = Json.createObjectBuilder()
-                .add("pokerAction", "Do you want to (f)old or (ch)eck or (r)aise")
-                .add("otherUserBet", false).build();
+                .add("pokerAction", "Do you want to (f)old or (ch)eck or (b)et")
+                .add("otherUserBet", false)
+                .add("newGame", false).build();
         return json.toString();
     }
 
     public String betWithCall() {
         JsonObject json = Json.createObjectBuilder()
                 .add("pokerAction", "Do you want to (f)old or (c)all or (r)aise")
-                .add("otherUserBet", true).build();
+                .add("otherUserBet", true)
+                .add("newGame", false).build();
+        return json.toString();
+    }
+
+    public String exitGame() {
+        JsonObject json = Json.createObjectBuilder()
+                .add("pokerExit", "").build();
         return json.toString();
     }
 }

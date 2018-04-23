@@ -49,4 +49,8 @@ public class OtherPlayer {
     public void setCurrentBet(double amount) {
         currentBet = amount;
     }
+
+    public void setHand(Hand hand) {
+        this.hand = hand;
+    }
 }

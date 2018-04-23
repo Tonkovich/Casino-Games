@@ -15,9 +15,11 @@ public interface CardGame extends Game {
 
     double getPot();
 
-    void addToPot(double amount, int userID);
+    void addToPotCall(int userID);
 
-    boolean isMoveAllowed(Player player);
+    void addToPotRaise(double amount, int userID);
+
+    void addToPotBet(double amount, int userID);
 
     void setGameReady();
 

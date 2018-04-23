@@ -26,7 +26,6 @@ public class UserInterface {
     private PokerActionMessage pm = new PokerActionMessage();
     private ClientSocket cs = ClientSocket.getInstance();
     public int gameID;
-    public double prevBet;
 
     private UserInterface() {
     }
@@ -53,7 +52,6 @@ public class UserInterface {
         gb.pot = json.getJsonNumber("pot").doubleValue();
         gb.smallBlind = json.getInt("smallBlind");
         gb.bigBlind = json.getInt("bigBlind");
-        prevBet = json.getJsonNumber("prevBet").doubleValue();
 
         // Assemble players cards
         JsonObject playerHand = json.getJsonObject("playerHand");
@@ -165,7 +163,7 @@ public class UserInterface {
                     newHand.addCard(new Card(newSuit2, newRank2, false));
 
 
-                    otherPlayers.get(j).hand = newHand;
+                    otherPlayers.get(j).setHand(newHand);
                 }
             }
         }
@@ -173,14 +171,17 @@ public class UserInterface {
         draw(gb, log);
     }
 
-    public void getInput(boolean otherUserBet, JsonObject json) {
-        checkInput(json, otherUserBet);
+    public void getInput(JsonObject json) {
+        boolean otherUserBet = json.getBoolean("otherUserBet");
+        boolean newGame = json.getBoolean("newGame");
+        checkInput(json, otherUserBet, newGame);
     }
 
 
-    private void checkInput(JsonObject json, boolean otherUserBet) {
+    private void checkInput(JsonObject json, boolean otherUserBet, boolean newGame) {
         InputStreamReader is = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(is);
+
         String newMessage = json.getString("pokerAction");
         log.add(newMessage);
 
@@ -196,51 +197,92 @@ public class UserInterface {
 
         }
 
-        if (result.trim().equalsIgnoreCase("f")) {
-            cs.sendMessage(pm.fold(gameID, p.getUserID()));
-        } else if (result.trim().equalsIgnoreCase("c") && otherUserBet) {
-            cs.sendMessage(pm.call(gameID, p.getUserID(), prevBet));
+        if ((otherUserBet || !otherUserBet) && !newGame) {
+            if (result.trim().equalsIgnoreCase("f")) {
+                cs.sendMessage(pm.fold(gameID, p.getUserID()));
+            } else if (result.trim().equalsIgnoreCase("c") && otherUserBet) {
+                cs.sendMessage(pm.call(gameID, p.getUserID()));
 
-        } else if (result.trim().equalsIgnoreCase("ch") && !otherUserBet) {
-            cs.sendMessage(pm.check(gameID, p.getUserID()));
+            } else if (result.trim().equalsIgnoreCase("ch") && !otherUserBet) {
+                cs.sendMessage(pm.check(gameID, p.getUserID()));
 
-        } else if (result.trim().equalsIgnoreCase("r")) {
-            // Ask for amount and add to prevBet
-            log.add("How much?");
-            log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+            } else if (result.trim().equalsIgnoreCase("b") && !otherUserBet) {
+                // Ask for amount and add to prevBet
+                log.add("How much?");
+                log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+                console.clearFromCursorLine();
+                console.out.print("> ");
+                String amount = "";
+                try {
+                    amount = br.readLine();
+                } catch (IOException ex) {
+
+                }
+
+                try {
+                    double bet = Double.parseDouble(amount);
+                    boolean insufficientFunds = bet > p.getPlayerWallet();
+                    if (bet < 0 || bet == 0 || insufficientFunds) {
+                        log.add("Incorrect Number: Try again:                        ");
+
+                        log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+                        checkInput(json, otherUserBet, newGame);
+                    } else {
+                        // TODO If raise == wallet, send all in message instead
+                        cs.sendMessage(pm.bet(gameID, p.getUserID(), bet));
+                    }
+                } catch (NumberFormatException ex) {
+                    log.add("Incorrect Number: Try again                             ");
+                    log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+                    checkInput(json, otherUserBet, newGame);
+                }
+            } else if (result.trim().equalsIgnoreCase("r")) {
+                // Ask for amount and add to prevBet
+                log.add("How much?");
+                log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+                console.clearFromCursorLine();
+                console.out.print("> ");
+                String amount = "";
+                try {
+                    amount = br.readLine();
+                } catch (IOException ex) {
+
+                }
+
+                try {
+                    double raise = Double.parseDouble(amount);
+                    boolean insufficientFunds = raise > p.getPlayerWallet();
+                    if (raise < 0 || raise == 0 || insufficientFunds) {
+                        log.add("Incorrect Number: Try again");
+                        log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+                        checkInput(json, otherUserBet, newGame);
+                    } else {
+                        // TODO If raise == wallet, send all in message instead
+                        cs.sendMessage(pm.raise(gameID, p.getUserID(), raise));
+                    }
+                } catch (NumberFormatException ex) {
+                    log.add("Incorrect Number: Try again                            ");
+                    log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+                    checkInput(json, otherUserBet, newGame);
+                }
+            } else {
+                // Incorrect input, try again
+                log.add("Incorrect choice: Try again                            ");
+                log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+                checkInput(json, otherUserBet, newGame);
+            }
             console.clearFromCursorLine();
             console.out.print("> ");
-            String amount = "";
-            try {
-                amount = br.readLine();
-            } catch (IOException ex) {
-
-            }
-
-            try {
-                double raise = Double.parseDouble(amount);
-                boolean insufficientFunds = !((raise + p.getPlayerWallet()) > p.getPlayerWallet());
-                if (raise < 0 || raise == 0 || insufficientFunds) {
-                    log.add("Incorrect Number: Try again");
-                    log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
-                    checkInput(json, otherUserBet);
-                }
-                // TODO If raise == wallet, send all in message instead
-                cs.sendMessage(pm.raise(gameID, p.getUserID(), raise + prevBet));
-            } catch (NumberFormatException ex) {
-                log.add("Incorrect Number: Try again");
-                log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
-                checkInput(json, otherUserBet);
-            }
         } else {
-            // Incorrect input, try again
-            log.add("Incorrect choice: Try again");
-            log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
-            checkInput(json, otherUserBet);
+            if (result.trim().equalsIgnoreCase("y")) {
+                cs.sendMessage(pm.readyUp(gameID, p.getUserID(), true));
+            } else if (result.trim().equalsIgnoreCase("n")) {
+                cs.sendMessage(pm.readyUp(gameID, p.getUserID(), false));
+            } else {
+                log.add("Incorrect choice: Try again");
+                checkInput(json, otherUserBet, newGame);
+            }
         }
-        console.clearFromCursorLine();
-        console.out.print("> ");
-        //scan.close();
     }
 
 
@@ -259,7 +301,11 @@ public class UserInterface {
         }
         String newMessage = json.getString("pokerMessage");
         log.add(newMessage);
-        log.draw(console, Constants.ScreenLayout.GAME_LOG.y, Constants.ScreenLayout.GAME_LOG.x);
+        draw(gb, log);
+    }
+
+    public void exitGame() {
+        console.killProcess();
     }
 
     private void startConsole() {

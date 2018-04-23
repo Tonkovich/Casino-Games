@@ -27,13 +27,13 @@ public class PokerActionMessage {
         return json.toString();
     }
 
-    public String call(int gameID, int userID, double amount) {
+    public String call(int gameID, int userID) {
         JsonObject json = Json.createObjectBuilder()
                 .add("gameID", gameID)
                 .add("userID", userID)
                 .add("gameAction", "Acting upon game")
                 .add("gameType", "Poker")
-                .add("call", amount)
+                .add("call", "")
                 .build();
         return json.toString();
     }
@@ -45,6 +45,28 @@ public class PokerActionMessage {
                 .add("gameAction", "Acting upon game")
                 .add("gameType", "Poker")
                 .add("raise", amount)
+                .build();
+        return json.toString();
+    }
+
+    public String readyUp(int gameID, int userID, boolean yes) {
+        JsonObject json = Json.createObjectBuilder()
+                .add("gameID", gameID)
+                .add("userID", userID)
+                .add("gameAction", "Acting upon game")
+                .add("gameType", "Poker")
+                .add("readyUp", yes)
+                .build();
+        return json.toString();
+    }
+
+    public String bet(int gameID, int userID, double amount) {
+        JsonObject json = Json.createObjectBuilder()
+                .add("gameID", gameID)
+                .add("userID", userID)
+                .add("gameAction", "Acting upon game")
+                .add("gameType", "Poker")
+                .add("bet", amount)
                 .build();
         return json.toString();
     }
