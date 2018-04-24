@@ -22,18 +22,34 @@ public class PokerThread implements Runnable {
     @Override
     public void run() {
         pk = gameDB.getPokerGame(gameID);
+        boolean allButOneFolded = false;
         //checkIfAllReady(); // This will pause game until all players ready
         applyBlinds();
         for (int i = 0; i < 3; i++) {
-            betting();
-            if (i != 0) {
-                nextRound();
+            if (!allButOneFolded()) { // Initial stop
+                betting();
+                if (i != 0) {
+                    nextRound();
+                } else {
+                    pk.initHouseCard();
+                }
             } else {
-                pk.initHouseCard();
+                allButOneFolded = true;
             }
         }
-        betting(); // All five cards down, final betting
-        pk.completeGame();
+        if (!allButOneFolded) {
+            betting(); // All five cards down, final betting
+            pk.completeGame();
+        } else {
+            int userID = 0;
+            for (Player p : pk.players.values()) {
+                if (!p.isFolded()) {
+                    userID = p.getUserID();
+                }
+            }
+            pk.winByAllFolded(userID);
+        }
+
         if (checkIfAllReady()) {
             pk.startNewGame();
         } else {
@@ -54,28 +70,32 @@ public class PokerThread implements Runnable {
     }
 
     private void betting() {
+        Player p;
         for (Integer i : pk.players.keySet()) {
             //ask for input
-            if (pk.playerBets.get(i) < maxBet) {
-                pk.askPlayerForInput(pm.betWithCall(), i);
-                responded = false;
-                // TODO: start time
-            } else if (pk.playerBets.get(i) == maxBet) {
-                pk.askPlayerForInput(pm.betWithCheck(), i);
-                responded = false;
-                // TODO: start time
-            } else {
-                pk.askPlayerForInput(pm.betWithCheck(), i);
-                responded = false;
-            }
-            while (!responded) {
-                // loop used to wait for response
-                try {
-                    Thread.sleep(1); // Keeps this loop alive, no idea why
-                } catch (InterruptedException ex) {
-
+            p = pk.players.get(i);
+            if (!p.isFolded() && !p.isAllIn() && !allButOneFolded()) { // Skip players that have folded or is all in
+                if (pk.playerBets.get(i) < maxBet) {
+                    pk.askPlayerForInput(pm.betWithCall(), i);
+                    responded = false;
+                    // TODO: start time
+                } else if (pk.playerBets.get(i) == maxBet) {
+                    pk.askPlayerForInput(pm.betWithCheck(), i);
+                    responded = false;
+                    // TODO: start time
+                } else {
+                    pk.askPlayerForInput(pm.betWithCheck(), i);
+                    responded = false;
                 }
-                // TODO: Have timer limit, if reached kick player pk.removePlayer() or fold automatically
+                while (!responded) {
+                    // loop used to wait for response
+                    try {
+                        Thread.sleep(1); // Keeps this loop alive, no idea why
+                    } catch (InterruptedException ex) {
+
+                    }
+                    // TODO: Have timer limit, if reached kick player pk.removePlayer() or fold automatically
+                }
             }
             // Find max bet
             for (Double j : pk.playerBets.values()) {
@@ -87,7 +107,8 @@ public class PokerThread implements Runnable {
             if (d != maxBet)
                 counter = true;
         }
-        if (counter) {
+
+        if (counter && !allButOneFolded()) {
             betting();
         }
     }
@@ -112,5 +133,16 @@ public class PokerThread implements Runnable {
             }
         }
         return true;
+    }
+
+    private boolean allButOneFolded() {
+        int counter = 0;
+        for (Player p : pk.players.values()) {
+            if (p.isFolded()) {
+                counter++;
+            }
+        }
+        // All but one folded, should end game
+        return counter == (pk.players.size() - 1);
     }
 }

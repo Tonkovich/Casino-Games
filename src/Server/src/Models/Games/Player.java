@@ -15,6 +15,8 @@ public class Player {
     private String username;
     private String playerRole;
     private boolean ready = false;
+    private boolean allIn = false;
+    private boolean folded = false;
 
     public double getPlayerWallet() {
         return wallet;
@@ -92,8 +94,19 @@ public class Player {
         return ready;
     }
 
+    public void setAllIn(boolean allIn) {
+        this.allIn = allIn;
+    }
 
-//    public int compareTo(Player anotherPlayer) {
-//        return userID - anotherPlayer.getUserID();
-//    }
+    public boolean isAllIn() {
+        return allIn;
+    }
+
+    public void setFolded(boolean folded) {
+        this.folded = folded;
+    }
+
+    public boolean isFolded() {
+        return folded;
+    }
 }

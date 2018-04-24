@@ -97,4 +97,16 @@ public class PokerMessages implements CardGameMessages {
                 .add("pokerExit", "").build();
         return json.toString();
     }
+
+    public String check(Player p) {
+        JsonObject json = Json.createObjectBuilder()
+                .add("pokerMessage", p.getUsername() + " checked." + spaces).build();
+        return json.toString();
+    }
+
+    public String allIn(Player p) {
+        JsonObject json = Json.createObjectBuilder()
+                .add("pokerMessage", p.getUsername() + " is all in!!" + spaces).build();
+        return json.toString();
+    }
 }

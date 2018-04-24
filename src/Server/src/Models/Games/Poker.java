@@ -31,9 +31,8 @@ public class Poker implements CardGame {
     private int currentPosOfSmallBlind;
     private boolean initialRound;
     private boolean initialBettingRound; // Same as initialRound?
-    public LinkedList<Player> turns;
     public Database db = Database.getInstance();
-    private HashMap<Integer, Hand> playerHands = new LinkedHashMap<>();
+    private Map<Integer, Hand> playerHands = Collections.synchronizedMap(new LinkedHashMap<>());
     public Map<Integer, Double> playerBets = Collections.synchronizedMap(new LinkedHashMap<>());
     public HashMap<Integer, Player> players = new LinkedHashMap<>(); // All linkedHashMap to ensure order on placement
     private UserInterfaceMessages ui = new UserInterfaceMessages();
@@ -42,7 +41,6 @@ public class Poker implements CardGame {
 
     public Poker(int gameID) {
         deck = new Deck(); // Deck is loaded and shuffled
-        turns = new LinkedList<>(); // Will keep track of player turns
         house = new Hand();
         pm = new PokerMessages();
         initialRound = true;
@@ -59,7 +57,6 @@ public class Poker implements CardGame {
         players.put(userID, player);
         playerBets.put(userID, 0.0); // Initialize bets
         setPlayerHand(hand, userID);
-        turns.add(player);
         deal(userID);
         massSender(pm.addedToGame(player));
         if (players.size() == maxSetPlayer) {
@@ -177,6 +174,7 @@ public class Poker implements CardGame {
 
     public void addToPotCall(int userID) {
 
+        Player p = players.get(userID);
         // Find the amount to substract
         double maxBet = 0;
         for (Double j : playerBets.values()) {
@@ -189,15 +187,23 @@ public class Poker implements CardGame {
 
         pot += callAmount;
         playerBets.put(userID, playerBets.get(userID) + callAmount);
-        players.get(userID).setPlayerWallet(players.get(userID).getPlayerWallet() - callAmount);
 
-        massSender(pm.addedToPot(callAmount, pot, players.get(userID)));
+        if (p.getPlayerWallet() - callAmount == 0) {
+            // All in
+            massSender(pm.allIn(p));
+            p.setAllIn(true);
+        } else {
+            // Not all in
+            massSender(pm.addedToPot(callAmount, pot, players.get(userID)));
+        }
+
+        p.setPlayerWallet(p.getPlayerWallet() - callAmount);
         pt.responded = true;
         updateClients();
     }
 
     public void addToPotRaise(double amount, int userID) {
-
+        Player p = players.get(userID);
         double maxBet = 0;
         for (Double j : playerBets.values()) {
             maxBet = j > maxBet ? j : maxBet;
@@ -210,8 +216,17 @@ public class Poker implements CardGame {
 
         pot += raiseAmount;
         playerBets.put(userID, playerBets.get(userID) + raiseAmount);
-        massSender(pm.addedToPot(raiseAmount, pot, players.get(userID)));
-        players.get(userID).setPlayerWallet(players.get(userID).getPlayerWallet() - raiseAmount);
+
+        if (p.getPlayerWallet() - raiseAmount == 0) {
+            // All in
+            massSender(pm.allIn(p));
+            p.setAllIn(true);
+        } else {
+            // Not all in
+            massSender(pm.addedToPot(raiseAmount, pot, p));
+        }
+
+        p.setPlayerWallet(p.getPlayerWallet() - raiseAmount);
         pt.responded = true;
         updateClients();
     }
@@ -221,21 +236,29 @@ public class Poker implements CardGame {
 
         pot += amount;
         playerBets.put(userID, playerBets.get(userID) + amount); // Increase their bet
-        p.setPlayerWallet(p.getPlayerWallet() - amount); // Adjust their wallet
 
-        massSender(pm.addedToPot(amount, pot, players.get(userID))); // Send message
+        if (p.getPlayerWallet() - amount == 0) {
+            // All in
+            massSender(pm.allIn(p));
+            p.setAllIn(true);
+        } else {
+            // Not all in
+            massSender(pm.addedToPot(amount, pot, players.get(userID))); // Send message
+        }
+
+        p.setPlayerWallet(p.getPlayerWallet() - amount); // Adjust their wallet
         pt.responded = true;
         updateClients(); // Update all clients
     }
 
-    public void check() {
+    public void check(int userID) {
         pt.responded = true;
+        massSender(pm.check(players.get(userID)));
         updateClients();
     }
 
     public void fold(int userID) {
-        // TODO: Is this really the right way?
-        turns.remove();
+        players.get(userID).setFolded(true);
         massSender(pm.userFold(players.get(userID).getUsername()));
         pt.responded = true;
         updateClients();
@@ -279,8 +302,10 @@ public class Poker implements CardGame {
         house = new Hand();
         for (Player p : players.values()) {
             playerHands.put(p.getUserID(), new Hand());
-            deal(p.getUserID());
             playerBets.put(p.getUserID(), 0.0);
+            deal(p.getUserID());
+            p.setFolded(false);
+            p.setAllIn(false);
         }
         pt = new PokerThread(gameID);
         t = new Thread(pt);
@@ -324,10 +349,13 @@ public class Poker implements CardGame {
         EvaluateHand evaluate;
         // Populate maps and score all players hands
         for (Integer key : playerHands.keySet()) {
-            Hand hand = playerHands.get(key);
-            evaluate = new EvaluateHand(hand, house);
-            ranks.put(players.get(key).getUserID(), evaluate.getRank()); // Put hand rank into map
-            highcards.put(players.get(key).getUserID(), evaluate.getHighCard()); // Put highcard into map
+            // Skip folded players
+            if (!players.get(key).isFolded()) {
+                Hand hand = playerHands.get(key);
+                evaluate = new EvaluateHand(hand, house);
+                ranks.put(players.get(key).getUserID(), evaluate.getRank()); // Put hand rank into map
+                highcards.put(players.get(key).getUserID(), evaluate.getHighCard()); // Put highcard into map
+            }
         }
 
         List<Player> winners = new ArrayList<>();
@@ -395,6 +423,18 @@ public class Poker implements CardGame {
             }
 
         }
+    }
+
+    public void winByAllFolded(int userID) {
+        Player p = players.get(userID);
+        gameDone = true;
+
+        p.setPlayerWallet(p.getPlayerWallet() + getPot());
+        db.updateWallet(userID, p.getPlayerWallet() + getPot());
+        p.sendMessage(pm.winnerMessage());
+        massSender(pm.winnerMessageOthers(p));
+        massSender(pm.gameCompleted()); // Ask if they wanna play again
+        updateClients(); // Also shows other players cards
     }
 
     /**

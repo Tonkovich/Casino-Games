@@ -1,9 +1,11 @@
 package Models.Parts.CardGame;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Hand {
-    private ArrayList<Card> hand = new ArrayList<>();
+    private List<Card> hand = Collections.synchronizedList(new ArrayList<>());
 
     public void addCard(Card c) {
         hand.add(c);
@@ -14,7 +16,7 @@ public class Hand {
         this.hand = hand;
     }
 
-    public ArrayList<Card> getCards() {
+    public List<Card> getCards() {
         return hand;
     }
 

@@ -6,7 +6,7 @@ import Models.Parts.CardGame.Hand;
 
 import javax.json.*;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class UserInterfaceMessages {
@@ -14,7 +14,7 @@ public class UserInterfaceMessages {
     // TODO: Handle prev bet
     public String updateClients(double pot, Hand pHand, Hand hHand, boolean initialBettingRound
             , int smallBlind, int bigBlind, Collection<Double> playerBets, Collection<Player> players
-            , double prevBet, Set<Integer> playerIDs, boolean gameDone, HashMap<Integer, Hand> playerHands) {
+            , double prevBet, Set<Integer> playerIDs, boolean gameDone, Map<Integer, Hand> playerHands) {
 
         Card card1 = pHand.getCards().get(0);
         Card card2 = pHand.getCards().get(1);

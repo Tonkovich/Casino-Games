@@ -39,7 +39,11 @@ public class Players {
     }
 
     public void logoutPlayer(int userID) {
-        log.info(getPlayer(userID).getUsername() + " logged out.");
+        try {
+            log.info(getPlayer(userID).getUsername() + " logged out.");
+        } catch (NullPointerException ex) {
+            // Player already removed????
+        }
         players.remove(userID);
         if (players.size() == 0) {
             hb.stop(); // Stop heartbeat

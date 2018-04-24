@@ -33,7 +33,7 @@ public class PokerParse {
             games.getPokerGame(gameID).addToPotCall(userID);
             // TODO Possibly move responded on success of add to pot, or isAllowed()
         } else if (json.getJsonString("check") != null) {
-            games.getPokerGame(gameID).check();
+            games.getPokerGame(gameID).check(userID);
         } else if (json.getJsonNumber("raise") != null) {
             double amount = json.getJsonNumber("raise").doubleValue();
             games.getPokerGame(gameID).addToPotRaise(amount, userID);

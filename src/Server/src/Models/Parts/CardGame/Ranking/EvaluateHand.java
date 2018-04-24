@@ -99,7 +99,7 @@ public class EvaluateHand {
 
 
     private boolean isFlush() {
-        ArrayList<Card> pc = playerHand.getCards();
+        List<Card> pc = playerHand.getCards();
         int index = 0;
         for (int each : suitFrequency) {
             if (each == 5) {
@@ -163,7 +163,7 @@ public class EvaluateHand {
     }
 
     private int getPairSum() {
-        ArrayList<Card> playerCards = playerHand.getCards();
+        List<Card> playerCards = playerHand.getCards();
         boolean belongs = false;
         int sum = 0;
         int index = 0;
@@ -193,7 +193,7 @@ public class EvaluateHand {
     }
 
     private void findHighCard() {
-        ArrayList<Card> temp = playerHand.getCards();
+        List<Card> temp = playerHand.getCards();
         if (temp.get(0).getCardValue().getVal() > temp.get(1).getCardValue().getVal()) {
             highCard = temp.get(0);
         } else {
