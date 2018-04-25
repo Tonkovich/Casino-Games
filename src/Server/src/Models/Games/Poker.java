@@ -5,6 +5,8 @@ import Models.Parts.CardGame.Deck;
 import Models.Parts.CardGame.Hand;
 import Models.Parts.CardGame.Ranking.EvaluateHand;
 import Utils.Database.Database;
+import Utils.Database.Games;
+import Utils.JSONMessages.GameOptionMessage;
 import Utils.JSONMessages.PokerMessages;
 import Utils.JSONMessages.UserInterfaceMessages;
 
@@ -15,7 +17,6 @@ import java.util.*;
  */
 public class Poker implements CardGame {
 
-    // TODO: Make getters/setters for thread???
     private double pot;
     private Deck deck;
     private Hand house;
@@ -26,7 +27,6 @@ public class Poker implements CardGame {
     private PokerMessages pm;
     private String[] rolePositions;
     public boolean gameDone = false;
-    private boolean gameReady = false;
     public boolean maxPlayers = false;
     private int currentPosOfSmallBlind;
     private boolean initialRound;
@@ -34,8 +34,10 @@ public class Poker implements CardGame {
     public Database db = Database.getInstance();
     private Map<Integer, Hand> playerHands = Collections.synchronizedMap(new LinkedHashMap<>());
     public Map<Integer, Double> playerBets = Collections.synchronizedMap(new LinkedHashMap<>());
-    public HashMap<Integer, Player> players = new LinkedHashMap<>(); // All linkedHashMap to ensure order on placement
+    public Map<Integer, Player> players = Collections.synchronizedMap(new LinkedHashMap<>()); // All linkedHashMap to ensure order on placement
     private UserInterfaceMessages ui = new UserInterfaceMessages();
+    private GameOptionMessage gom = new GameOptionMessage();
+    private Games gameDB = Games.getInstance();
     private Thread t;
     private int gameID;
 
@@ -73,6 +75,17 @@ public class Poker implements CardGame {
         /**
          * If player it's player turn, remove, updateClients, next player, keep pot same, update left player in DB
          */
+        playerHands.remove(userID);
+        playerBets.remove(userID);
+        players.remove(userID);
+        if (players.size() == 2) {
+            exitGame();
+            try {
+                t.join();
+            } catch (InterruptedException ex) {
+
+            }
+        }
     }
 
     public Player getPlayer(int userID) {
@@ -251,6 +264,24 @@ public class Poker implements CardGame {
         updateClients(); // Update all clients
     }
 
+    public void addToPotBlinds(double amount, int userID) {
+        Player p = players.get(userID);
+
+        pot += amount;
+
+        if (p.getPlayerWallet() - amount == 0) {
+            // All in
+            massSender(pm.allIn(p));
+            p.setAllIn(true);
+        } else {
+            // Not all in
+            massSender(pm.addedToPot(amount, pot, players.get(userID))); // Send message
+        }
+
+        p.setPlayerWallet(p.getPlayerWallet() - amount); // Adjust their wallet
+        updateClients(); // Update all clients
+    }
+
     public void check(int userID) {
         pt.responded = true;
         massSender(pm.check(players.get(userID)));
@@ -264,15 +295,6 @@ public class Poker implements CardGame {
         updateClients();
     }
 
-    public void setGameReady() {
-        gameReady = true;
-        massSender(pm.gameReady());
-    }
-
-    public boolean isGameReady() {
-        return gameReady;
-    }
-
     public Hand getPlayerHand(int userID) {
         return playerHands.get(userID);
     }
@@ -283,9 +305,7 @@ public class Poker implements CardGame {
 
     // Final game code
     public void completeGame() {
-        gameDone = true;
         getWinner();
-
         massSender(pm.gameCompleted()); // Ask if they wanna play again
         updateClients(); // Also shows other players cards
     }
@@ -295,7 +315,7 @@ public class Poker implements CardGame {
      */
     public void startNewGame() {
         gameDone = false;
-        initialRound = true;
+        //initialRound = true;
         initialBettingRound = true;
         deck = new Deck(); // Deck is loaded and shuffled
         resetPot();
@@ -306,6 +326,7 @@ public class Poker implements CardGame {
             deal(p.getUserID());
             p.setFolded(false);
             p.setAllIn(false);
+            p.setReady(false);
         }
         pt = new PokerThread(gameID);
         t = new Thread(pt);
@@ -427,10 +448,10 @@ public class Poker implements CardGame {
 
     public void winByAllFolded(int userID) {
         Player p = players.get(userID);
-        gameDone = true;
 
         p.setPlayerWallet(p.getPlayerWallet() + getPot());
         db.updateWallet(userID, p.getPlayerWallet() + getPot());
+        updateAllNonWinnersWallet();
         p.sendMessage(pm.winnerMessage());
         massSender(pm.winnerMessageOthers(p));
         massSender(pm.gameCompleted()); // Ask if they wanna play again
@@ -463,6 +484,7 @@ public class Poker implements CardGame {
                 massSender(pm.winnerMessageOthers(players.get(i)));
             }
         }
+        updateAllNonWinnersWallet();
     }
 
     /**
@@ -491,7 +513,7 @@ public class Poker implements CardGame {
                 db.updateWallet(i, player.getPlayerWallet() + divPot);
             }
         }
-
+        updateAllNonWinnersWallet();
         massSender(pm.multipleWinners(finalWinners));
     }
 
@@ -506,10 +528,16 @@ public class Poker implements CardGame {
         }
     }
 
+    private void updateAllNonWinnersWallet() {
+        for (Player p : players.values()) {
+            db.updateWallet(p.getUserID(), p.getPlayerWallet());
+        }
+    }
+
     /**
      * Sends graphical updates to clients
      */
-    private void updateClients() {
+    public void updateClients() {
         for (Integer i : playerHands.keySet()) {
             // players.size() - 1, subtract user being updated
             String message = ui.updateClients(pot, playerHands.get(i), house, initialBettingRound

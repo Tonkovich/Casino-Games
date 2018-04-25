@@ -23,13 +23,15 @@ public class UserInterfaceMessages {
         JsonObjectBuilder houseHand = Json.createObjectBuilder();
 
         int i = 1;
-        for (Card c : hHand.getCards()) {
-            houseHand.add("card" + i, Json.createObjectBuilder()
-                    .add("suit", c.getSuit().getName())
-                    .add("value", c.getCardValue().getVal())
-                    .build()
-            );
-            i++;
+        synchronized (hHand.getCards()) {
+            for (Card c : hHand.getCards()) {
+                houseHand.add("card" + i, Json.createObjectBuilder()
+                        .add("suit", c.getSuit().getName())
+                        .add("value", c.getCardValue().getVal())
+                        .build()
+                );
+                i++;
+            }
         }
 
         JsonArrayBuilder playerID = Json.createArrayBuilder();

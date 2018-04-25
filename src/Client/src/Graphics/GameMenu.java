@@ -27,6 +27,8 @@ public class GameMenu {
     public void display() {
         // Fetch options and choose
         getOptions();
+
+
     }
 
     private void getOptions() {

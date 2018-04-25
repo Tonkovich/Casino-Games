@@ -88,9 +88,6 @@ public class UserInterface {
                 otherPlayers.get(j).hand = blankHand;
             }
         }
-        for (OtherPlayer p : otherPlayers.values()) {
-            System.out.println(p.getUsername() + " ");
-        }
 
 
         // Assemble their bets
@@ -136,6 +133,9 @@ public class UserInterface {
                 hand.addCard(card);
             }
             gb.communityCards = hand;
+        } else {
+            // Is initial round
+            gb.communityCards = new Hand();
         }
 
         // Final card flop at end of game
@@ -278,6 +278,7 @@ public class UserInterface {
                 cs.sendMessage(pm.readyUp(gameID, p.getUserID(), true));
             } else if (result.trim().equalsIgnoreCase("n")) {
                 cs.sendMessage(pm.readyUp(gameID, p.getUserID(), false));
+                console.killProcess();
             } else {
                 log.add("Incorrect choice: Try again");
                 checkInput(json, otherUserBet, newGame);

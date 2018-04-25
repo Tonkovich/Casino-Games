@@ -21,11 +21,9 @@ public interface CardGame extends Game {
 
     void addToPotBet(double amount, int userID);
 
+    void addToPotBlinds(double amount, int userID);
+
     void check(int userID);
-
-    void setGameReady();
-
-    boolean isGameReady();
 
     void completeGame();
 

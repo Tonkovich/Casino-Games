@@ -82,7 +82,7 @@ public class GameBoard implements Drawable {
             Point newNameAndBetPost = nameAndBetPos.getLocation();
             // Current bet amount
             console.setCursor(getRelativePoint(origin, nameAndBetPos));
-            console.out.print(player.getUsername() + " bet $" + player.getBetAmount());
+            console.out.print(player.getUsername() + " bet $" + player.getCurrentBet());
             // Wallet
             newNameAndBetPost.y += 1;
             console.setCursor(getRelativePoint(origin, newNameAndBetPost));
@@ -95,7 +95,7 @@ public class GameBoard implements Drawable {
             // Current bet amount
             newNameAndBetPost.x += 22;
             console.setCursor(getRelativePoint(origin, newNameAndBetPost));
-            console.out.print(player.getUsername() + " bet $" + player.getBetAmount());
+            console.out.print(player.getUsername() + " bet $" + player.getCurrentBet());
             // Wallet
             newNameAndBetPost.y += 1;
             console.setCursor(getRelativePoint(origin, newNameAndBetPost));
@@ -109,7 +109,7 @@ public class GameBoard implements Drawable {
             // Current bet amount
             newNameAndBetPost.x += 44;
             console.setCursor(getRelativePoint(origin, newNameAndBetPost));
-            console.out.print(player.getUsername() + " bet $" + player.getBetAmount());
+            console.out.print(player.getUsername() + " bet $" + player.getCurrentBet());
             // Wallet
             newNameAndBetPost.y += 1;
             console.setCursor(getRelativePoint(origin, newNameAndBetPost));

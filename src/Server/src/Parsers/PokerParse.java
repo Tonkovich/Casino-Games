@@ -43,7 +43,12 @@ public class PokerParse {
             double amount = json.getJsonNumber("bet").doubleValue();
             games.getPokerGame(gameID).addToPotBet(amount, userID);
         } else if (json.getBoolean("readyUp")) {
-            players.getPlayer(userID).setReady(json.getBoolean("readyUp"));
+            boolean answer = json.getBoolean("readyUp");
+            if (answer) {
+                players.getPlayer(userID).setReady(json.getBoolean("readyUp"));
+            } else {
+                games.getPokerGame(gameID).removePlayer(userID);
+            }
         }
     }
 }

@@ -134,6 +134,9 @@ public class ConsoleHelper {
     }
 
     public void killProcess() {
+        clear();
         process.destroy();
+        GameMenu gm = new GameMenu();
+        gm.display();
     }
 }

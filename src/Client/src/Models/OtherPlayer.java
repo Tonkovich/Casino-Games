@@ -5,7 +5,6 @@ import Graphics.Parts.Hand;
 public class OtherPlayer {
     private double playerWallet = 0; // Should only set as zero on "new Models.Player()"
     private int userID;
-    private double betAmount;
     private String username;
     public Hand hand;
     private double currentBet;
@@ -32,14 +31,6 @@ public class OtherPlayer {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public void setBetAmount(double amount) {
-        betAmount = amount;
-    }
-
-    public double getBetAmount() {
-        return betAmount;
     }
 
     public double getCurrentBet() {
