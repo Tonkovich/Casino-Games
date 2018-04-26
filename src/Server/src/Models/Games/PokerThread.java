@@ -133,6 +133,11 @@ public class PokerThread implements Runnable {
 
     private boolean checkIfAllReady() {
         while (!allReady) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+
+            }
             if (!(pk.players.size() > 1)) {
                 return false; // Not enough players exit
             }

@@ -2,6 +2,8 @@ package Parsers;
 
 import Utils.Database.Games;
 import Utils.Database.Players;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.json.JsonObject;
 
@@ -10,6 +12,7 @@ public class PokerParse {
     private static PokerParse instance;
     private Games games = Games.getInstance();
     private Players players = Players.getInstance();
+    private static final Logger log = LogManager.getLogger(PokerParse.class);
 
     private PokerParse() {
     }
@@ -42,7 +45,7 @@ public class PokerParse {
         } else if (json.getJsonNumber("bet") != null) {
             double amount = json.getJsonNumber("bet").doubleValue();
             games.getPokerGame(gameID).addToPotBet(amount, userID);
-        } else if (json.getBoolean("readyUp")) {
+        } else if (json.getBoolean("readyUp") || !json.getBoolean("readyUp")) {
             boolean answer = json.getBoolean("readyUp");
             if (answer) {
                 players.getPlayer(userID).setReady(json.getBoolean("readyUp"));

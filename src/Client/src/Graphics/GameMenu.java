@@ -30,39 +30,47 @@ public class GameMenu {
     }
 
     private void getOptions() {
-        Scanner scan = new Scanner(System.in);
-        cs.sendMessage(gmo.gameOptionsSend());
-        JsonReader jsonReader = Json.createReader(new StringReader(cs.receiveMessage()));
-        JsonObject obj = jsonReader.readObject();
-        if (obj.getJsonObject("available") != null) {
-            String options = chooseOption(obj);
-            System.out.println(options);
-            log.info("Please enter the lobby's number to join or type 'c' to create or 'r' to refresh: ");
-            String option = scan.nextLine();
-            if (Character.isDigit(option.charAt(0))) {
-                int optionInt = Integer.parseInt(option);
-                if (allGameIDs.contains(optionInt)) {
-                    joinGame(optionInt);
-                    ui.gameID = optionInt;
-                } else {
-                    // Incorrect choice
-                    incorrectOption(obj);
+        try {
+            Scanner scan = new Scanner(System.in);
+            cs.sendMessage(gmo.gameOptionsSend());
+            JsonReader jsonReader = Json.createReader(new StringReader(cs.receiveMessage()));
+            JsonObject obj = jsonReader.readObject();
+            if (obj.getJsonObject("available") != null) {
+                String options = chooseOption(obj);
+                System.out.println(options);
+                log.info("Please enter the lobby's number to join or type 'c' to create or 'r' to refresh: ");
+                String option = scan.nextLine();
+                if (Character.isDigit(option.charAt(0))) {
+                    int optionInt = Integer.parseInt(option);
+                    if (allGameIDs.contains(optionInt)) {
+                        joinGame(optionInt);
+                        ui.gameID = optionInt;
+                    } else {
+                        // Incorrect choice
+                        incorrectOption(obj);
+                    }
+                } else if (option.trim().equalsIgnoreCase("c")) {
+                    log.info("Would you like to create one? (y/n)");
+                    createGame();
+                    ui.gameID = p.getUserID();
+                } else if (option.trim().equalsIgnoreCase("r")) {
+                    log.info("Refreshing...");
+                    getOptions();
                 }
-            } else if (option.trim().equalsIgnoreCase("c")) {
-                log.info("Would you like to create one? (y/n)");
-                createGame();
-                ui.gameID = p.getUserID();
-            } else if (option.trim().equalsIgnoreCase("r")) {
-                log.info("Refreshing...");
-                getOptions();
-            }
 
-        } else if (obj.getString("createGame") != null) {
-            log.info("No games available..");
-            log.info("Would you like to create one? (y/n) or 'r' to refresh");
-            createGame();
+            } else if (obj.getString("createGame") != null) {
+                log.info("No games available..");
+                log.info("Would you like to create one? (y/n) or 'r' to refresh");
+                createGame();
+            } else { // If anything else comes through just display this
+                log.info("No games available..");
+                log.info("Would you like to create one? (y/n) or 'r' to refresh");
+                createGame();
+            }
+            //scan.close();
+        } catch (NullPointerException ex) {
+            getOptions(); // If anything bad happens just run again?
         }
-        //scan.close();
     }
 
     private String chooseOption(JsonObject obj) {
@@ -72,7 +80,7 @@ public class GameMenu {
 
         log.info("Available poker games\n");
         for (int i = 0; i < size; i++) {
-            options += available.getInt("" + i) + ". Poker game\n";
+            options += "\t" + available.getInt("" + i) + ". Poker game\n";
             allGameIDs.add(available.getInt("" + i));
         }
         return options;

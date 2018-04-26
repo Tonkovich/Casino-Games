@@ -5,8 +5,6 @@ import Models.Parts.CardGame.Deck;
 import Models.Parts.CardGame.Hand;
 import Models.Parts.CardGame.Ranking.EvaluateHand;
 import Utils.Database.Database;
-import Utils.Database.Games;
-import Utils.JSONMessages.GameOptionMessage;
 import Utils.JSONMessages.PokerMessages;
 import Utils.JSONMessages.UserInterfaceMessages;
 
@@ -36,8 +34,6 @@ public class Poker implements CardGame {
     public Map<Integer, Double> playerBets = Collections.synchronizedMap(new LinkedHashMap<>());
     public Map<Integer, Player> players = Collections.synchronizedMap(new LinkedHashMap<>()); // All linkedHashMap to ensure order on placement
     private UserInterfaceMessages ui = new UserInterfaceMessages();
-    private GameOptionMessage gom = new GameOptionMessage();
-    private Games gameDB = Games.getInstance();
     private Thread t;
     private int gameID;
 
@@ -56,6 +52,9 @@ public class Poker implements CardGame {
      */
     public void addPlayer(int userID, Player player) {
         Hand hand = new Hand(); // Create empty hand
+        player.setAllIn(false);
+        player.setFolded(false);
+        player.setReady(false);
         players.put(userID, player);
         playerBets.put(userID, 0.0); // Initialize bets
         setPlayerHand(hand, userID);
@@ -78,14 +77,6 @@ public class Poker implements CardGame {
         playerHands.remove(userID);
         playerBets.remove(userID);
         players.remove(userID);
-        if (players.size() == 2) {
-            exitGame();
-            try {
-                t.join();
-            } catch (InterruptedException ex) {
-
-            }
-        }
     }
 
     public Player getPlayer(int userID) {
@@ -340,6 +331,11 @@ public class Poker implements CardGame {
 
     public void exitGame() {
         massSender(pm.exitGame());
+        try {
+            t.join();
+        } catch (InterruptedException ex) {
+            ex.getMessage();
+        }
     }
 
     private void resetPot() {
