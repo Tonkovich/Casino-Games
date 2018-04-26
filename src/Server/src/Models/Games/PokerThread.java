@@ -142,7 +142,10 @@ public class PokerThread implements Runnable {
                     counter++;
                 }
             }
-            if (counter == pk.players.size()) {
+            if (pk.players.size() == 1) {
+                return false;
+            }
+            if (counter == pk.players.size() && pk.players.size() != 1) {
                 allReady = true;
             }
         }

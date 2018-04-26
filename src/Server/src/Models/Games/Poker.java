@@ -314,24 +314,28 @@ public class Poker implements CardGame {
      * Resets the game entirely
      */
     public void startNewGame() {
-        gameDone = false;
-        //initialRound = true;
-        initialBettingRound = true;
-        deck = new Deck(); // Deck is loaded and shuffled
-        resetPot();
-        house = new Hand();
-        for (Player p : players.values()) {
-            playerHands.put(p.getUserID(), new Hand());
-            playerBets.put(p.getUserID(), 0.0);
-            deal(p.getUserID());
-            p.setFolded(false);
-            p.setAllIn(false);
-            p.setReady(false);
+        if (players.size() != 1) {
+            gameDone = false;
+            //initialRound = true;
+            initialBettingRound = true;
+            deck = new Deck(); // Deck is loaded and shuffled
+            resetPot();
+            house = new Hand();
+            for (Player p : players.values()) {
+                playerHands.put(p.getUserID(), new Hand());
+                playerBets.put(p.getUserID(), 0.0);
+                deal(p.getUserID());
+                p.setFolded(false);
+                p.setAllIn(false);
+                p.setReady(false);
+            }
+            pt = new PokerThread(gameID);
+            t = new Thread(pt);
+            t.start();
+            updateClients();
+        } else {
+            exitGame();
         }
-        pt = new PokerThread(gameID);
-        t = new Thread(pt);
-        t.start();
-        updateClients();
     }
 
     public void exitGame() {
@@ -455,7 +459,6 @@ public class Poker implements CardGame {
         p.sendMessage(pm.winnerMessage());
         massSender(pm.winnerMessageOthers(p));
         massSender(pm.gameCompleted()); // Ask if they wanna play again
-        updateClients(); // Also shows other players cards
     }
 
     /**

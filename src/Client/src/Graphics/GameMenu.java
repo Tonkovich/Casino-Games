@@ -27,8 +27,6 @@ public class GameMenu {
     public void display() {
         // Fetch options and choose
         getOptions();
-
-
     }
 
     private void getOptions() {
@@ -38,10 +36,10 @@ public class GameMenu {
         JsonObject obj = jsonReader.readObject();
         if (obj.getJsonObject("available") != null) {
             String options = chooseOption(obj);
-            log.info(options);
-            log.info("Please enter the lobby's number to join or type 'c' to create: ");
+            System.out.println(options);
+            log.info("Please enter the lobby's number to join or type 'c' to create or 'r' to refresh: ");
             String option = scan.nextLine();
-            if (!option.equalsIgnoreCase("c")) {
+            if (Character.isDigit(option.charAt(0))) {
                 int optionInt = Integer.parseInt(option);
                 if (allGameIDs.contains(optionInt)) {
                     joinGame(optionInt);
@@ -54,11 +52,14 @@ public class GameMenu {
                 log.info("Would you like to create one? (y/n)");
                 createGame();
                 ui.gameID = p.getUserID();
+            } else if (option.trim().equalsIgnoreCase("r")) {
+                log.info("Refreshing...");
+                getOptions();
             }
 
         } else if (obj.getString("createGame") != null) {
             log.info("No games available..");
-            log.info("Would you like to create one? (y/n)");
+            log.info("Would you like to create one? (y/n) or 'r' to refresh");
             createGame();
         }
         //scan.close();
@@ -84,10 +85,21 @@ public class GameMenu {
 
             System.out.println();
             System.out.print("Max Players: ");
-            int maxPlayers = scan.nextInt();
+            int maxPlayers;
+            try {
+                maxPlayers = scan.nextInt();
+            } catch (NumberFormatException ex) {
+                log.info("Not a number: setting to 2");
+                System.out.print("Max Players: 2");
+                maxPlayers = 2;
+
+            }
             if (maxPlayers > 4) {
                 System.out.println("Server only allows 4 max..setting to 4");
                 maxPlayers = 4;
+            } else if (maxPlayers < 2) {
+                System.out.println("Server only allows 2 min..setting to 2");
+                maxPlayers = 2;
             }
             System.out.print("\nBig blind: ");
             int bigBlind = scan.nextInt();
@@ -98,9 +110,11 @@ public class GameMenu {
             cs.sendMessage(gmo.createGame(maxPlayers, bigBlind, smallBlind));
             ui.gameID = p.getUserID();
         } else if (result.equalsIgnoreCase("n")) {
-            // TODO Maybe make something that will go back to game menu and give a choice, but for no just exit
-            log.info("Client logging off..");
+            getOptions();
             System.exit(0);
+        } else if (result.equalsIgnoreCase("r")) {
+            log.info("Refreshing...");
+            getOptions();
         } else {
             log.info("Incorrect entry: Try again");
             createGame();
