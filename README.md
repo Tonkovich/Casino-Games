@@ -6,12 +6,12 @@ Currently there is only Texas Hold'em but in the future there will be more multi
 such as slots. 
 
 ## Server
-* Can tell whether or not a player is connected using a heartbeat.
-* Stores and manages a thread pool of all active games to ensure multi-player.
+* Can tell whether or not a player is connected using a heartbeat
+* Stores and manages a thread pool of all active games to ensure multi-player
 * Uses a MySQL database for all player information (username, password, wallet[$])
-* Parses/Uses JSON data for its messaging system between clients.
-* Uses network port 12000 for DatagramSocket(UDP) messages.
-* Uses local algorithm for determining winner of games.
+* Parses/Uses JSON data for its messaging system between clients
+* Uses network port 12000 for DatagramSocket(UDP) messages
+* Uses local algorithm for determining winner of games
 
 ## Client
 * Modified GUI inspired by [Pathoschild's JPoker](https://github.com/Pathoschild/JPoker)
@@ -20,7 +20,7 @@ such as slots.
 
 ## :bug: Bugs :bug:
 * Graphical issues where user exits game and is met with black screen (just type 'r')
-* Users can sometimes not create new games on exiting games
+* Users can sometimes not create new games immediately upon exiting a game
 
 ## :star2: Upcoming... :star2:
 * Web-page for all active servers
@@ -31,8 +31,8 @@ such as slots.
 * Implement timers for limit of user decisions
     
 ## Authors:
-* Aaron Tonkovich
-* Joshua Potrawski
+* [Aaron Tonkovich](https://github.com/Tonkovich)
+* [Joshua Potrawski](https://github.com/projectpolak)
 
 
     
