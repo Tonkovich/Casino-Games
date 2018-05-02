@@ -18,7 +18,7 @@ such as slots.
 * Users can join, create, and leave games.
 * Can register on the server in client.
 
-## :boom: Bugs :boom:
+## :bug: Bugs :bug:
 * Graphical issues where user exits game and is met with black screen (just type 'r')
 * Users can sometimes not create new games on exiting games
 
