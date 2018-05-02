@@ -69,7 +69,7 @@ public class GameMenu {
             }
             //scan.close();
         } catch (NullPointerException ex) {
-            getOptions(); // If anything bad happens just run again?
+            createGame(); // If anything bad happens just run again?
         }
     }
 
@@ -119,7 +119,7 @@ public class GameMenu {
             ui.gameID = p.getUserID();
         } else if (result.equalsIgnoreCase("n")) {
             getOptions();
-            System.exit(0);
+            //System.exit(0);
         } else if (result.equalsIgnoreCase("r")) {
             log.info("Refreshing...");
             getOptions();

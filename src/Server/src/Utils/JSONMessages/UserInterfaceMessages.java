@@ -11,7 +11,6 @@ import java.util.Set;
 
 public class UserInterfaceMessages {
 
-    // TODO: Handle prev bet
     public String updateClients(double pot, Hand pHand, Hand hHand, boolean initialBettingRound
             , int smallBlind, int bigBlind, Collection<Double> playerBets, Collection<Player> players
             , double prevBet, Set<Integer> playerIDs, boolean gameDone, Map<Integer, Hand> playerHands) {

@@ -89,7 +89,6 @@ public class HeartBeat {
         }
     }
 
-    // Might not be the best implementation. Using casting to avoid possible conversion performance hits
     private Thread t = new Thread(() -> {
         log.info("Heartbeat started");
         while (true) { // This is to keep the thread alive constantly, sloppy probably

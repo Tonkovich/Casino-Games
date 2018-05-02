@@ -34,7 +34,6 @@ public class PokerParse {
         int userID = json.getInt("userID");
         if (json.getJsonString("call") != null) {
             games.getPokerGame(gameID).addToPotCall(userID);
-            // TODO Possibly move responded on success of add to pot, or isAllowed()
         } else if (json.getJsonString("check") != null) {
             games.getPokerGame(gameID).check(userID);
         } else if (json.getJsonNumber("raise") != null) {

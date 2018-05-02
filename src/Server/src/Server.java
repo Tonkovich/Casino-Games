@@ -29,7 +29,7 @@ public class Server {
         ParseStore ps = ParseStore.getInstance();
 
         // Parse config
-        File file = new File("src/Server/src/config.json");
+        File file = new File("config.json");
 
         String jsonConfig = FileUtils.readFileToString(file, "UTF-8");
         JsonReader configReader = Json.createReader(new StringReader(jsonConfig));
@@ -58,7 +58,6 @@ public class Server {
                 JsonReader jsonReader = Json.createReader(new StringReader(message));
                 JsonObject json = jsonReader.readObject();
 
-                // TODO: Intercept heartbeat to prevent out of order messages
                 ps.parse(json, senderIP, senderPort); // Parse
             }
         } catch (Exception ex) {

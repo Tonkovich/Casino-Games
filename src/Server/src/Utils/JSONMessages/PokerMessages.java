@@ -6,7 +6,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import java.util.List;
 
-public class PokerMessages implements CardGameMessages {
+public class PokerMessages {
 
     String spaces = "                                                                    ";
 

@@ -54,7 +54,7 @@ public class Games {
         // We will use initialUserID for gameID because no one will ever have it and it's easy
         pokerGames.put(userID, newGame);
         log.info("New poker game created ID:" + userID);
-        //playerDB.getPlayer(userID).sendMessage(gom.startGUI(userID));
+        playerDB.getPlayer(userID).sendMessage(gom.startGUI(userID));
     }
 
     public void joinPokerGame(JsonObject json) {

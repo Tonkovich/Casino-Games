@@ -1,28 +1,34 @@
-## Laundry List:
-* Complete message passing and managing connections of clients
-* Complete poker/slots logic
-    * Card/Slot values
-    * Logic for best hand
-        * Splitting pot if equal values
-    * etc..
-* Test cases
-    * Testing connection of Clients
-* Add more...    
+# Casino Games :moneybag:
+In this distributed system, users have the ability to connect to any active casino server and search for active games.
+Users can then join and play against other users (up to 4 players) for in game currency that is backed up to a database. 
 
-## Notes:
-* Message passing will be done by standard Java I/O 
-    * Utilizes SimpleJSON for encoding and decoding information
-* All new and current games are stored in HashMap in [Utils.Database.Games](https://github.com/Tonkovich/Casino-Utils.Database.Games/blob/master/Server/src/Utils.Database.Games.java)    
-    * To act upon a game data we get the game in the game hashmap, 
-    then use methods in a specific [game model](https://github.com/Tonkovich/Casino-Utils.Database.Games/tree/master/Server/src/GameModels)
-* The database will store the players money for offline purposes
-    * Players bank will be updated upon completing a game
-    * Used for getting players bank upon connecting to server
-    
-## Ideas:
-* Client can create account and default cash of $500
-* GUI for client
-    * Buttons for betting, card display, game creation, game joining, and etc..
+Currently there is only Texas Hold'em but in the future there will be more multiplayer games and singleplayer games
+such as slots. 
+
+## Server
+* Can tell whether or not a player is connected using a heartbeat.
+* Stores and manages a thread pool of all active games to ensure multi-player.
+* Uses a MySQL database for all player information (username, password, wallet[$])
+* Parses/Uses JSON data for its messaging system between clients.
+* Uses network port 12000 for DatagramSocket(UDP) messages.
+* Uses local algorithm for determining winner of games.
+
+## Client
+* Modified GUI inspired by [Pathoschild's JPoker](https://github.com/Pathoschild/JPoker)
+* Users can join, create, and leave games.
+* Can register on the server in client.
+
+## :boom: Bugs :boom:
+* Graphical issues where user exits game and is met with black screen (just type 'r')
+* Users can sometimes not create new games on exiting games
+
+## :star2: Upcoming... :star2:
+* Web-page for all active servers
+* Add more server configurable options to config
+* Combat firewall issues with certain machines
+* Create real GUI using Java graphics
+* Write more test cases (really)
+* Implement timers for limit of user decisions
     
 ## Authors:
 * Aaron Tonkovich

@@ -40,11 +40,11 @@ public class Players {
 
     public void logoutPlayer(int userID) {
         try {
-            log.info(getPlayer(userID).getUsername() + " logged out.");
+            //log.info(getPlayer(userID).getUsername() + " logged out.");
         } catch (NullPointerException ex) {
             // Player already removed????
         }
-        players.remove(userID);
+        //players.remove(userID);
         if (players.size() == 0) {
             hb.stop(); // Stop heartbeat
         }
@@ -52,5 +52,9 @@ public class Players {
 
     public Collection getPlayers() {
         return players.values();
+    }
+
+    public void updatePlayer(Player p) {
+        players.put(p.getUserID(), p);
     }
 }
